@@ -15,16 +15,12 @@ const WelcomeModal = () => {
   const { role, loading } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [closing, setClosing] = useState(false);
-  const [contentReady, setContentReady] = useState(false);
 
   useEffect(() => {
     if (role !== 'guest') {
-      const t = setTimeout(() => {
-        setIsOpen(false);
-        setClosing(false);
-        setContentReady(false);
-      }, 0);
-      return () => clearTimeout(t);
+      setIsOpen(false);
+      setClosing(false);
+      return;
     }
 
     if (!loading && role === 'guest') {
@@ -33,8 +29,7 @@ const WelcomeModal = () => {
       if (!hasSeenModal) {
         const timer = setTimeout(() => {
           setIsOpen(true);
-          setTimeout(() => setContentReady(true), 100);
-        }, 1200);
+        }, 1000);
         return () => clearTimeout(timer);
       }
     }
@@ -54,9 +49,8 @@ const WelcomeModal = () => {
     setTimeout(() => {
       setIsOpen(false);
       setClosing(false);
-      setContentReady(false);
       sessionStorage.setItem('welcome_modal_seen', 'true');
-    }, 350);
+    }, 300);
   }, []);
 
   useEffect(() => {
@@ -72,107 +66,86 @@ const WelcomeModal = () => {
 
   return (
     <div
-      className={`wm-overlay ${closing ? 'wm-overlay--closing' : ''}`}
+      className={`modal-overlay ${closing ? 'modal-overlay--closing' : ''}`}
       onClick={handleClose}
-      role="presentation"
     >
-      <div className="wm-backdrop" aria-hidden />
-
       <div
-        className={`wm-modal ${closing ? 'wm-modal--closing' : ''}`}
+        className={`modal-container ${closing ? 'modal-container--closing' : ''}`}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="wm-heading"
+        aria-labelledby="modal-title"
       >
-        {/* decorative */}
-        <div className="wm-decor" aria-hidden>
-          <span className="wm-orb wm-orb--1" />
-          <span className="wm-orb wm-orb--2" />
-          <span className="wm-orb wm-orb--3" />
-          <div className="wm-grid-pattern" />
-        </div>
-
-        {/* accent bar */}
-        <div className="wm-accent-bar" aria-hidden>
-          <span className="wm-accent-sweep" />
-        </div>
-
-        {/* close */}
-        <button className="wm-close" onClick={handleClose} aria-label="Close">
+        {/* Close Button */}
+        <button className="modal-close" onClick={handleClose} aria-label="Close">
           <FaTimes />
         </button>
 
-        {/* content */}
-        <div className={`wm-content ${contentReady ? 'wm-content--visible' : ''}`}>
-          {/* hero icon */}
-          <div className="wm-hero-icon">
-            <div className="wm-hero-bg" />
-            <FaMapMarkerAlt className="wm-hero-svg" />
-            <span className="wm-hero-ping" />
-            <span className="wm-hero-ring" />
+        {/* Content */}
+        <div className="modal-content">
+          {/* Icon */}
+          <div className="modal-icon">
+            <FaMapMarkerAlt />
           </div>
 
-          {/* header */}
-          <div className="wm-header">
-            <span className="wm-badge">
-              <FaInfoCircle className="wm-badge-icon" />
+          {/* Header */}
+          <div className="modal-header">
+            <span className="modal-badge">
+              <FaInfoCircle />
               Important Notice
             </span>
-            <h2 className="wm-heading" id="wm-heading">
+            <h2 id="modal-title" className="modal-title">
               Delivery Area Update
             </h2>
-            <p className="wm-subheading">
+            <p className="modal-subtitle">
               Please review our current service availability
             </p>
           </div>
 
-          {/* info cards */}
-          <div className="wm-cards">
-            <div className="wm-card">
-              <div className="wm-card-icon-wrap wm-card-icon-wrap--primary">
-                <FaShippingFast className="wm-card-icon" />
+          {/* Info Cards */}
+          <div className="modal-cards">
+            <div className="info-card">
+              <div className="card-icon">
+                <FaShippingFast />
               </div>
-              <div className="wm-card-text">
-                <strong className="wm-card-title">Current Service Area</strong>
-                <p className="wm-card-desc">
+              <div className="card-content">
+                <strong className="card-title">Current Service Area</strong>
+                <p className="card-description">
                   Our delivery service is currently available only for users in{' '}
-                  <span className="wm-highlight">Rahim Yar Khan</span>.
+                  <strong>Rahim Yar Khan</strong>.
                 </p>
               </div>
             </div>
 
-            <div className="wm-card wm-card--alt">
-              <div className="wm-card-icon-wrap wm-card-icon-wrap--accent">
-                <FaExpandArrowsAlt className="wm-card-icon" />
+            <div className="info-card">
+              <div className="card-icon card-icon--accent">
+                <FaExpandArrowsAlt />
               </div>
-              <div className="wm-card-text">
-                <strong className="wm-card-title">Expanding Soon</strong>
-                <p className="wm-card-desc">
+              <div className="card-content">
+                <strong className="card-title">Expanding Soon</strong>
+                <p className="card-description">
                   We're working to bring our services to more cities across Pakistan.
                 </p>
               </div>
             </div>
           </div>
 
-          {/* divider */}
-          <div className="wm-divider">
-            <span className="wm-divider-line" />
-            <FaHeart className="wm-divider-icon" />
-            <span className="wm-divider-line" />
+          {/* Divider */}
+          <div className="modal-divider">
+            <span className="divider-line" />
+            <FaHeart className="divider-icon" />
+            <span className="divider-line" />
           </div>
 
-          {/* footer */}
-          <div className="wm-footer">
-            <button className="wm-btn" onClick={handleClose}>
-              <span className="wm-btn-shine" />
-              <span className="wm-btn-label">Continue Browsing</span>
-              <FaArrowRight className="wm-btn-arrow" />
+          {/* Footer */}
+          <div className="modal-footer">
+            <button className="modal-button" onClick={handleClose}>
+              <span>Continue Browsing</span>
+              <FaArrowRight />
             </button>
-
-            <p className="wm-thanks">
-              <FaHeart className="wm-thanks-icon" />
-              Thank you for your patience &amp; support!
+            <p className="modal-thanks">
+              <FaHeart />
+              Thank you for your patience &amp; support
             </p>
           </div>
         </div>
