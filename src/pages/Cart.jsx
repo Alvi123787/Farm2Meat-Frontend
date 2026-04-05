@@ -21,9 +21,9 @@ import api from '../services/api'
 import '../css/Cart.css'
 import { animalsService } from '../services/animalsService'
 import { useCart } from '../contexts/cartContextCore'
+import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl'
 
 // ── Config ──
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 const WHATSAPP_NUMBER = '923089880479'
 const DELIVERY_CHARGE = 0
 
@@ -63,11 +63,8 @@ const buildImageUrl = (imagePath) => {
   if (!trimmed) return '/placeholder.jpg'
   
   // Already a full URL
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed
-  
-  // Relative path - ensure it starts with / and prepend API_URL
-  const path = trimmed.startsWith('/') ? trimmed : `/${trimmed}`
-  return `${API_URL}${path}`
+  if (isAbsoluteUrl(trimmed)) return trimmed
+  return buildMediaUrl(trimmed) || '/placeholder.jpg'
 }
 
 // ── Helper: Get thumbnail URL ──

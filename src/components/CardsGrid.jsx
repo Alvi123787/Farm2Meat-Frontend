@@ -11,8 +11,8 @@ import {
 import ButcherSection from './ButcherSection'
 import api from '../services/api'
 import '../css/CardsGrid.css'
+import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 const WHATSAPP_NUMBER = '923089880479'
 const SCROLL_THRESHOLD = 12
 
@@ -84,25 +84,22 @@ const ProductCard = ({ product, index, isAnimated }) => {
     if (!firstImg) return '/placeholder.jpg'
     
     // If it's already a full URL, return it
-    if (firstImg.startsWith('http://') || firstImg.startsWith('https://')) {
+    if (isAbsoluteUrl(firstImg)) {
       return firstImg
     }
-    
-    // If it's a relative path, ensure it starts with / and prepend API_URL
-    const path = firstImg.startsWith('/') ? firstImg : `/${firstImg}`
-    return `${API_URL}${path}`
+
+    return buildMediaUrl(firstImg) || '/placeholder.jpg'
   }
 
   const getFirstVideoUrl = () => {
     const firstVid = product.videos?.[0]
     if (!firstVid) return null
 
-    if (firstVid.startsWith('http://') || firstVid.startsWith('https://')) {
+    if (isAbsoluteUrl(firstVid)) {
       return firstVid
     }
 
-    const path = firstVid.startsWith('/') ? firstVid : `/${firstVid}`
-    return `${API_URL}${path}`
+    return buildMediaUrl(firstVid)
   }
 
   const firstVideo = getFirstVideoUrl()

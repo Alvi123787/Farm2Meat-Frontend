@@ -4,12 +4,12 @@ import { faTimes, faSpinner, faCheckCircle } from '@fortawesome/free-solid-svg-i
 import { butcherService } from '../services/butcherService';
 import { useCart } from '../contexts/cartContextCore';
 import '../css/ButcherModal.css';
+import { buildMediaUrl } from '../utils/mediaUrl';
 
 const ButcherModal = ({ isOpen, onClose }) => {
   const { selectedButcher, setSelectedButcher } = useCart();
   const [butchers, setButchers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     if (isOpen) {
@@ -27,7 +27,7 @@ const ButcherModal = ({ isOpen, onClose }) => {
 
   const resolveImageUrl = (src) => {
     if (!src) return '';
-    return src.startsWith('/uploads') ? `${apiBase}${src}` : src;
+    return buildMediaUrl(src) || src;
   };
 
   const handleSelect = (butcher) => {

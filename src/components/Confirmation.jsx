@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import '../css/Confirmation.css';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import OrderExperienceModal from './OrderExperienceModal';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl';
 const PURCHASE_STATE_KEY = 'postPurchaseConfirmationState';
 const REVIEW_DISMISSED_PREFIX = 'postPurchaseReviewDismissed:';
 
@@ -31,9 +30,8 @@ const buildImageUrl = (imagePath) => {
   if (!imagePath || typeof imagePath !== 'string') return '/placeholder.jpg';
   const trimmed = imagePath.trim();
   if (!trimmed) return '/placeholder.jpg';
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
-  const path = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
-  return `${API_URL}${path}`;
+  if (isAbsoluteUrl(trimmed)) return trimmed;
+  return buildMediaUrl(trimmed) || '/placeholder.jpg';
 };
 
 const Confirmation = () => {

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { butcherService } from '../services/butcherService';
 import '../css/ButcherSection.css';
+import { buildMediaUrl } from '../utils/mediaUrl';
 
 const ButcherSection = () => {
   const [butchers, setButchers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   const resolveImageUrl = (src) => {
     if (!src) return '';
-    return src.startsWith('/uploads') ? `${apiBase}${src}` : src;
+    return buildMediaUrl(src) || src;
   };
 
   useEffect(() => {

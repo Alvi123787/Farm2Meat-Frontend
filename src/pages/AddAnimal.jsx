@@ -24,8 +24,7 @@ import {
 } from 'react-icons/fa'
 import api from '../services/api'
 import '../css/AddAnimal.css'
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+import { buildMediaUrl } from '../utils/mediaUrl'
 
 // ── Dropdown options ──
 const categoryOptions = [
@@ -1038,7 +1037,7 @@ const AddAnimal = () => {
                           {existingImages.map((imgPath, i) => (
                             <div key={`existing-${i}`} className="aa-preview-item">
                               <img
-                                src={`${API_URL}${imgPath}`}
+                                src={buildMediaUrl(imgPath)}
                                 alt={`Existing ${i + 1}`}
                                 className="aa-preview-img"
                               />
@@ -1147,7 +1146,7 @@ const AddAnimal = () => {
                           {existingVideos.map((vidPath, i) => (
                             <div key={`existing-vid-${i}`} className="aa-preview-item aa-preview-item--video">
                               <video
-                                src={`${API_URL}${vidPath}`}
+                                src={buildMediaUrl(vidPath)}
                                 className="aa-preview-video"
                                 controls
                               />

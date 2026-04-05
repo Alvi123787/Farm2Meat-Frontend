@@ -28,8 +28,7 @@ import {
 import api from '../services/api'
 import '../css/InventoryPreview.css'
 import { useAdminLiveRefresh } from '../hooks/useAdminLiveRefresh'
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+import { buildMediaUrl } from '../utils/mediaUrl'
 
 /* ── fallback ────────────────────────────────────────── */
 const fallbackSrc =
@@ -46,8 +45,8 @@ const handleImageError = (e) => { e.target.src = fallbackSrc }
 
 /* ── helpers ─────────────────────────────────────────── */
 const getThumbnail = (animal) => {
-  if (animal.images?.length > 0) return `${API_URL}${animal.images[0]}`
-  if (animal.imageUrl) return `${API_URL}${animal.imageUrl}`
+  if (animal.images?.length > 0) return buildMediaUrl(animal.images[0]) || fallbackSrc
+  if (animal.imageUrl) return buildMediaUrl(animal.imageUrl) || fallbackSrc
   return fallbackSrc
 }
 

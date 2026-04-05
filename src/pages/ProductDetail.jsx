@@ -40,11 +40,10 @@ import {
 import '../css/ProductDetail.css'
 import CustomerReviewSection from '../components/CustomerReviewSection'
 import { useCart } from '../contexts/cartContextCore'
-
 import api from '../services/api'
+import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl'
 
 // ── Config ──
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 const WHATSAPP_NUMBER = '923089880479'
 
 // ── Trust elements — matches Cart page format ──
@@ -78,20 +77,18 @@ const buildImageUrls = (animal) => {
   const urls = []
   if (animal.images && animal.images.length > 0) {
     animal.images.forEach((img) => {
-      if (img.startsWith('http://') || img.startsWith('https://')) {
+      if (isAbsoluteUrl(img)) {
         urls.push(img)
       } else {
-        const path = img.startsWith('/uploads') ? img : `/${img}`
-        urls.push(`${API_URL}${path}`)
+        urls.push(buildMediaUrl(img))
       }
     })
   } else if (animal.imageUrl) {
     const img = animal.imageUrl
-    if (img.startsWith('http://') || img.startsWith('https://')) {
+    if (isAbsoluteUrl(img)) {
       urls.push(img)
     } else {
-      const path = img.startsWith('/uploads') ? img : `/${img}`
-      urls.push(`${API_URL}${path}`)
+      urls.push(buildMediaUrl(img))
     }
   }
   if (urls.length === 0) urls.push('/placeholder.jpg')
@@ -102,11 +99,10 @@ const buildImageUrls = (animal) => {
 const buildVideoUrls = (animal) => {
   if (!animal.videos || animal.videos.length === 0) return []
   return animal.videos.map((vid) => {
-    if (vid.startsWith('http://') || vid.startsWith('https://')) {
+    if (isAbsoluteUrl(vid)) {
       return vid
     }
-    const path = vid.startsWith('/uploads') ? vid : `/${vid}`
-    return `${API_URL}${path}`
+    return buildMediaUrl(vid)
   })
 }
 
