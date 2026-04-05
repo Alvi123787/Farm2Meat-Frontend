@@ -3,10 +3,8 @@ import {
   FaTimes,
   FaMapMarkerAlt,
   FaArrowRight,
-  FaHeart,
-  FaInfoCircle,
   FaShippingFast,
-  FaExpandArrowsAlt,
+  FaInfoCircle,
 } from 'react-icons/fa';
 import { useAuth } from '../contexts/authContextCore';
 import '../css/WelcomeModal.css';
@@ -17,31 +15,19 @@ const WelcomeModal = () => {
   const [closing, setClosing] = useState(false);
 
   useEffect(() => {
-    if (role !== 'guest') {
-      setIsOpen(false);
-      setClosing(false);
-      return;
-    }
-
     if (!loading && role === 'guest') {
-      const hasSeenModal = sessionStorage.getItem('welcome_modal_seen');
+      const seen = sessionStorage.getItem('welcome_modal_seen');
 
-      if (!hasSeenModal) {
-        const timer = setTimeout(() => {
-          setIsOpen(true);
-        }, 1000);
+      if (!seen) {
+        const timer = setTimeout(() => setIsOpen(true), 1000);
         return () => clearTimeout(timer);
       }
     }
   }, [role, loading]);
 
   useEffect(() => {
-    if (!isOpen) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = prev;
-    };
+    if (isOpen) document.body.style.overflow = 'hidden';
+    return () => (document.body.style.overflow = 'auto');
   }, [isOpen]);
 
   const handleClose = useCallback(() => {
@@ -50,105 +36,45 @@ const WelcomeModal = () => {
       setIsOpen(false);
       setClosing(false);
       sessionStorage.setItem('welcome_modal_seen', 'true');
-    }, 300);
+    }, 200);
   }, []);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const handler = (e) => {
-      if (e.key === 'Escape') handleClose();
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [isOpen, handleClose]);
 
   if (!isOpen) return null;
 
   return (
-    <div
-      className={`modal-overlay ${closing ? 'modal-overlay--closing' : ''}`}
-      onClick={handleClose}
-    >
-      <div
-        className={`modal-container ${closing ? 'modal-container--closing' : ''}`}
-        onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
-      >
-        {/* Close Button */}
-        <button className="modal-close" onClick={handleClose} aria-label="Close">
+    <div className={`wm-overlay ${closing ? 'wm-closing' : ''}`} onClick={handleClose}>
+      <div className="wm-modal" onClick={(e) => e.stopPropagation()}>
+
+        <button className="wm-close" onClick={handleClose}>
           <FaTimes />
         </button>
 
-        {/* Content */}
-        <div className="modal-content">
-          {/* Icon */}
-          <div className="modal-icon">
-            <FaMapMarkerAlt />
-          </div>
+        <div className="wm-header">
+          <FaMapMarkerAlt className="wm-icon" />
+          <h2>Delivery Area Notice</h2>
+          <p>We currently operate in limited locations.</p>
+        </div>
 
-          {/* Header */}
-          <div className="modal-header">
-            <span className="modal-badge">
-              <FaInfoCircle />
-              Important Notice
-            </span>
-            <h2 id="modal-title" className="modal-title">
-              Delivery Area Update
-            </h2>
-            <p className="modal-subtitle">
-              Please review our current service availability
-            </p>
-          </div>
-
-          {/* Info Cards */}
-          <div className="modal-cards">
-            <div className="info-card">
-              <div className="card-icon">
-                <FaShippingFast />
-              </div>
-              <div className="card-content">
-                <strong className="card-title">Current Service Area</strong>
-                <p className="card-description">
-                  Our delivery service is currently available only for users in{' '}
-                  <strong>Rahim Yar Khan</strong>.
-                </p>
-              </div>
-            </div>
-
-            <div className="info-card">
-              <div className="card-icon card-icon--accent">
-                <FaExpandArrowsAlt />
-              </div>
-              <div className="card-content">
-                <strong className="card-title">Expanding Soon</strong>
-                <p className="card-description">
-                  We're working to bring our services to more cities across Pakistan.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div className="modal-divider">
-            <span className="divider-line" />
-            <FaHeart className="divider-icon" />
-            <span className="divider-line" />
-          </div>
-
-          {/* Footer */}
-          <div className="modal-footer">
-            <button className="modal-button" onClick={handleClose}>
-              <span>Continue Browsing</span>
-              <FaArrowRight />
-            </button>
-            <p className="modal-thanks">
-              <FaHeart />
-              Thank you for your patience &amp; support
-            </p>
+        <div className="wm-card">
+          <FaShippingFast className="wm-card-icon" />
+          <div>
+            <h4>Service Area</h4>
+            <p>Currently available only in <b>Rahim Yar Khan</b>.</p>
           </div>
         </div>
+
+        <div className="wm-card wm-muted">
+          <FaInfoCircle className="wm-card-icon" />
+          <div>
+            <h4>Expanding Soon</h4>
+            <p>We are expanding to more cities in Pakistan.</p>
+          </div>
+        </div>
+
+        <button className="wm-btn" onClick={handleClose}>
+          Continue <FaArrowRight />
+        </button>
+
       </div>
     </div>
   );
