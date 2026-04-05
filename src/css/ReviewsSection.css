@@ -1,0 +1,456 @@
+/* ==========================================
+   REVIEWS SECTION — MAIN
+   ========================================== */
+
+.rv-section {
+  padding: 80px 20px;
+  background: var(--bg-main);
+}
+
+/* ---------- HEADER ---------- */
+
+.rv-badge {
+  display: inline-block;
+  padding: 0;
+  background: none;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  border-radius: 0;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.rv-title {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  letter-spacing: -0.03em;
+  text-align: left;
+  line-height: 1.2;
+}
+
+.rv-title-highlight {
+  color: var(--primary);
+  position: relative;
+}
+
+.rv-title-highlight::after {
+  display: none;
+}
+
+.rv-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  max-width: 650px;
+  margin: 0 0 24px 0;
+  line-height: 1.7;
+  text-align: left;
+}
+
+/* ---------- TITLE DIVIDER ---------- */
+
+.rv-title-divider {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0;
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+
+.rv-divider-dot {
+  display: none;
+}
+
+.rv-divider-line {
+  width: 50px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--primary);
+}
+
+/* ==========================================
+   REVIEW CARDS — GRID
+   ========================================== */
+
+.rv-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto 44px;
+  text-align: left;
+  justify-content: center;
+}
+
+.rv-grid--center {
+  max-width: 900px;
+}
+
+/* ---------- CARD ---------- */
+
+.rv-card {
+  position: relative;
+  background: var(--bg-section);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  padding: 32px 26px 28px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: flex;
+  flex-direction: column;
+  cursor: default;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.rv-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.12);
+}
+
+/* ---------- CORNER ACCENT ---------- */
+
+.rv-corner-accent {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(
+    135deg,
+    transparent 50%,
+    rgba(212, 175, 55, 0.06) 50%
+  );
+  border-radius: 0 16px 0 0;
+  pointer-events: none;
+}
+
+.rv-card:hover .rv-corner-accent {
+  background: linear-gradient(
+    135deg,
+    transparent 50%,
+    rgba(212, 175, 55, 0.12) 50%
+  );
+}
+
+/* ---------- QUOTE ICON ---------- */
+
+.rv-quote-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--primary), var(--primary-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin-bottom: 18px;
+  box-shadow: 0 4px 14px rgba(128, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.rv-card:hover .rv-quote-icon {
+  transform: scale(1.08);
+}
+
+/* ---------- STARS ---------- */
+
+.rv-stars {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 16px;
+}
+
+.rv-star {
+  font-size: 0.85rem;
+  color: var(--border-light);
+}
+
+.rv-star.rv-star-filled {
+  color: var(--accent);
+}
+
+/* ---------- REVIEW TEXT ---------- */
+
+.rv-text {
+  font-size: 0.93rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+  margin: 0 0 20px;
+  flex-grow: 1;
+  font-style: italic;
+}
+
+/* ---------- DIVIDER ---------- */
+
+.rv-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--border-light);
+  margin-bottom: 18px;
+}
+
+/* ---------- CUSTOMER INFO ---------- */
+
+.rv-customer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ---------- AVATAR ---------- */
+
+.rv-avatar {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--primary), var(--primary-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-light);
+  box-shadow: 0 3px 10px rgba(128, 0, 0, 0.18);
+}
+
+/* ---------- NAME & LOCATION ---------- */
+
+.rv-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rv-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.rv-location {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rv-loc-icon {
+  font-size: 0.65rem;
+  color: var(--accent);
+}
+
+/* ==========================================
+   VIEW ALL REVIEWS — BUTTON
+   ========================================== */
+
+.rv-view-all-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(145deg, var(--btn-primary), var(--btn-primary-hover));
+  color: var(--text-light);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 14px 34px;
+  border-radius: 50px;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+  margin-bottom: 30px;
+  box-shadow: 0 6px 22px rgba(128, 0, 0, 0.25);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              gap 0.3s ease;
+}
+
+.rv-view-all-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 32px rgba(128, 0, 0, 0.35);
+  gap: 16px;
+  color: var(--text-light);
+  text-decoration: none;
+}
+
+.rv-view-all-btn:active {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(128, 0, 0, 0.3);
+}
+
+.rv-btn-text {
+  line-height: 1;
+}
+
+.rv-btn-arrow {
+  font-size: 0.8rem;
+  transition: transform 0.3s ease;
+}
+
+.rv-view-all-btn:hover .rv-btn-arrow {
+  transform: translateX(4px);
+}
+
+/* ==========================================
+   TRUST LINE
+   ========================================== */
+
+.rv-trust-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-section);
+  border: 1px solid var(--border-light);
+  border-radius: 40px;
+  padding: 12px 28px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.rv-trust-icon {
+  font-size: 1.2rem;
+}
+
+.rv-trust-text {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.2px;
+}
+
+.rv-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 22px 0 44px;
+  color: var(--text-secondary);
+}
+
+.rv-loading-spinner {
+  animation: rv-spin 0.9s linear infinite;
+}
+
+@keyframes rv-spin {
+  to { transform: rotate(360deg); }
+}
+
+.rv-error {
+  margin: 18px auto 34px;
+  max-width: 640px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(244, 67, 54, 0.08);
+  border: 1px solid rgba(244, 67, 54, 0.2);
+  color: #b71c1c;
+  font-weight: 600;
+}
+
+.rv-card--enter {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: rv-fade-up 0.55s ease forwards;
+}
+
+.rv-section--loaded .rv-card--enter {
+  will-change: opacity, transform;
+}
+
+@keyframes rv-fade-up {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 1100px) {
+  .rv-grid {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .rv-section {
+    padding: 60px 16px;
+  }
+
+  .rv-title {
+    font-size: 1.8rem;
+  }
+
+  .rv-subtitle {
+    font-size: 0.92rem;
+  }
+
+  .rv-title-divider {
+    margin-bottom: 36px;
+  }
+
+  .rv-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    max-width: 480px;
+  }
+
+  .rv-card {
+    padding: 26px 22px 24px;
+  }
+
+  .rv-view-all-btn {
+    padding: 12px 28px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .rv-section {
+    padding: 46px 12px;
+  }
+
+  .rv-badge {
+    font-size: 0.65rem;
+    padding: 5px 14px;
+  }
+
+  .rv-title {
+    font-size: 1.5rem;
+  }
+
+  .rv-text {
+    font-size: 0.88rem;
+  }
+
+  .rv-view-all-btn {
+    padding: 11px 24px;
+    font-size: 0.85rem;
+    margin-bottom: 24px;
+  }
+
+  .rv-trust-line {
+    padding: 10px 18px;
+    flex-direction: column;
+    gap: 6px;
+    border-radius: 14px;
+    text-align: center;
+  }
+
+  .rv-trust-text {
+    font-size: 0.82rem;
+  }
+}

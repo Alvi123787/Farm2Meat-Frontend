@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+:root {
+  /* ========== PRIMARY BRAND COLORS ========== */
+  --primary: #800000;
+  --primary-dark: #5C0000;
+  --accent: #D4AF37;
+
+  /* ========== BACKGROUNDS ========== */
+  --bg-main: #FAF7F2;
+  --bg-section: #FFFFFF;
+  --bg-dark: #1C1C1C;
+
+  /* ========== TEXT COLORS ========== */
+  --text-primary: #222222;
+  --text-secondary: #666666;
+  --text-light: #FFFFFF;
+
+  /* ========== BUTTONS ========== */
+  --btn-primary: #800000;
+  --btn-primary-hover: #5C0000;
+  --btn-secondary: #D4AF37;
+  --btn-secondary-hover: #B8952F;
+
+  /* ========== BORDERS & SHADOWS ========== */
+  --border-light: #E5E5E5;
+  --card-shadow: 0 6px 16px rgba(0,0,0,0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.container-fluid {
+  width: 100%;
+}

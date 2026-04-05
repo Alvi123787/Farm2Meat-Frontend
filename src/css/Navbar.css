@@ -1,0 +1,810 @@
+/* ===================================
+   DOCK (Fixed Container)
+==================================== */
+.pnav-dock {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 9999;
+  padding: 0 16px 18px;
+  pointer-events: none;
+}
+
+/* ===================================
+   SHELL (Nav Wrapper)
+==================================== */
+.pnav-shell {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  height: 84px;
+  pointer-events: all;
+}
+
+/* ===================================
+   SVG WRAPPER
+==================================== */
+.pnav-svg-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  filter:
+    drop-shadow(0 2px 4px rgba(0, 0, 0, 0.04))
+    drop-shadow(0 6px 14px rgba(0, 0, 0, 0.07))
+    drop-shadow(0 12px 28px rgba(0, 0, 0, 0.05));
+}
+
+.pnav-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.pnav-path {
+  transition: d 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ===================================
+   FLOATING BALL
+==================================== */
+.pnav-ball {
+  position: absolute;
+  top: -14px;
+  left: var(--ball-x);
+  transform: translateX(-50%);
+  z-index: 10;
+  transition: left 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
+.pnav-ball-glow {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(128, 0, 0, 0.18) 0%,
+    rgba(128, 0, 0, 0.06) 50%,
+    transparent 70%
+  );
+  animation: ballGlow 2.5s ease-in-out infinite;
+}
+
+@keyframes ballGlow {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.35); opacity: 0.25; }
+}
+
+.pnav-ball-circle {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(150deg, #8b0000, #5c0000, #3d0000);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3.5px solid #faf7f2;
+  box-shadow:
+    0 6px 22px rgba(128, 0, 0, 0.45),
+    0 2px 6px rgba(0, 0, 0, 0.12),
+    inset 0 2px 4px rgba(255, 255, 255, 0.12),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pnav-ball-circle:active {
+  transform: scale(0.9);
+}
+
+.pnav-ball-icon {
+  font-size: 1.2rem;
+  color: #d4af37;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+  animation: iconSwap 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes iconSwap {
+  0%   { transform: scale(0) rotate(-120deg); opacity: 0; }
+  60%  { transform: scale(1.15) rotate(8deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* ===================================
+   MENU LIST
+==================================== */
+.pnav-list {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  padding: 28px 9.1% 0;
+  margin: 0;
+  list-style: none;
+}
+
+/* ===================================
+   MENU ITEM
+==================================== */
+.pnav-li {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.pnav-a {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  width: 100%;
+  padding: 4px 0;
+  background: none;
+  border: none;
+  font-family: inherit;
+  outline: none;
+}
+
+/* ===================================
+   ITEM ICON
+==================================== */
+.pnav-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: #aaa;
+  height: 24px;
+  transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pnav-active .pnav-item-icon {
+  transform: translateY(-18px) scale(0);
+  opacity: 0;
+}
+
+.pnav-li:not(.pnav-active):hover .pnav-item-icon {
+  color: #800000;
+  transform: translateY(-2px) scale(1.1);
+}
+
+/* ===================================
+   CART BADGE
+==================================== */
+.pnav-cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background: linear-gradient(150deg, #8b0000, #5c0000);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #fff;
+  box-shadow: 0 2px 6px rgba(128, 0, 0, 0.3);
+  padding: 0 2px;
+  z-index: 2;
+}
+
+.pnav-active .pnav-cart-badge {
+  display: none; /* Hide badge when active since icon is hidden */
+}
+
+.pnav-cart-badge--ball {
+  display: flex !important;
+  top: -4px;
+  right: -4px;
+  border-color: #faf8f5;
+  transform: scale(1.1);
+}
+
+.pnav-cart-badge--pop {
+  animation: pnavBadgePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes pnavBadgePop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+/* ===================================
+   ITEM LABEL
+==================================== */
+.pnav-item-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #bbb;
+  letter-spacing: 0.3px;
+  transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  white-space: nowrap;
+}
+
+.pnav-active .pnav-item-label {
+  color: #800000;
+  font-weight: 700;
+  transform: translateY(-5px);
+  font-size: 11px;
+}
+
+.pnav-li:not(.pnav-active):hover .pnav-item-label {
+  color: #800000;
+}
+
+/* ===================================
+   POPUP-OPEN STATE
+   Gold tint when popup is visible
+==================================== */
+.pnav-popup-open:not(.pnav-active) .pnav-item-icon {
+  color: #d4af37;
+  transform: translateY(-2px) scale(1.08);
+}
+
+.pnav-popup-open:not(.pnav-active) .pnav-item-label {
+  color: #d4af37;
+}
+
+/* ===================================
+   CLICK RIPPLE
+==================================== */
+.pnav-ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(128, 0, 0, 0.06);
+  transform: translate(-50%, -50%) scale(0);
+  animation: pnavRipple 0.6s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes pnavRipple {
+  0%   { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+}
+
+/* ===================================
+   ACCOUNT OVERLAY
+   Transparent full-screen click trap
+==================================== */
+.pnav-account-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  animation: overlayFade 0.25s ease-out;
+}
+
+@keyframes overlayFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ===================================
+   GLASS POPUP CARD
+==================================== */
+.pnav-account-popup {
+  position: absolute;
+  bottom: calc(100% + 18px);
+  right: -6px;
+  width: 268px;
+  padding: 22px 20px 20px;
+  border-radius: 20px;
+  z-index: 20;
+
+  /* Glassmorphism */
+  background: rgba(255, 253, 248, 0.92);
+  backdrop-filter: blur(24px) saturate(1.8);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+
+  /* Gold accent border */
+  border: 1px solid rgba(212, 175, 55, 0.18);
+
+  /* Layered luxury shadow */
+  box-shadow:
+    0 4px 12px rgba(128, 0, 0, 0.06),
+    0 12px 32px rgba(0, 0, 0, 0.08),
+    0 20px 48px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
+  animation: popupSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Glass shine reflection */
+.pnav-account-popup::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 45%;
+  border-radius: 20px 20px 0 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+}
+
+@keyframes popupSlideIn {
+  0%   { opacity: 0; transform: translateY(10px) scale(0.92); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ===================================
+   POPUP — HEADER
+==================================== */
+.pnav-popup-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.pnav-popup-header--user {
+  align-items: flex-start;
+}
+
+.pnav-popup-welcome-text {
+  min-width: 0;
+}
+
+.pnav-popup-user-text {
+  min-width: 0;
+  flex: 1;
+  text-align: left;
+}
+
+.pnav-popup-user-name {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: -0.2px;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.pnav-popup-user-email {
+  margin: 6px 0 0;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: rgba(100, 100, 100, 0.88);
+  line-height: 1.35;
+  word-break: break-all;
+}
+
+.pnav-popup-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(150deg, #8b0000, #5c0000);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(128, 0, 0, 0.32);
+}
+
+.pnav-popup-icon {
+  font-size: 0.95rem;
+  color: #d4af37;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+.pnav-popup-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+.pnav-popup-sub {
+  font-size: 0.72rem;
+  color: #999;
+  margin: 2px 0 0;
+  font-weight: 500;
+}
+
+/* ===================================
+   POPUP — GOLD DIVIDER
+==================================== */
+.pnav-popup-divider {
+  height: 1px;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(212, 175, 55, 0.28) 50%,
+    transparent 100%
+  );
+}
+
+/* ===================================
+   POPUP — ACTION BUTTONS
+==================================== */
+.pnav-popup-actions {
+  display: flex;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.pnav-popup-actions--single {
+  flex-direction: column;
+  gap: 0;
+}
+
+.pnav-popup-actions--single .pnav-popup-btn {
+  flex: none;
+  width: 100%;
+}
+
+.pnav-popup-btn {
+  flex: 1;
+  padding: 11px 0;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  display: block;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Login — solid burgundy gradient */
+.pnav-popup-login {
+  background: linear-gradient(150deg, #8b0000, #5c0000);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 14px rgba(128, 0, 0, 0.35);
+}
+
+.pnav-popup-login:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 20px rgba(128, 0, 0, 0.45);
+  color: #fff;
+}
+
+.pnav-popup-login:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* Sign Up — gold outline */
+.pnav-popup-signup {
+  background: transparent;
+  color: #8b0000;
+  border: 1.5px solid rgba(212, 175, 55, 0.5);
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.08);
+}
+
+.pnav-popup-signup:hover {
+  background: rgba(212, 175, 55, 0.08);
+  border-color: rgba(212, 175, 55, 0.75);
+  transform: translateY(-2px) scale(1.03);
+  color: #8b0000;
+}
+
+.pnav-popup-signup:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* Logout — primary when sole action; outline when paired (guest uses login/signup only) */
+.pnav-popup-logout {
+  background: rgba(0, 0, 0, 0.03);
+  color: #666;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.pnav-popup-actions--single .pnav-popup-logout {
+  background: linear-gradient(150deg, #8b0000, #5c0000);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 14px rgba(128, 0, 0, 0.35);
+  padding: 12px 0;
+}
+
+.pnav-popup-actions--single .pnav-popup-logout:hover {
+  background: linear-gradient(150deg, #9b1010, #6c1010);
+  color: #fff;
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 6px 20px rgba(128, 0, 0, 0.45);
+}
+
+.pnav-popup-actions--single .pnav-popup-logout:active {
+  transform: translateY(0) scale(0.99);
+}
+
+/* My Orders — same as Signup style but different color */
+.pnav-popup-my-orders {
+  background: transparent;
+  color: #8b4513;
+  border: 1.5px solid rgba(139, 69, 19, 0.3);
+}
+
+.pnav-popup-my-orders:hover {
+  background: rgba(139, 69, 19, 0.05);
+  border-color: rgba(139, 69, 19, 0.6);
+  color: #8b4513;
+  transform: translateY(-2px);
+}
+
+/* ===================================
+   POPUP — ARROW (points down)
+==================================== */
+.pnav-popup-arrow {
+  position: absolute;
+  bottom: -7px;
+  right: 36px;
+  width: 14px;
+  height: 14px;
+  background: rgba(255, 253, 248, 0.95);
+  border-right: 1px solid rgba(212, 175, 55, 0.18);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.18);
+  transform: rotate(45deg);
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* ===================================
+   RESPONSIVE — DESKTOP
+==================================== */
+@media (min-width: 768px) {
+  .pnav-dock {
+    padding-bottom: 22px;
+  }
+
+  .pnav-shell {
+    max-width: 500px;
+    height: 88px;
+  }
+
+  .pnav-ball-circle {
+    width: 60px;
+    height: 60px;
+    border-width: 4px;
+  }
+
+  .pnav-ball-icon {
+    font-size: 1.3rem;
+  }
+
+  .pnav-ball {
+    top: -16px;
+  }
+
+  .pnav-item-icon {
+    font-size: 1.25rem;
+  }
+
+  .pnav-item-label {
+    font-size: 11.5px;
+  }
+
+  .pnav-list {
+    padding-top: 30px;
+  }
+
+  .pnav-li:not(.pnav-active):hover .pnav-item-icon {
+    transform: translateY(-4px) scale(1.12);
+  }
+
+  .pnav-account-popup {
+    width: 288px;
+    padding: 24px 22px 22px;
+    right: -8px;
+  }
+}
+
+/* ===================================
+   RESPONSIVE — SMALL MOBILE
+==================================== */
+@media (max-width: 400px) {
+  .pnav-dock {
+    padding: 0 10px 14px;
+  }
+
+  .pnav-shell {
+    max-width: 380px;
+    height: 76px;
+  }
+
+  .pnav-ball {
+    top: -12px;
+  }
+
+  .pnav-ball-circle {
+    width: 50px;
+    height: 50px;
+    border-width: 3px;
+  }
+
+  .pnav-ball-icon {
+    font-size: 1.05rem;
+  }
+
+  .pnav-item-icon {
+    font-size: 1.05rem;
+  }
+
+  .pnav-item-label {
+    font-size: 9.5px;
+  }
+
+  .pnav-list {
+    padding-top: 24px;
+    padding-left: 8%;
+    padding-right: 8%;
+  }
+
+  .pnav-account-popup {
+    width: 240px;
+    right: -8px;
+    padding: 18px 16px 16px;
+    bottom: calc(100% + 14px);
+  }
+
+  .pnav-popup-icon-wrap {
+    width: 36px;
+    height: 36px;
+  }
+
+  .pnav-popup-icon {
+    font-size: 0.85rem;
+  }
+
+  .pnav-popup-title {
+    font-size: 0.95rem;
+  }
+
+  .pnav-popup-user-name {
+    font-size: 0.95rem;
+  }
+
+  .pnav-popup-sub {
+    font-size: 0.68rem;
+  }
+
+  .pnav-popup-user-email {
+    font-size: 0.68rem;
+  }
+
+  .pnav-popup-btn {
+    padding: 10px 0;
+    font-size: 0.78rem;
+  }
+
+  .pnav-popup-actions--single .pnav-popup-logout {
+    padding: 11px 0;
+  }
+
+  .pnav-popup-arrow {
+    right: 28px;
+  }
+}
+
+/* ===================================
+   RESPONSIVE — EXTRA SMALL
+==================================== */
+@media (max-width: 340px) {
+  .pnav-shell {
+    max-width: 340px;
+    height: 72px;
+  }
+
+  .pnav-ball-circle {
+    width: 46px;
+    height: 46px;
+  }
+
+  .pnav-ball-icon {
+    font-size: 0.95rem;
+  }
+
+  .pnav-item-icon {
+    font-size: 0.95rem;
+  }
+
+  .pnav-item-label {
+    font-size: 9px;
+    letter-spacing: 0;
+  }
+
+  .pnav-list {
+    padding-top: 22px;
+    padding-left: 7%;
+    padding-right: 7%;
+  }
+
+  .pnav-account-popup {
+    width: 218px;
+    right: -10px;
+    padding: 16px 14px 14px;
+    border-radius: 16px;
+  }
+
+  .pnav-popup-header {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .pnav-popup-icon-wrap {
+    width: 32px;
+    height: 32px;
+  }
+
+  .pnav-popup-icon {
+    font-size: 0.78rem;
+  }
+
+  .pnav-popup-title {
+    font-size: 0.88rem;
+  }
+
+  .pnav-popup-divider {
+    margin-bottom: 12px;
+  }
+
+  .pnav-popup-btn {
+    padding: 9px 0;
+    font-size: 0.75rem;
+    border-radius: 10px;
+  }
+
+  .pnav-popup-arrow {
+    right: 24px;
+    width: 12px;
+    height: 12px;
+    bottom: -6px;
+  }
+}
+
+/* ===================================
+   IPHONE SAFE AREA
+==================================== */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .pnav-dock {
+    padding-bottom: calc(18px + env(safe-area-inset-bottom));
+  }
+}
+
+/* ===================================
+   REDUCED MOTION
+==================================== */
+@media (prefers-reduced-motion: reduce) {
+  .pnav-ball              { transition-duration: 0.01s; }
+  .pnav-path              { transition-duration: 0.01s; }
+  .pnav-ball-glow         { animation: none; opacity: 0.4; }
+  .pnav-ball-icon         { animation: none; }
+  .pnav-ripple            { display: none; }
+  .pnav-item-icon,
+  .pnav-item-label        { transition-duration: 0.01s; }
+  .pnav-account-popup     { animation: none; }
+  .pnav-account-overlay   { animation: none; }
+  .pnav-popup-btn         { transition-duration: 0.01s; }
+}

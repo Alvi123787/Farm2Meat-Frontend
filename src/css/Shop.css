@@ -1,0 +1,97 @@
+/* ══════════════════════════════════════════
+   SHOP PAGE — LAYOUT & Z-INDEX FIX
+   ══════════════════════════════════════════ */
+
+.shp-page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Header Wrapper ── */
+.shp-header-wrapper {
+  position: relative;
+  z-index: 100;
+}
+
+/* ── Filters Wrapper (dropdowns must appear ABOVE grid) ── */
+.shp-filters-wrapper {
+  position: relative;
+  z-index: 50;
+}
+
+/*
+  KEY FIX: Make sure nothing inside the filters
+  creates a new stacking context that clips dropdowns.
+  Also ensure dropdown menus have high z-index.
+*/
+.shp-filters-wrapper * {
+  /* Prevent overflow hidden from clipping dropdowns */
+}
+
+/* ── Grid Wrapper ── */
+.shp-grid-wrapper {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+}
+
+/* ══════════════════════════════════════════
+   GLOBAL DROPDOWN Z-INDEX OVERRIDES
+   Targets common dropdown patterns so they
+   always float above the card grid.
+   ══════════════════════════════════════════ */
+
+/* If ShopHeroSection uses any dropdown/select/popover */
+.shp-filters-wrapper [class*="dropdown"],
+.shp-filters-wrapper [class*="Dropdown"],
+.shp-filters-wrapper [class*="select-menu"],
+.shp-filters-wrapper [class*="filter-menu"],
+.shp-filters-wrapper [class*="filter-dropdown"],
+.shp-filters-wrapper [class*="options"],
+.shp-filters-wrapper [class*="popover"],
+.shp-filters-wrapper [class*="listbox"] {
+  z-index: 60 !important;
+  position: relative;
+}
+
+/* Dropdown panels / option lists that are positioned absolute */
+.shp-filters-wrapper [class*="dropdown-menu"],
+.shp-filters-wrapper [class*="dropdown-list"],
+.shp-filters-wrapper [class*="filter-options"],
+.shp-filters-wrapper [class*="select-options"],
+.shp-filters-wrapper [class*="menu-list"],
+.shp-filters-wrapper ul[role="listbox"],
+.shp-filters-wrapper div[role="listbox"] {
+  z-index: 999 !important;
+  position: absolute !important;
+}
+
+/* ══════════════════════════════════════════
+   SAFETY: Prevent overflow clipping on
+   the filter section
+   ══════════════════════════════════════════ */
+
+.shp-filters-wrapper > * {
+  overflow: visible !important;
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .shp-header-wrapper {
+    z-index: 100;
+  }
+
+  .shp-filters-wrapper {
+    z-index: 50;
+  }
+
+  .shp-grid-wrapper {
+    z-index: 10;
+  }
+}

@@ -1,0 +1,474 @@
+/* ============================================================
+   HOW IT WORKS PAGE — MAIN
+   ============================================================ */
+
+.hiw-page {
+  background: var(--bg-main);
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+/* ============================================================
+   HEADER SECTION
+   ============================================================ */
+
+.hiw-header-section {
+  position: relative;
+  padding: 100px 24px 60px;
+  background: var(--bg-dark);
+  overflow: hidden;
+}
+
+.hiw-header-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hiw-header-circle {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.hiw-header-circle--1 {
+  width: 500px;
+  height: 500px;
+  top: -250px;
+  right: -100px;
+  background: radial-gradient(circle, rgba(128, 0, 0, 0.15), transparent 70%);
+}
+
+.hiw-header-circle--2 {
+  width: 400px;
+  height: 400px;
+  bottom: -150px;
+  left: -100px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent 70%);
+}
+
+.hiw-header-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.hiw-header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1) 0.1s;
+}
+
+.hiw-page--visible .hiw-header-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hiw-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+}
+
+.hiw-back-link svg {
+  transition: transform 0.3s ease;
+}
+
+.hiw-back-link:hover {
+  color: var(--accent);
+}
+
+.hiw-back-link:hover svg {
+  transform: translateX(-5px);
+}
+
+.hiw-header-main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.hiw-header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.hiw-header-icon {
+  font-size: 2.2rem;
+  color: var(--accent);
+  filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.4));
+  animation: hiw-header-float 3s ease-in-out infinite;
+}
+
+@keyframes hiw-header-float {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-6px) rotate(5deg); }
+}
+
+.hiw-header-title {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.03em;
+  margin: 0;
+  text-align: left;
+}
+
+.hiw-free-delivery-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: rgba(46, 125, 50, 0.15);
+  border: 1px solid rgba(46, 125, 50, 0.3);
+  border-radius: 50px;
+  color: #4caf50;
+  font-size: 0.85rem;
+  font-weight: 700;
+  animation: hiw-pulse-green 2s infinite;
+}
+
+@keyframes hiw-pulse-green {
+  0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4); }
+  70% { box-shadow: 0 0 0 12px rgba(76, 175, 80, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+}
+
+/* ============================================================
+   MAIN SECTION
+   ============================================================ */
+
+.hiw-main {
+  padding: 80px 24px;
+}
+
+.hiw-intro {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 80px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s ease 0.3s;
+}
+
+.hiw-page--visible .hiw-intro {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hiw-intro-title {
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 20px;
+  letter-spacing: -0.02em;
+  text-align: left;
+}
+
+.hiw-intro-text {
+  font-size: 1.1rem;
+  color: var(--text-soft);
+  line-height: 1.7;
+  text-align: left;
+  max-width: 700px;
+}
+
+/* ============================================================
+   HOW IT WORKS COMPONENT (HOME PAGE)
+   ============================================================ */
+
+.how-it-works {
+  padding: 80px 0;
+}
+
+.how-it-works-header {
+  margin-bottom: 50px;
+  text-align: left;
+}
+
+.how-it-works-title {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 16px;
+  letter-spacing: -0.03em;
+  text-align: left;
+}
+
+.how-it-works-accent {
+  color: var(--primary);
+}
+
+.how-it-works-sub {
+  font-size: 1.05rem;
+  color: #666;
+  max-width: 650px;
+  margin: 0 0 24px 0;
+  line-height: 1.7;
+  text-align: left;
+}
+
+/* ============================================================
+   STEPS GRID
+   ============================================================ */
+
+.hiw-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px;
+  margin-bottom: 80px;
+}
+
+.hiw-step-card {
+  position: relative;
+  background: #fff;
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  opacity: 0;
+  transform: translateY(30px);
+  animation: hiw-fade-in-up 0.8s forwards;
+}
+
+@keyframes hiw-fade-in-up {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hiw-step-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(128, 0, 0, 0.08);
+  border-color: rgba(128, 0, 0, 0.1);
+}
+
+.hiw-step-number {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  font-size: 4rem;
+  font-weight: 900;
+  color: rgba(0, 0, 0, 0.03);
+  line-height: 1;
+  pointer-events: none;
+  transition: color 0.3s ease;
+}
+
+.hiw-step-card:hover .hiw-step-number {
+  color: rgba(128, 0, 0, 0.05);
+}
+
+.hiw-step-icon-wrap {
+  width: 70px;
+  height: 70px;
+  background: rgba(128, 0, 0, 0.05);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  color: var(--primary);
+  margin-bottom: 28px;
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+.hiw-step-icon-wrap svg {
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.hiw-step-card:hover .hiw-step-icon-wrap {
+  background: var(--primary);
+  color: #fff;
+  transform: rotate(12deg) scale(1.1);
+  box-shadow: 0 10px 20px rgba(128, 0, 0, 0.2);
+}
+
+.hiw-step-card:hover .hiw-step-icon-wrap svg {
+  transform: rotate(-12deg) scale(1.1);
+}
+
+.hiw-step-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 16px;
+}
+
+.hiw-step-description {
+  font-size: 1rem;
+  color: var(--text-soft);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.hiw-step-points {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.hiw-step-points li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+}
+
+.hiw-step-points li:hover {
+  transform: translateX(8px);
+  color: var(--primary);
+}
+
+.hiw-point-icon {
+  font-size: 0.75rem;
+  color: var(--accent);
+  margin-top: 4px;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.hiw-step-points li:hover .hiw-point-icon {
+  transform: rotate(90deg) scale(1.2);
+  color: var(--primary);
+}
+
+/* ============================================================
+   CTA SECTION
+   ============================================================ */
+
+.hiw-cta-section {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.hiw-cta-card {
+  background: var(--primary);
+  border-radius: 30px;
+  padding: 60px 40px;
+  text-align: center;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(128, 0, 0, 0.2);
+}
+
+.hiw-cta-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.1), transparent 60%);
+  pointer-events: none;
+}
+
+.hiw-cta-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.hiw-cta-text {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin-bottom: 36px;
+  position: relative;
+  z-index: 1;
+}
+
+.hiw-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 40px;
+  background: #fff;
+  color: var(--primary);
+  border: none;
+  border-radius: 50px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  z-index: 1;
+}
+
+.hiw-cta-btn svg {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.hiw-cta-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+}
+
+.hiw-cta-btn:hover svg {
+  transform: translateX(5px) scale(1.2);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 992px) {
+  .hiw-header-title {
+    font-size: 2.4rem;
+  }
+  
+  .hiw-intro-title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .hiw-header-section {
+    padding: 80px 20px 40px;
+  }
+  
+  .hiw-header-title {
+    font-size: 2rem;
+  }
+  
+  .hiw-header-icon {
+    font-size: 1.8rem;
+  }
+  
+  .hiw-main {
+    padding: 60px 20px;
+  }
+  
+  .hiw-steps-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .hiw-cta-card {
+    padding: 40px 24px;
+  }
+  
+  .hiw-cta-title {
+    font-size: 1.8rem;
+  }
+}

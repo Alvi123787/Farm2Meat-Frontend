@@ -1,0 +1,235 @@
+:root {
+  --maroon: #800000;
+  --maroon-light: #a52a2a;
+  --gold: #d4af37;
+  --gold-light: #f1d16c;
+  --text-dark: #333;
+  --text-gray: #666;
+  --bg-light: #f9f9f9;
+  --white: #ffffff;
+  --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  --transition: all 0.3s ease;
+}
+
+.butcher-section {
+  padding: 60px 0;
+  background-color: var(--bg-light);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.badge-premium {
+  display: inline-block;
+  padding: 5px 15px;
+  background-color: rgba(128, 0, 0, 0.05);
+  color: var(--maroon);
+  border: 1px solid var(--maroon);
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
+}
+
+.section-title {
+  font-size: 2.25rem;
+  color: var(--maroon);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.section-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-gray);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.butcher-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+  padding: 10px;
+}
+
+.butcher-card {
+  background-color: var(--white);
+  border-radius: 16px;
+  padding: 25px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  position: relative;
+  overflow: hidden;
+}
+
+.butcher-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+.butcher-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--maroon), var(--gold));
+}
+
+.butcher-avatar-wrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 20px;
+}
+
+.butcher-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--white);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.butcher-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--maroon), var(--maroon-light));
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  border: 3px solid var(--white);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.verified-badge {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background-color: var(--white);
+  color: #28a745;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border: 2px solid var(--white);
+}
+
+.butcher-name {
+  font-size: 1.35rem;
+  color: var(--text-dark);
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.butcher-name-icon {
+  font-size: 1.1rem;
+  color: var(--maroon);
+  opacity: 0.9;
+}
+
+.butcher-detail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text-gray);
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+
+.icon-detail {
+  color: var(--maroon);
+}
+
+.btn-call {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: var(--maroon);
+  color: var(--white);
+  padding: 12px 20px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--transition);
+  width: 100%;
+}
+
+.btn-call:hover {
+  background-color: var(--maroon-light);
+  color: var(--white);
+  transform: scale(1.02);
+}
+
+.icon-call {
+  font-size: 0.9rem;
+}
+
+.butcher-notice {
+  text-align: center;
+  margin-top: 35px;
+  color: var(--text-gray);
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+/* Skeleton Loading */
+.skeleton {
+  background-color: #eee;
+  pointer-events: none;
+}
+
+.skeleton-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #ddd;
+  margin: 0 auto 15px;
+}
+
+.skeleton-line {
+  height: 15px;
+  background-color: #ddd;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+.skeleton-line:last-child {
+  width: 60%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 1.8rem;
+  }
+  
+  .butcher-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}

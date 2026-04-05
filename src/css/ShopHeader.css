@@ -1,0 +1,120 @@
+.shopHeader-section {
+  position: relative;
+  padding: 90px 24px 40px;
+  background: var(--bg-dark);
+  overflow: hidden;
+}
+
+.shopHeader-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.shopHeader-circle {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.shopHeader-circle--1 {
+  width: 400px;
+  height: 400px;
+  top: -200px;
+  right: -100px;
+  background: radial-gradient(circle, rgba(128, 0, 0, 0.12), transparent 70%);
+}
+
+.shopHeader-circle--2 {
+  width: 300px;
+  height: 300px;
+  bottom: -100px;
+  left: -80px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.08), transparent 70%);
+}
+
+.shopHeader-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.shopHeader-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s cubic-bezier(0.23, 1, 0.32, 1), transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.shopHeader-content--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.shopHeader-backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.shopHeader-backLink:hover {
+  color: var(--accent);
+}
+
+.shopHeader-main {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.shopHeader-iconWrap {
+  width: 60px;
+  height: 60px;
+  min-width: 60px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, var(--primary), var(--primary-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(128, 0, 0, 0.3);
+}
+
+.shopHeader-icon {
+  font-size: 1.4rem;
+  color: var(--text-light);
+}
+
+.shopHeader-title {
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 900;
+  color: var(--text-light);
+  margin: 0 0 6px;
+  letter-spacing: -0.5px;
+}
+
+.shopHeader-sub {
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .shopHeader-section {
+    padding: 80px 166px 36px;
+  }
+}
+
+
