@@ -15,8 +15,8 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
-    // Remove credentials: 'include' if it was somehow set
-    config.withCredentials = false
+    // Cross-domain cookie support
+    config.withCredentials = true
     return config
   },
   (error) => {
