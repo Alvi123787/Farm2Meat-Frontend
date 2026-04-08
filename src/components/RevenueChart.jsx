@@ -9,6 +9,16 @@ import {
   ComposedChart,
   Bar,
 } from 'recharts';
+import {
+  FaArrowDown,
+  FaArrowTrendUp,
+  FaBolt,
+  FaChartArea,
+  FaChartBar,
+  FaChartLine,
+  FaDownload,
+  FaMoneyBillWave,
+} from 'react-icons/fa6';
 import '../css/RevenueChart.css';
 import { dashboardService } from '../services/dashboardService';
 
@@ -41,7 +51,7 @@ const RevenueChartTooltip = ({ active, payload, label, showPrevious }) => {
         <span className="rc-tooltip-label">{label}</span>
         {prev && (
           <span className={`rc-tooltip-badge ${change >= 0 ? 'up' : 'down'}`}>
-            <i className={`fa-solid fa-arrow-${change >= 0 ? 'up' : 'down'}`} />
+            {change >= 0 ? <FaArrowTrendUp /> : <FaArrowDown />}
             {Math.abs(change)}%
           </span>
         )}
@@ -122,7 +132,7 @@ const RevenueChart = ({ data, loading, error, period, onPeriodChange } = {}) => 
       value: formatCompact(stats.totalRevenue),
       change: `+${stats.growth}%`,
       isUp: stats.growth >= 0,
-      icon: 'fa-sack-dollar',
+      icon: FaMoneyBillWave,
       color: '#d4af37',
     },
     {
@@ -130,7 +140,7 @@ const RevenueChart = ({ data, loading, error, period, onPeriodChange } = {}) => 
       value: formatCompact(stats.avgRevenue),
       change: 'per period',
       isUp: true,
-      icon: 'fa-chart-simple',
+      icon: FaChartBar,
       color: '#800000',
     },
     {
@@ -138,7 +148,7 @@ const RevenueChart = ({ data, loading, error, period, onPeriodChange } = {}) => 
       value: formatCompact(stats.peakRevenue),
       change: 'highest',
       isUp: true,
-      icon: 'fa-arrow-trend-up',
+      icon: FaArrowTrendUp,
       color: '#2e7d32',
     },
     {
@@ -146,7 +156,7 @@ const RevenueChart = ({ data, loading, error, period, onPeriodChange } = {}) => 
       value: `${stats.growth}%`,
       change: 'vs previous',
       isUp: stats.growth >= 0,
-      icon: 'fa-bolt',
+      icon: FaBolt,
       color: '#1565c0',
     },
   ];
@@ -157,7 +167,7 @@ const RevenueChart = ({ data, loading, error, period, onPeriodChange } = {}) => 
       <div className="rc-header">
         <div className="rc-header-left">
           <div className="rc-icon-box">
-            <i className="fa-solid fa-chart-line" />
+            <FaChartLine />
           </div>
           <div>
             <h3 className="rc-title">Revenue Analytics</h3>
@@ -171,14 +181,14 @@ const RevenueChart = ({ data, loading, error, period, onPeriodChange } = {}) => 
               onClick={() => setChartType('area')}
               title="Area Chart"
             >
-              <i className="fa-solid fa-chart-area" />
+              <FaChartArea />
             </button>
             <button
               className={`rc-type-btn ${chartType === 'bar' ? 'active' : ''}`}
               onClick={() => setChartType('bar')}
               title="Bar Chart"
             >
-              <i className="fa-solid fa-chart-bar" />
+              <FaChartBar />
             </button>
           </div>
           <div className="rc-period-tabs">
@@ -206,7 +216,7 @@ const RevenueChart = ({ data, loading, error, period, onPeriodChange } = {}) => 
         {statCards.map((s, i) => (
           <div className="rc-stat-card" key={i} style={{ '--stat-color': s.color }}>
             <div className="rc-stat-icon" style={{ background: `${s.color}12`, color: s.color }}>
-              <i className={`fa-solid ${s.icon}`} />
+              <s.icon />
             </div>
             <div className="rc-stat-info">
               <span className="rc-stat-label">{s.label}</span>
@@ -237,7 +247,7 @@ const RevenueChart = ({ data, loading, error, period, onPeriodChange } = {}) => 
             </label>
           </div>
           <button className="rc-export-btn">
-            <i className="fa-solid fa-download" />
+            <FaDownload />
             Export
           </button>
         </div>
@@ -354,10 +364,10 @@ const RevenueChart = ({ data, loading, error, period, onPeriodChange } = {}) => 
           </div>
         </div>
         <div className="rc-footer-right">
-          <div className={`rc-growth-pill ${stats.growth >= 0 ? 'up' : 'down'}`}>
-            <i className={`fa-solid fa-arrow-trend-${stats.growth >= 0 ? 'up' : 'down'}`} />
-            <span>{stats.growth}% growth vs previous period</span>
-          </div>
+        <div className={`rc-growth-pill ${stats.growth >= 0 ? 'up' : 'down'}`}>
+          {stats.growth >= 0 ? <FaArrowTrendUp /> : <FaArrowDown />}
+          <span>{stats.growth}% growth vs previous period</span>
+        </div>
         </div>
       </div>
     </div>

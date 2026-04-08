@@ -8,6 +8,15 @@ import {
   Tooltip,
   ResponsiveContainer
 } from 'recharts';
+import {
+  FaArrowDown,
+  FaArrowTrendUp,
+  FaCalendarAlt,
+  FaChartBar,
+  FaChartLine,
+  FaDownload,
+  FaTrophy,
+} from 'react-icons/fa6';
 import '../css/SalesChart.css';
 import { dashboardService } from '../services/dashboardService';
 
@@ -107,7 +116,7 @@ const SalesChart = ({ data, loading, error, period, onPeriodChange } = {}) => {
       <div className="sc-header">
         <div className="sc-header-left">
           <div className="sc-icon-box">
-            <i className="fa-solid fa-chart-simple" />
+            <FaChartBar />
           </div>
           <div>
             <h3 className="sc-title">Sales Performance</h3>
@@ -138,7 +147,7 @@ const SalesChart = ({ data, loading, error, period, onPeriodChange } = {}) => {
       <div className="sc-stats-row">
         <div className="sc-stat-card">
           <div className="sc-stat-icon" style={{ background: '#2c7a4d12', color: '#2c7a4d' }}>
-            <i className="fa-solid fa-chart-line" />
+            <FaChartLine />
           </div>
           <div className="sc-stat-info">
             <span className="sc-stat-label">Total Sold</span>
@@ -147,7 +156,7 @@ const SalesChart = ({ data, loading, error, period, onPeriodChange } = {}) => {
         </div>
         <div className="sc-stat-card">
           <div className="sc-stat-icon" style={{ background: '#1e4e6f12', color: '#1e4e6f' }}>
-            <i className="fa-solid fa-calendar-week" />
+            <FaCalendarAlt />
           </div>
           <div className="sc-stat-info">
             <span className="sc-stat-label">Period Avg</span>
@@ -156,7 +165,7 @@ const SalesChart = ({ data, loading, error, period, onPeriodChange } = {}) => {
         </div>
         <div className="sc-stat-card">
           <div className="sc-stat-icon" style={{ background: '#d4af3712', color: '#b8960f' }}>
-            <i className="fa-solid fa-trophy" />
+            <FaTrophy />
           </div>
           <div className="sc-stat-info">
             <span className="sc-stat-label">Best Period</span>
@@ -175,7 +184,7 @@ const SalesChart = ({ data, loading, error, period, onPeriodChange } = {}) => {
             </div>
           </div>
           <button className="sc-export-btn" onClick={handleExport}>
-            <i className="fa-solid fa-download" />
+            <FaDownload />
             Export
           </button>
         </div>
@@ -244,7 +253,7 @@ const SalesChart = ({ data, loading, error, period, onPeriodChange } = {}) => {
           </div>
         </div>
         <div className={`sc-trend-pill ${stats.growth >= 0 ? 'up' : 'down'}`}>
-          <i className={`fa-solid fa-arrow-trend-${stats.growth >= 0 ? 'up' : 'down'}`} />
+          {stats.growth >= 0 ? <FaArrowTrendUp /> : <FaArrowDown />}
           <span>{Math.abs(stats.growth).toFixed(1)}% vs previous period</span>
         </div>
       </div>
