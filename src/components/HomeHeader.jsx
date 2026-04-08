@@ -17,7 +17,7 @@ const HomeHeader = () => {
         {/* Background Image */}
         <div className="homeHeader-bg">
           <img
-            src="../uploads/ulleo-goats-2719445_1920.jpg"
+            src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775614049/ulleo-goats-2719445_jrxqhv.jpg"
             alt="Header"
             className="homeHeader-bg-img"
           />
