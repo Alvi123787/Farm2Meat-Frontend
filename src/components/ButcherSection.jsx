@@ -63,10 +63,12 @@ const ButcherSection = () => {
           <div className="header-icon-wrapper">
             <FaUtensils className="header-icon" />
           </div>
-          <div className="header-badge">
-            <span>Halal Certified</span>
+          <div className="header-copy">
+            <div className="header-badge">
+              <span>Halal Certified</span>
+            </div>
+            <h2 className="section-title">Master Butchers</h2>
           </div>
-          <h2 className="section-title">Master Butchers</h2>
           <p className="section-subtitle">
             Expert craftsmen dedicated to professional halal meat processing in Rahim Yar Khan.
           </p>
