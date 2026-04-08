@@ -3,6 +3,7 @@ import '../css/Confirmation.css';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import OrderExperienceModal from './OrderExperienceModal';
 import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl';
+import { WHATSAPP_LINK } from '../constants/contact';
 const PURCHASE_STATE_KEY = 'postPurchaseConfirmationState';
 const REVIEW_DISMISSED_PREFIX = 'postPurchaseReviewDismissed:';
 
@@ -355,7 +356,7 @@ const Confirmation = () => {
         {/* Support Section */}
         <div className="support-section">
           <span>Need help with your order?</span>
-          <a href="https://wa.me/971501234567" target="_blank" rel="noopener noreferrer">
+          <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
             Contact Support
           </a>
         </div>

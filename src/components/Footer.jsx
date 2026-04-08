@@ -1,9 +1,7 @@
 import React from 'react'
 import {
   FaFacebookF,
-  FaInstagram,
   FaWhatsapp,
-  FaYoutube,
   FaPhoneAlt,
   FaMapMarkerAlt,
   FaEnvelope,
@@ -12,6 +10,13 @@ import {
   FaShieldAlt
 } from 'react-icons/fa'
 import '../css/Footer.css'
+import {
+  FACEBOOK_URL,
+  PHONE_DISPLAY,
+  PHONE_LINK,
+  WHATSAPP_DISPLAY,
+  WHATSAPP_LINK,
+} from '../constants/contact'
 
 const quickLinks = [
   { label: 'Home', path: '/' },
@@ -21,10 +26,8 @@ const quickLinks = [
 ]
 
 const socialLinks = [
-  { icon: <FaFacebookF />, href: 'https://facebook.com/', label: 'Facebook' },
-  { icon: <FaInstagram />, href: 'https://instagram.com/', label: 'Instagram' },
-  { icon: <FaWhatsapp />, href: 'https://wa.me/923089880479', label: 'WhatsApp' },
-  { icon: <FaYoutube />, href: 'https://youtube.com/', label: 'YouTube' },
+  { icon: <FaFacebookF />, href: FACEBOOK_URL, label: 'Facebook' },
+  { icon: <FaWhatsapp />, href: WHATSAPP_LINK, label: 'WhatsApp' },
 ]
 
 const Footer = () => {
@@ -93,8 +96,8 @@ const Footer = () => {
                     </span>
                     <div>
                       <span className="footer-contact-label">Phone</span>
-                      <a href="tel:+923089880479" className="footer-contact-value">
-                        +92 308 9880479
+                      <a href={PHONE_LINK} className="footer-contact-value">
+                        {PHONE_DISPLAY}
                       </a>
                     </div>
                   </li>
@@ -105,12 +108,12 @@ const Footer = () => {
                     <div>
                       <span className="footer-contact-label">WhatsApp</span>
                       <a
-                        href="https://wa.me/923089880479"
+                        href={WHATSAPP_LINK}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="footer-contact-value"
                       >
-                        03089880479
+                        {WHATSAPP_DISPLAY}
                       </a>
                     </div>
                   </li>

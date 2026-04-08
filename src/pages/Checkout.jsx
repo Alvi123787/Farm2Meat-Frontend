@@ -40,9 +40,9 @@ import { animalsService } from '../services/animalsService'
 import { useCart } from '../contexts/cartContextCore'
 import ButcherModal from '../components/ButcherModal'
 import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl'
+import { WHATSAPP_NUMBER } from '../constants/contact'
 
 // ── Config ──
-const WHATSAPP_NUMBER = '923089880479'
 const DELIVERY_CHARGE = 0
 const PURCHASE_STATE_KEY = 'postPurchaseConfirmationState'
 

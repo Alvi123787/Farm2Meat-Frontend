@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import {
   FaWhatsapp,
   FaFacebookF,
-  FaInstagram,
   FaPhoneAlt,
   FaMapMarkerAlt,
   FaClock,
@@ -17,22 +16,29 @@ import {
   FaVideo
 } from 'react-icons/fa'
 import '../css/Contact.css'
+import {
+  FACEBOOK_URL,
+  PHONE_DISPLAY,
+  PHONE_LINK,
+  WHATSAPP_DISPLAY,
+  WHATSAPP_LINK,
+} from '../constants/contact'
 
 const contactInfo = [
   {
     id: 1,
     icon: <FaPhoneAlt />,
     label: 'Phone',
-    value: '+92 308 9880479',
-    href: 'tel:+923089880479',
+    value: PHONE_DISPLAY,
+    href: PHONE_LINK,
     color: 'primary',
   },
   {
     id: 2,
     icon: <FaWhatsapp />,
     label: 'WhatsApp',
-    value: '+92 308 9880479',
-    href: 'https://wa.me/923089880479',
+    value: WHATSAPP_DISPLAY,
+    href: WHATSAPP_LINK,
     color: 'whatsapp',
   },
   {
@@ -90,7 +96,7 @@ const Contact = () => {
 
     setTimeout(() => {
       window.open(
-        `https://wa.me/923089880479?text=${message}`,
+        `${WHATSAPP_LINK}?text=${message}`,
         '_blank'
       )
       setIsSubmitting(false)
@@ -133,7 +139,7 @@ const Contact = () => {
                 {/* Quick Contact Buttons */}
                 <div className="cp-hero-quick">
                   <a
-                    href="https://wa.me/923089880479?text=Assalam%20o%20Alaikum!%20Website%20se%20contact%20kar%20raha%20hun."
+                    href={`${WHATSAPP_LINK}?text=Assalam%20o%20Alaikum!%20Website%20se%20contact%20kar%20raha%20hun.`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="cp-hero-btn cp-hero-btn--wa"
@@ -141,7 +147,7 @@ const Contact = () => {
                     <FaWhatsapp className="cp-hero-btn-icon" />
                     <span>WhatsApp Par Baat Karen</span>
                   </a>
-                  <a href="tel:+923089880479" className="cp-hero-btn cp-hero-btn--call">
+                  <a href={PHONE_LINK} className="cp-hero-btn cp-hero-btn--call">
                     <FaPhoneAlt className="cp-hero-btn-icon" />
                     <span>Direct Call Karen</span>
                   </a>
@@ -381,7 +387,7 @@ const Contact = () => {
               <div className="cp-social-grid">
                 {/* WhatsApp */}
                 <a
-                  href="https://wa.me/923089880479"
+                  href={WHATSAPP_LINK}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="cp-social-card cp-social-card--wa"
@@ -397,7 +403,7 @@ const Contact = () => {
 
                 {/* Facebook */}
                 <a
-                  href="https://facebook.com/"
+                  href={FACEBOOK_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="cp-social-card cp-social-card--fb"
@@ -411,25 +417,9 @@ const Contact = () => {
                   </div>
                 </a>
 
-                {/* Instagram */}
-                <a
-                  href="https://instagram.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="cp-social-card cp-social-card--ig"
-                >
-                  <div className="cp-social-card-icon">
-                    <FaInstagram />
-                  </div>
-                  <div className="cp-social-card-info">
-                    <strong>Instagram</strong>
-                    <span>See Our Collection</span>
-                  </div>
-                </a>
-
                 {/* Phone */}
                 <a
-                  href="tel:+923089880479"
+                  href={PHONE_LINK}
                   className="cp-social-card cp-social-card--phone"
                 >
                   <div className="cp-social-card-icon">
@@ -437,7 +427,7 @@ const Contact = () => {
                   </div>
                   <div className="cp-social-card-info">
                     <strong>Direct Call</strong>
-                    <span>+92 308 9880479</span>
+                    <span>{PHONE_DISPLAY}</span>
                   </div>
                 </a>
               </div>

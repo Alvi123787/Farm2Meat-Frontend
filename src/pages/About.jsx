@@ -24,6 +24,7 @@ import {
   FaEnvelope
 } from 'react-icons/fa'
 import '../css/About.css'
+import { PHONE_DISPLAY, PHONE_LINK, WHATSAPP_LINK } from '../constants/contact'
 
 /* ── Animate-on-scroll hook ── */
 function useReveal(threshold = 0.15) {
@@ -434,8 +435,8 @@ export default function About() {
                     <h3 className="abt-founder-name">Muhammad Ahmad</h3>
                     <span className="abt-founder-role">Founder &amp; CEO — Farm2Meat</span>
                     <div className="abt-founder-contact">
-                      <a href="tel:03089880479" className="abt-founder-contact-item">
-                        <FaPhoneAlt /> <span>0308-9880479</span>
+                      <a href={PHONE_LINK} className="abt-founder-contact-item">
+                        <FaPhoneAlt /> <span>{PHONE_DISPLAY}</span>
                       </a>
                       <a href="mailto:farm2meat@gmail.com" className="abt-founder-contact-item">
                         <FaEnvelope /> <span>farm2meat@gmail.com</span>
@@ -516,7 +517,7 @@ export default function About() {
                     <FaArrowRight />
                   </a>
                   <a
-                    href="https://wa.me/923001234567"
+                    href={WHATSAPP_LINK}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="abt-cta-btn abt-cta-btn-wa"

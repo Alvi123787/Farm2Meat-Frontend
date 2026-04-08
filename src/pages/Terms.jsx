@@ -20,6 +20,7 @@ import {
   FaEnvelope
 } from 'react-icons/fa'
 import "../css/Terms.css"
+import { PHONE_LINK, WHATSAPP_LINK } from '../constants/contact'
 
 const sections = [
   {
@@ -286,7 +287,7 @@ const Terms = () => {
                     </p>
                     <div className="tp-contact-links">
                       <a
-                        href="https://wa.me/923089880479"
+                        href={WHATSAPP_LINK}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="tp-contact-link tp-contact-link--wa"
@@ -294,7 +295,7 @@ const Terms = () => {
                         <FaWhatsapp />
                         <span>WhatsApp</span>
                       </a>
-                      <a href="tel:03089880479" className="tp-contact-link tp-contact-link--phone">
+                      <a href={PHONE_LINK} className="tp-contact-link tp-contact-link--phone">
                         <FaPhoneAlt />
                         <span>Call Us</span>
                       </a>

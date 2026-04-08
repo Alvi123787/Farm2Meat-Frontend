@@ -20,6 +20,7 @@ import {
   FaExclamationCircle
 } from 'react-icons/fa'
 import '../css/PrivacyPolicy.css'
+import { PHONE_DISPLAY, PHONE_LINK, WHATSAPP_LINK } from '../constants/contact'
 
 const sections = [
   {
@@ -397,7 +398,7 @@ const PrivacyPolicy = () => {
                             <FaCheckCircle className="pp-callout-icon" />
                             <span>
                               To exercise any of your rights, contact us via WhatsApp at
-                              03089880479 or email farm2meat@gmail.com. We will respond
+                              {PHONE_DISPLAY} or email farm2meat@gmail.com. We will respond
                               within 7 business days.
                             </span>
                           </div>
@@ -415,7 +416,7 @@ const PrivacyPolicy = () => {
                     </p>
                     <div className="pp-contact-links">
                       <a
-                        href="https://wa.me/923089880479?text=Assalam%20o%20Alaikum!%20Privacy%20Policy%20ke%20baare%20mein%20poochna%20tha."
+                        href={`${WHATSAPP_LINK}?text=Assalam%20o%20Alaikum!%20Privacy%20Policy%20ke%20baare%20mein%20poochna%20tha.`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="pp-contact-link pp-contact-link--wa"
@@ -423,7 +424,7 @@ const PrivacyPolicy = () => {
                         <FaWhatsapp />
                         <span>WhatsApp</span>
                       </a>
-                      <a href="tel:03089880479" className="pp-contact-link pp-contact-link--phone">
+                      <a href={PHONE_LINK} className="pp-contact-link pp-contact-link--phone">
                         <FaPhoneAlt />
                         <span>Call Us</span>
                       </a>

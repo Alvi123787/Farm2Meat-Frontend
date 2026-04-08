@@ -42,9 +42,9 @@ import CustomerReviewSection from '../components/CustomerReviewSection'
 import { useCart } from '../contexts/cartContextCore'
 import api from '../services/api'
 import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl'
+import { WHATSAPP_NUMBER } from '../constants/contact'
 
 // ── Config ──
-const WHATSAPP_NUMBER = '923089880479'
 
 // ── Trust elements — matches Cart page format ──
 const trustElements = [

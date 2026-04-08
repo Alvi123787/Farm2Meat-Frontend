@@ -12,8 +12,7 @@ import ButcherSection from './ButcherSection'
 import api from '../services/api'
 import '../css/CardsGrid.css'
 import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl'
-
-const WHATSAPP_NUMBER = '923089880479'
+import { WHATSAPP_NUMBER } from '../constants/contact'
 const SCROLL_THRESHOLD = 12
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
