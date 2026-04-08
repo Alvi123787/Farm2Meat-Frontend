@@ -81,7 +81,7 @@ const HomeCategory = () => {
 
       <div className="container-fluid px-lg-5">
         <div className="row mb-5">
-          <div className="col-12 text-center">
+          <div className="col-12">
             <span className="homeCategory-badge">CATEGORIES</span>
             <h2 className="homeCategory-title">
               Shop by <span className="homeCategory-title-highlight">Categories</span>

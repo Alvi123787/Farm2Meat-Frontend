@@ -83,7 +83,7 @@ export default function AboutPreview({
       <div className="container-fluid px-lg-5">
         {/* Section Header */}
         <div className="row mb-5">
-          <div className="col-12 text-center">
+          <div className="col-12">
             <span className="ap-badge">ABOUT US</span>
             <h2 className="ap-title">
               Why Choose <span className="ap-title-highlight">Farm2Meat</span>?

@@ -183,7 +183,7 @@ export default function About() {
         </div>
         <div className="container-fluid px-lg-5">
           <div className="row justify-content-center">
-            <div className="col-12 text-center">
+            <div className="col-12">
               <span className="abt-section-badge">OUR STORY</span>
               <h2 className="abt-section-title">
                 Hamari <span className="abt-section-highlight">Kahani</span>
@@ -246,7 +246,7 @@ export default function About() {
       >
         <div className="container-fluid px-lg-5">
           <div className="row justify-content-center">
-            <div className="col-12 text-center">
+            <div className="col-12">
               <span className="abt-section-badge">MISSION & VISION</span>
               <h2 className="abt-section-title">
                 Humara <span className="abt-section-highlight">Maqsad</span>
@@ -313,7 +313,7 @@ export default function About() {
 
         <div className="container-fluid px-lg-5">
           <div className="row justify-content-center">
-            <div className="col-12 text-center">
+            <div className="col-12">
               <span className="abt-section-badge">WHAT WE OFFER</span>
               <h2 className="abt-section-title">
                 Hum Kya <span className="abt-section-highlight">Pesh Karte Hain</span>
@@ -354,7 +354,7 @@ export default function About() {
       >
         <div className="container-fluid px-lg-5">
           <div className="row justify-content-center">
-            <div className="col-12 text-center">
+            <div className="col-12">
               <span className="abt-section-badge">OUR VALUES</span>
               <h2 className="abt-section-title">
                 Humari <span className="abt-section-highlight">Buniyadi Qadrein</span>
@@ -403,7 +403,7 @@ export default function About() {
 
         <div className="container-fluid px-lg-5">
           <div className="row justify-content-center">
-            <div className="col-12 text-center">
+            <div className="col-12">
               <span className="abt-section-badge">FOUNDER</span>
               <h2 className="abt-section-title">
                 Hamara <span className="abt-section-highlight">Bani</span>

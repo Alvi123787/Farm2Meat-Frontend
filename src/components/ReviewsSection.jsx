@@ -83,7 +83,7 @@ const ReviewsSection = ({ mode = 'home', limit = 4, hideWhenEmpty = true } = {})
     <section className={`rv-section ${loaded ? 'rv-section--loaded' : ''}`}>
       <div className="container-fluid">
         <div className="row">
-          <div className="col-12 text-center">
+          <div className="col-12">
 
             {/* ── Header ── */}
             <span className="rv-badge">REVIEWS</span>
