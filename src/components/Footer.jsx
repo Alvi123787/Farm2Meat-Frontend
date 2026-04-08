@@ -135,7 +135,7 @@ const Footer = () => {
                     <div>
                       <span className="footer-contact-label">Office</span>
                       <span className="footer-contact-value">
-                        Main Bazaar, Rahim Yar Khan, Punjab, Pakistan
+                        Near Gulshan Iqbal 110/p, Rahim Yar Khan, Punjab, Pakistan
                       </span>
                     </div>
                   </li>
