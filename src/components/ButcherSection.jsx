@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaPhoneAlt, FaMapMarkerAlt, FaCheckCircle, FaStar, FaKnife, FaUserCheck } from 'react-icons/fa';
+import { FaPhoneAlt, FaMapMarkerAlt, FaCheckCircle, FaStar, FaUtensils, FaUserCheck } from 'react-icons/fa';
 import { butcherService } from '../services/butcherService';
 import '../css/ButcherSection.css';
 import { buildMediaUrl } from '../utils/mediaUrl';
@@ -31,7 +31,7 @@ const ButcherSection = () => {
         <div className="container">
           <div className="section-header">
             <div className="header-icon-wrapper">
-              <FaKnife className="header-icon" />
+              <FaUtensils className="header-icon" />
             </div>
             <h2 className="section-title">Master Butchers</h2>
             <p className="section-subtitle">Discovering skilled professionals in your area...</p>
@@ -61,7 +61,7 @@ const ButcherSection = () => {
       <div className="container">
         <div className="section-header">
           <div className="header-icon-wrapper">
-            <FaKnife className="header-icon" />
+            <FaUtensils className="header-icon" />
           </div>
           <div className="header-badge">
             <span>Halal Certified</span>
