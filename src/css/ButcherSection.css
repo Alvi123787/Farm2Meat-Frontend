@@ -1,4 +1,4 @@
-/* ButcherSection.css - Professional Butcher Theme with Minimal Header */
+/* ButcherSection.css - Professional Butcher Theme aligned with shared section headers */
 
 :root {
   --butcher-primary: #8B1E1E;      /* Deep butcher red */
@@ -34,49 +34,64 @@
   pointer-events: none;
 }
 
-.butcher-section .container {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 24px;
+.butcher-section .container-fluid {
+  max-width: 1320px;
   position: relative;
   z-index: 1;
 }
 
-/* Minimal Left-Aligned Header */
 .section-header {
   text-align: left;
   margin-bottom: 48px;
-  max-width: 800px;
+  max-width: 680px;
 }
 
-.header-title-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.header-icon-simple {
-  font-size: 28px;
+.section-badge {
+  display: inline-block;
+  padding: 0;
+  background: none;
   color: var(--butcher-primary);
-  opacity: 0.85;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  border-radius: 0;
+  margin-bottom: 12px;
+  text-transform: uppercase;
 }
 
 .section-title {
-  font-size: 2.25rem;
+  font-size: clamp(2rem, 5vw, 2.8rem);
   color: var(--butcher-secondary);
-  font-weight: 600;
-  margin: 0;
-  letter-spacing: -0.02em;
+  font-weight: 800;
+  margin: 0 0 16px;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.section-title-highlight {
+  color: var(--butcher-primary);
 }
 
 .section-subtitle {
-  font-size: 1rem;
+  font-size: 1.05rem;
   color: var(--butcher-gray);
-  margin: 0;
-  line-height: 1.6;
-  opacity: 0.75;
-  font-weight: 400;
+  max-width: 650px;
+  margin: 0 0 24px;
+  line-height: 1.7;
+  opacity: 0.88;
+}
+
+.section-divider {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.section-divider-line {
+  width: 50px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--butcher-primary);
 }
 
 /* Grid Layout */
@@ -88,7 +103,6 @@
   padding: 8px 0;
 }
 
-/* Butcher Card - Distinctive Butcher Style (UNCHANGED) */
 .butcher-card {
   background: var(--butcher-light);
   border-radius: 24px;
@@ -333,7 +347,6 @@
   50% { transform: rotate(0deg); }
 }
 
-/* Minimal Footer */
 .butcher-footer {
   margin-top: 48px;
   padding-top: 24px;
@@ -413,7 +426,11 @@
   }
 
   .section-title {
-    font-size: 2rem;
+    font-size: 1.9rem;
+  }
+
+  .section-subtitle {
+    font-size: 0.92rem;
   }
 
   .butcher-grid {
@@ -428,24 +445,21 @@
 }
 
 @media (max-width: 480px) {
-  .butcher-section .container {
-    padding: 0 16px;
+  .butcher-section .container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 
-  .header-title-wrapper {
-    gap: 10px;
-  }
-
-  .header-icon-simple {
-    font-size: 24px;
+  .section-badge {
+    font-size: 10px;
   }
 
   .section-title {
-    font-size: 1.75rem;
+    font-size: 1.55rem;
   }
 
   .section-subtitle {
-    font-size: 0.95rem;
+    font-size: 0.88rem;
   }
 
   .butcher-avatar-wrapper {

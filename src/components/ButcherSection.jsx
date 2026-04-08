@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaPhoneAlt, FaMapMarkerAlt, FaCheckCircle, FaStar, FaUtensils, FaUserCheck } from 'react-icons/fa';
+import { FaPhoneAlt, FaMapMarkerAlt, FaCheckCircle, FaStar, FaUserCheck } from 'react-icons/fa';
 import { butcherService } from '../services/butcherService';
 import '../css/ButcherSection.css';
 import { buildMediaUrl } from '../utils/mediaUrl';
@@ -28,13 +28,16 @@ const ButcherSection = () => {
   if (loading) {
     return (
       <section className="butcher-section">
-        <div className="container">
+        <div className="container-fluid px-lg-5">
           <div className="section-header">
-            <div className="header-title-wrapper">
-              <FaUtensils className="header-icon-simple" />
-              <h2 className="section-title">Master Butchers</h2>
-            </div>
+            <span className="section-badge">Halal Certified</span>
+            <h2 className="section-title">
+              Master <span className="section-title-highlight">Butchers</span>
+            </h2>
             <p className="section-subtitle">Discovering skilled professionals in your area...</p>
+            <div className="section-divider">
+              <span className="section-divider-line"></span>
+            </div>
           </div>
           <div className="butcher-grid">
             {[1, 2, 3, 4].map((i) => (
@@ -58,16 +61,18 @@ const ButcherSection = () => {
 
   return (
     <section className="butcher-section">
-      <div className="container">
-        {/* Minimal Left-Aligned Header */}
+      <div className="container-fluid px-lg-5">
         <div className="section-header">
-          <div className="header-title-wrapper">
-            <FaUtensils className="header-icon-simple" />
-            <h2 className="section-title">Master Butchers</h2>
-          </div>
+          <span className="section-badge">Halal Certified</span>
+          <h2 className="section-title">
+            Master <span className="section-title-highlight">Butchers</span>
+          </h2>
           <p className="section-subtitle">
             Expert craftsmen dedicated to professional halal meat processing in Rahim Yar Khan.
           </p>
+          <div className="section-divider">
+            <span className="section-divider-line"></span>
+          </div>
         </div>
 
         <div className="butcher-grid">
