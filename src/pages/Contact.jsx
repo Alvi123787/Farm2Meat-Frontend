@@ -45,8 +45,8 @@ const contactInfo = [
     id: 3,
     icon: <FaEnvelope />,
     label: 'Email',
-    value: 'info@rykmandi.com',
-    href: 'mailto:info@rykmandi.com',
+    value: 'farm2meat@gmail.com',
+    href: 'mailto:farm2meat@gmail.com',
     color: 'accent',
   },
   {
