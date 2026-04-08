@@ -30,10 +30,10 @@ const ButcherSection = () => {
       <section className="butcher-section">
         <div className="container">
           <div className="section-header">
-            <div className="header-icon-wrapper">
-              <FaUtensils className="header-icon" />
+            <div className="header-title-wrapper">
+              <FaUtensils className="header-icon-simple" />
+              <h2 className="section-title">Master Butchers</h2>
             </div>
-            <h2 className="section-title">Master Butchers</h2>
             <p className="section-subtitle">Discovering skilled professionals in your area...</p>
           </div>
           <div className="butcher-grid">
@@ -59,14 +59,10 @@ const ButcherSection = () => {
   return (
     <section className="butcher-section">
       <div className="container">
+        {/* Minimal Left-Aligned Header */}
         <div className="section-header">
-          <div className="header-icon-wrapper">
-            <FaUtensils className="header-icon" />
-          </div>
-          <div className="header-copy">
-            <div className="header-badge">
-              <span>Halal Certified</span>
-            </div>
+          <div className="header-title-wrapper">
+            <FaUtensils className="header-icon-simple" />
             <h2 className="section-title">Master Butchers</h2>
           </div>
           <p className="section-subtitle">
@@ -135,13 +131,11 @@ const ButcherSection = () => {
           ))}
         </div>
 
+        {/* Minimal Footer Notice */}
         <div className="butcher-footer">
-          <div className="footer-content">
-            <FaCheckCircle className="footer-icon" />
-            <p>
-              All butchers are personally verified. Pricing and scheduling arranged directly.
-            </p>
-          </div>
+          <p className="footer-text">
+            All butchers are personally verified. Pricing arranged directly.
+          </p>
         </div>
       </div>
     </section>
