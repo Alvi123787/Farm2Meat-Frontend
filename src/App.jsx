@@ -33,6 +33,13 @@ import AdminButchers from './pages/AdminButchers'
 import WelcomeModal from './components/WelcomeModal';
 import { AuthProvider } from './contexts/AuthContext.jsx';
 import { CartProvider } from './contexts/CartContext';
+import PageTitle from './components/PageTitle'
+
+const withPageTitle = (element, title) => (
+  <PageTitle title={title}>
+    {element}
+  </PageTitle>
+)
 
 function App() {
   return (
@@ -42,20 +49,20 @@ function App() {
           <WelcomeModal />
           <Navbar />
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/how-it-works" element={<HowItWorks />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/all-reviews" element={<AllReviews />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/order-success" element={<OrderSuccess />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/shop/:id" element={<ProductDetail />} />
+          <Route path="/" element={withPageTitle(<Home />, 'Home')} />
+          <Route path="/about" element={withPageTitle(<About />, 'About')} />
+          <Route path="/how-it-works" element={withPageTitle(<HowItWorks />, 'How It Works')} />
+          <Route path="/shop" element={withPageTitle(<Shop />, 'Products')} />
+          <Route path="/all-reviews" element={withPageTitle(<AllReviews />, 'Reviews')} />
+          <Route path="/contact" element={withPageTitle(<Contact />, 'Contact')} />
+          <Route path="/cart" element={withPageTitle(<Cart />, 'Cart')} />
+          <Route path="/checkout" element={withPageTitle(<Checkout />, 'Checkout')} />
+          <Route path="/order-success" element={withPageTitle(<OrderSuccess />, 'Order Success')} />
+          <Route path="/terms" element={withPageTitle(<Terms />, 'Terms')} />
+          <Route path="/privacy-policy" element={withPageTitle(<PrivacyPolicy />, 'Privacy Policy')} />
+          <Route path="/signup" element={withPageTitle(<Signup />, 'Sign Up')} />
+          <Route path="/login" element={withPageTitle(<Login />, 'Login')} />
+          <Route path="/shop/:id" element={withPageTitle(<ProductDetail />, 'Product Details')} />
           <Route path="/admin-dashboard" element={<Navigate to="/admin" replace />} />
           <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
 
@@ -67,27 +74,27 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route index element={<AdminDashboard />} />
-            <Route path="add-animal" element={<AddAnimal />} />
-            <Route path="edit-animal/:id" element={<AddAnimal />} />
-            <Route path="orders" element={<Orders />} />
-            <Route path="animals" element={<InventoryPreview />} />
-            <Route path="inquiries" element={<RecentInquiriesTable />} />
-            <Route path="reviews" element={<AdminReviews />} />
-            <Route path="users" element={<AdminUsers />} />
-            <Route path="butchers" element={<AdminButchers />} />
+            <Route index element={withPageTitle(<AdminDashboard />, 'Dashboard')} />
+            <Route path="add-animal" element={withPageTitle(<AddAnimal />, 'Add Animal')} />
+            <Route path="edit-animal/:id" element={withPageTitle(<AddAnimal />, 'Edit Animal')} />
+            <Route path="orders" element={withPageTitle(<Orders />, 'Orders')} />
+            <Route path="animals" element={withPageTitle(<InventoryPreview />, 'Inventory')} />
+            <Route path="inquiries" element={withPageTitle(<RecentInquiriesTable />, 'Inquiries')} />
+            <Route path="reviews" element={withPageTitle(<AdminReviews />, 'Reviews')} />
+            <Route path="users" element={withPageTitle(<AdminUsers />, 'Users')} />
+            <Route path="butchers" element={withPageTitle(<AdminButchers />, 'Butchers')} />
           </Route>
 
           <Route path="/add-animal" element={<Navigate to="/admin/add-animal" replace />} />
-          <Route path="/revenue-chart" element={<RevenueChart />} />
+          <Route path="/revenue-chart" element={withPageTitle(<RevenueChart />, 'Revenue')} />
           <Route path="/recent-inquiries" element={<Navigate to="/admin/inquiries" replace />} />
           <Route path="/inventory-preview" element={<Navigate to="/admin/animals" replace />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/confirmation" element={<Confirmation />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password/:token" element={<ResetPassword />} />
-          <Route path="/verify-email/:token" element={<EmailVerification />} />
-          <Route path="/verify-email" element={<EmailVerification />} />
+          <Route path="/orders" element={withPageTitle(<Orders />, 'Orders')} />
+          <Route path="/confirmation" element={withPageTitle(<Confirmation />, 'Confirmation')} />
+          <Route path="/forgot-password" element={withPageTitle(<ForgotPassword />, 'Forgot Password')} />
+          <Route path="/reset-password/:token" element={withPageTitle(<ResetPassword />, 'Reset Password')} />
+          <Route path="/verify-email/:token" element={withPageTitle(<EmailVerification />, 'Verify Email')} />
+          <Route path="/verify-email" element={withPageTitle(<EmailVerification />, 'Verify Email')} />
         </Routes>
         <Footer />
         </CartProvider>
