@@ -241,7 +241,7 @@ const Contact = () => {
                     <div className="cp-address-content">
                       <strong className="cp-address-title">Farm2Meat Office</strong>
                       <p className="cp-address-text">
-                        Main Bazaar, Near Cattle Market,<br />
+                        Near Gulshan Iqbal 110/p, <br />
                         Rahim Yar Khan, Punjab, Pakistan
                       </p>
                     </div>
