@@ -15,7 +15,7 @@ const HomeCategory = () => {
     {
       title: "Bakra",
       subtitle: "Qurbani ke liye behtareen aur sehatmand nar bakray.",
-      img: "../uploads/Bakra.jpg",
+      img: "https://res.cloudinary.com/dqclqmuhi/image/upload/v1775622451/lisaredfern-goat-707467_1280_e4cp0o.jpg",
       gradientColor: "139, 69, 19",
       accentColor: "#D2691E",
       tag: "Most Popular",
@@ -23,7 +23,7 @@ const HomeCategory = () => {
     {
       title: "Patth",
       subtitle: "Palne ke liye munasib umar aur achi nasl ki patth.",
-      img: "../uploads/patth.jpg",
+      img: "https://res.cloudinary.com/dqclqmuhi/image/upload/v1775622580/jaclou-dl-goat-2775034_1280_okmk38.jpg",
       gradientColor: "34, 85, 34",
       accentColor: "#2E8B57",
       tag: "Best Value",
@@ -31,7 +31,7 @@ const HomeCategory = () => {
     {
       title: "Bakri",
       subtitle: "Doodh aur nasl barhane ke liye top quality bakriyan.",
-      img: "../uploads/bakri.jpg",
+      img: "https://res.cloudinary.com/dqclqmuhi/image/upload/v1775622609/bones64-goat-2484986_1280_heycvx.jpg",
       gradientColor: "128, 0, 0",
       accentColor: "#A0522D",
       tag: "Top Quality",
