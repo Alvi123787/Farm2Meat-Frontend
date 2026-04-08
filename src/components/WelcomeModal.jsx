@@ -45,36 +45,47 @@ const WelcomeModal = () => {
     <div className={`wm-overlay ${closing ? 'wm-closing' : ''}`} onClick={handleClose}>
       <div className="wm-modal" onClick={(e) => e.stopPropagation()}>
 
+        {/* Minimal Close Button - No Background, Just Icon */}
         <button className="wm-close" onClick={handleClose}>
           <FaTimes />
         </button>
 
+        {/* Refined Header with better spacing */}
         <div className="wm-header">
-          <FaMapMarkerAlt className="wm-icon" />
+          <div className="wm-icon-badge">
+            <FaMapMarkerAlt className="wm-icon" />
+          </div>
           <h2>Delivery Area Notice</h2>
-          <p>We currently operate in limited locations.</p>
+          <p>We're currently growing. Here's where we deliver.</p>
         </div>
 
-        <div className="wm-card">
-          <FaShippingFast className="wm-card-icon" />
-          <div>
-            <h4>Service Area</h4>
-            <p>Currently available only in <b>Rahim Yar Khan</b>.</p>
+        {/* Primary Info Card - Cleaner Layout */}
+        <div className="wm-card wm-card-primary">
+          <div className="wm-card-icon-wrapper">
+            <FaShippingFast />
+          </div>
+          <div className="wm-card-content">
+            <h4>Current Service Area</h4>
+            <p>Available only in <strong>Rahim Yar Khan</strong>.</p>
           </div>
         </div>
 
-        <div className="wm-card wm-muted">
-          <FaInfoCircle className="wm-card-icon" />
-          <div>
-            <h4>Expanding Soon</h4>
-            <p>We are expanding to more cities in Pakistan.</p>
+        {/* Secondary Info Card */}
+        <div className="wm-card wm-card-secondary">
+          <div className="wm-card-icon-wrapper">
+            <FaInfoCircle />
+          </div>
+          <div className="wm-card-content">
+            <h4>Expanding Nationwide</h4>
+            <p>More cities across Pakistan coming very soon.</p>
           </div>
         </div>
 
+        {/* Refined Button with Smooth Interaction */}
         <button className="wm-btn" onClick={handleClose}>
-          Continue <FaArrowRight />
+          <span>Understood, Continue</span>
+          <FaArrowRight className="wm-btn-icon" />
         </button>
-
       </div>
     </div>
   );
