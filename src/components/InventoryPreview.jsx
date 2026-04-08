@@ -20,30 +20,29 @@ import {
   FaTag,
   FaClipboardList,
   FaBox,
-  FaDollarSign,
   FaInfoCircle,
-  FaUser,
   FaArchive,
+  FaFilter,
+  FaThLarge,
+  FaList,
 } from 'react-icons/fa'
 import api from '../services/api'
 import '../css/InventoryPreview.css'
 import { useAdminLiveRefresh } from '../hooks/useAdminLiveRefresh'
 import { buildMediaUrl } from '../utils/mediaUrl'
 
-/* ── fallback ────────────────────────────────────────── */
 const fallbackSrc =
   'data:image/svg+xml,' +
   encodeURIComponent(
     `<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
-      <rect fill="#f5f0e8" width="60" height="60" rx="12"/>
+      <rect fill="#f8f6f2" width="60" height="60" rx="12"/>
       <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle"
-        font-family="sans-serif" font-size="22" fill="#ccc">🐐</text>
+        font-family="sans-serif" font-size="22" fill="#cbd5e1">🐐</text>
     </svg>`
   )
 
 const handleImageError = (e) => { e.target.src = fallbackSrc }
 
-/* ── helpers ─────────────────────────────────────────── */
 const getThumbnail = (animal) => {
   if (animal.images?.length > 0) return buildMediaUrl(animal.images[0]) || fallbackSrc
   if (animal.imageUrl) return buildMediaUrl(animal.imageUrl) || fallbackSrc
@@ -67,7 +66,6 @@ const getStatusInfo = (animal) => {
   }
 }
 
-/* ── toggle switch ───────────────────────────────────── */
 const ToggleSwitch = ({ isActive, onToggle, disabled, size = 'md' }) => (
   <button
     className={`ip-toggle ${isActive ? 'ip-toggle--on' : ''} ${disabled ? 'ip-toggle--disabled' : ''} ip-toggle--${size}`}
@@ -86,7 +84,6 @@ const ToggleSwitch = ({ isActive, onToggle, disabled, size = 'md' }) => (
   </button>
 )
 
-/* ── animated counter ────────────────────────────────── */
 const AnimCounter = ({ value, className = '' }) => {
   const [display, setDisplay] = useState(0)
   useEffect(() => {
@@ -108,7 +105,6 @@ const AnimCounter = ({ value, className = '' }) => {
   return <span className={className}>{display}</span>
 }
 
-/* ── skeleton row ────────────────────────────────────── */
 const SkeletonRow = ({ delay = 0 }) => (
   <tr className="ip-skeleton-row" style={{ '--sk-delay': `${delay}s` }}>
     <td className="ip-col-thumb"><div className="ip-sk ip-sk--circle" /></td>
@@ -132,9 +128,6 @@ const SkeletonCard = ({ delay = 0 }) => (
   </div>
 )
 
-/* ═══════════════════════════════════════════════════════
-   MAIN COMPONENT
-   ═══════════════════════════════════════════════════════ */
 const InventoryPreview = () => {
   const navigate = useNavigate()
 
@@ -144,6 +137,7 @@ const InventoryPreview = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [sortField, setSortField] = useState('name')
   const [sortDir, setSortDir] = useState('asc')
+  const [viewMode, setViewMode] = useState('table')
 
   const [deleteModal, setDeleteModal] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState(null)
@@ -153,7 +147,6 @@ const InventoryPreview = () => {
   const [toasts, setToasts] = useState([])
   const toastId = useRef(0)
 
-  /* ── fetch ─────────────────────────────────────── */
   const fetchAnimals = useCallback(async () => {
     try {
       setLoading(true)
@@ -173,7 +166,6 @@ const InventoryPreview = () => {
 
   useAdminLiveRefresh(fetchAnimals, { intervalMs: 8000, enabled: true })
 
-  /* ── toasts ────────────────────────────────────── */
   const showToast = useCallback((message, type = 'success') => {
     const id = ++toastId.current
     setToasts((prev) => [...prev, { id, message, type, exiting: false }])
@@ -183,7 +175,6 @@ const InventoryPreview = () => {
     }, 3200)
   }, [])
 
-  /* ── toggle ────────────────────────────────────── */
   const handleToggle = async (animal) => {
     const newVis = !animal.visibility
     setAnimals((prev) => prev.map((a) => (a._id === animal._id ? { ...a, visibility: newVis } : a)))
@@ -201,10 +192,8 @@ const InventoryPreview = () => {
     }
   }
 
-  /* ── edit ───────────────────────────────────────── */
   const handleEdit = (animal) => navigate(`/admin/edit-animal/${animal._id}`)
 
-  /* ── delete ────────────────────────────────────── */
   const openDeleteModal = (animal) => { setDeleteTarget(animal); setDeleteModal(true); setDeleteClosing(false) }
 
   const closeDeleteModal = useCallback(() => {
@@ -230,7 +219,6 @@ const InventoryPreview = () => {
     }
   }
 
-  /* ── sort & filter ─────────────────────────────── */
   const filtered = useMemo(() => {
     let list = [...animals]
     if (searchQuery.trim()) {
@@ -261,12 +249,10 @@ const InventoryPreview = () => {
       : <FaSortAmountDown className="ip-sort-icon" />
   }
 
-  /* ── counts ────────────────────────────────────── */
   const totalCount = animals.length
   const activeCount = animals.filter((a) => a.visibility !== false).length
   const hiddenCount = totalCount - activeCount
 
-  /* ── body lock for modal ───────────────────────── */
   useEffect(() => {
     if (!deleteModal) return
     const prev = document.body.style.overflow
@@ -274,12 +260,8 @@ const InventoryPreview = () => {
     return () => { document.body.style.overflow = prev }
   }, [deleteModal])
 
-  /* ═══════════════════════════════════════════════
-     RENDER
-     ═══════════════════════════════════════════════ */
   return (
     <div className="ip-wrapper">
-      {/* ── toasts ─────────────────────────────── */}
       <div className="ip-toast-stack">
         {toasts.map((t) => (
           <div key={t.id} className={`ip-toast ip-toast--${t.type} ${t.exiting ? 'ip-toast--exit' : ''}`}>
@@ -296,99 +278,108 @@ const InventoryPreview = () => {
       </div>
 
       <div className="ip-container">
-        {/* ── header ───────────────────────────── */}
         <header className="ip-header">
-          <div className="ip-header-left">
-            <div className="ip-header-icon-wrap">
-              <FaBoxOpen className="ip-header-icon" />
+          <div className="ip-header-content">
+            <div className="ip-header-title-wrap">
+              <div className="ip-header-icon">
+                <FaBoxOpen />
+              </div>
+              <div className="ip-header-text">
+                <h1 className="ip-title">Inventory</h1>
+                <p className="ip-subtitle">Manage your livestock collection</p>
+              </div>
             </div>
-            <div>
-              <h2 className="ip-title">Inventory Management</h2>
-              <p className="ip-title-sub">Manage and track your livestock listings</p>
-            </div>
+            {!loading && !error && animals.length > 0 && (
+              <button className="ip-add-btn" onClick={() => navigate('/add-animal')}>
+                <FaPlusCircle />
+                <span>Add Animal</span>
+              </button>
+            )}
           </div>
-
-          {!loading && !error && animals.length > 0 && (
-            <button className="ip-add-btn" onClick={() => navigate('/add-animal')}>
-              <FaPlusCircle className="ip-add-btn-icon" />
-              <span>Add New Animal</span>
-              <span className="ip-add-btn-shine" />
-            </button>
-          )}
         </header>
 
-        {/* ── stats strip ──────────────────────── */}
         {!loading && !error && animals.length > 0 && (
-          <div className="ip-stats">
-            <div className="ip-stat-card">
-              <div className="ip-stat-icon ip-stat-icon--total">
+          <div className="ip-stats-grid">
+            <div className="ip-stat-item">
+              <div className="ip-stat-icon-wrap ip-stat-icon-wrap--total">
                 <FaBox />
               </div>
-              <div className="ip-stat-info">
-                <AnimCounter value={totalCount} className="ip-stat-num" />
-                <span className="ip-stat-label">Total Listings</span>
+              <div className="ip-stat-content">
+                <AnimCounter value={totalCount} className="ip-stat-value" />
+                <span className="ip-stat-label">Total</span>
               </div>
             </div>
-            <div className="ip-stat-card ip-stat-card--active">
-              <div className="ip-stat-icon ip-stat-icon--active">
+            <div className="ip-stat-item">
+              <div className="ip-stat-icon-wrap ip-stat-icon-wrap--active">
                 <FaEye />
               </div>
-              <div className="ip-stat-info">
-                <AnimCounter value={activeCount} className="ip-stat-num ip-stat-num--active" />
+              <div className="ip-stat-content">
+                <AnimCounter value={activeCount} className="ip-stat-value ip-stat-value--active" />
                 <span className="ip-stat-label">Active</span>
               </div>
             </div>
-            <div className="ip-stat-card ip-stat-card--hidden">
-              <div className="ip-stat-icon ip-stat-icon--hidden">
+            <div className="ip-stat-item">
+              <div className="ip-stat-icon-wrap ip-stat-icon-wrap--hidden">
                 <FaArchive />
               </div>
-              <div className="ip-stat-info">
-                <AnimCounter value={hiddenCount} className="ip-stat-num ip-stat-num--hidden" />
+              <div className="ip-stat-content">
+                <AnimCounter value={hiddenCount} className="ip-stat-value ip-stat-value--hidden" />
                 <span className="ip-stat-label">Hidden</span>
               </div>
             </div>
           </div>
         )}
 
-        {/* ── search & sort bar ────────────────── */}
         {!loading && !error && animals.length > 0 && (
-          <div className="ip-toolbar">
-            <div className="ip-search-wrap">
+          <div className="ip-control-bar">
+            <div className="ip-search-wrapper">
               <FaSearch className="ip-search-icon" />
               <input
-                className="ip-search"
+                className="ip-search-input"
                 type="text"
-                placeholder="Search by name, breed, or category..."
+                placeholder="Search animals..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               {searchQuery && (
-                <button className="ip-search-clear" onClick={() => setSearchQuery('')} aria-label="Clear search">
+                <button className="ip-search-clear" onClick={() => setSearchQuery('')}>
                   <FaTimes />
                 </button>
               )}
-              <span className="ip-search-glow" />
             </div>
-            <span className="ip-result-count">
-              {filtered.length} result{filtered.length !== 1 && 's'}
-            </span>
+            <div className="ip-control-right">
+              <span className="ip-result-badge">{filtered.length} items</span>
+              <div className="ip-view-toggle">
+                <button 
+                  className={`ip-view-btn ${viewMode === 'table' ? 'ip-view-btn--active' : ''}`}
+                  onClick={() => setViewMode('table')}
+                >
+                  <FaList />
+                </button>
+                <button 
+                  className={`ip-view-btn ${viewMode === 'grid' ? 'ip-view-btn--active' : ''}`}
+                  onClick={() => setViewMode('grid')}
+                >
+                  <FaThLarge />
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
-        {/* ── loading skeleton ─────────────────── */}
         {loading && (
           <>
             <div className="ip-table-wrap">
               <table className="ip-table">
                 <thead>
                   <tr>
-                    <th className="ip-col-thumb">Photo</th>
+                    <th className="ip-col-thumb"></th>
                     <th>Name</th>
                     <th>Breed</th>
                     <th>Price</th>
                     <th>Status</th>
                     <th className="ip-col-toggle">Visibility</th>
-                    <th className="ip-col-actions">Actions</th>
+                    <th className="ip-col-actions"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -402,251 +393,243 @@ const InventoryPreview = () => {
           </>
         )}
 
-        {/* ── error state ──────────────────────── */}
         {error && !loading && (
-          <div className="ip-state">
-            <div className="ip-state-icon-wrap ip-state-icon-wrap--error">
-              <FaExclamationTriangle className="ip-state-icon" />
+          <div className="ip-empty-state">
+            <div className="ip-empty-icon ip-empty-icon--error">
+              <FaExclamationTriangle />
             </div>
-            <h3 className="ip-state-title">Connection Error</h3>
-            <p className="ip-state-text">{error}</p>
-            <button className="ip-state-btn" onClick={fetchAnimals}>
-              <span className="ip-state-btn-shine" />
+            <h3>Connection Error</h3>
+            <p>{error}</p>
+            <button className="ip-btn ip-btn--primary" onClick={fetchAnimals}>
               Try Again
             </button>
           </div>
         )}
 
-        {/* ── empty state ──────────────────────── */}
         {!loading && !error && animals.length === 0 && (
-          <div className="ip-state">
-            <div className="ip-state-icon-wrap ip-state-icon-wrap--empty">
-              <FaBoxOpen className="ip-state-icon" />
+          <div className="ip-empty-state">
+            <div className="ip-empty-icon">
+              <FaBoxOpen />
             </div>
-            <h3 className="ip-state-title">No Listings Yet</h3>
-            <p className="ip-state-text">Your inventory is empty. Add your first animal to get started.</p>
-            <button className="ip-state-btn" onClick={() => navigate('/add-animal')}>
+            <h3>No listings yet</h3>
+            <p>Start by adding your first animal to the inventory.</p>
+            <button className="ip-btn ip-btn--primary" onClick={() => navigate('/add-animal')}>
               <FaPlusCircle />
               <span>Add First Listing</span>
-              <span className="ip-state-btn-shine" />
             </button>
           </div>
         )}
 
-        {/* ── no results ───────────────────────── */}
         {!loading && !error && animals.length > 0 && filtered.length === 0 && (
-          <div className="ip-state ip-state--compact">
-            <FaSearch className="ip-state-search-icon" />
-            <p className="ip-state-text">No animals match "<strong>{searchQuery}</strong>"</p>
-            <button className="ip-state-btn ip-state-btn--ghost" onClick={() => setSearchQuery('')}>
+          <div className="ip-empty-state ip-empty-state--compact">
+            <FaSearch className="ip-empty-search-icon" />
+            <p>No results for "<strong>{searchQuery}</strong>"</p>
+            <button className="ip-btn ip-btn--ghost" onClick={() => setSearchQuery('')}>
               Clear Search
             </button>
           </div>
         )}
 
-        {/* ── data loaded ──────────────────────── */}
         {!loading && !error && filtered.length > 0 && (
           <>
-            {/* ═══════ DESKTOP TABLE ═══════ */}
-            <div className="ip-table-wrap">
-              <table className="ip-table">
-                <thead>
-                  <tr>
-                    <th className="ip-col-thumb">Photo</th>
-                    <th className="ip-th-sortable" onClick={() => toggleSort('name')}>
-                      Name <SortIcon field="name" />
-                    </th>
-                    <th className="ip-th-sortable" onClick={() => toggleSort('breed')}>
-                      Breed <SortIcon field="breed" />
-                    </th>
-                    <th className="ip-th-sortable" onClick={() => toggleSort('price')}>
-                      Price <SortIcon field="price" />
-                    </th>
-                    <th>Status</th>
-                    <th className="ip-col-toggle">Visibility</th>
-                    <th className="ip-col-actions">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((animal, idx) => {
-                    const status = getStatusInfo(animal)
-                    const StatusIcon = status.icon
-                    return (
-                      <tr key={animal._id} className="ip-row" style={{ '--row-i': idx }}>
-                        <td className="ip-col-thumb">
-                          <div className="ip-thumb-wrap">
-                            <img
-                              className="ip-thumb"
-                              src={getThumbnail(animal)}
-                              alt={animal.name}
-                              onError={handleImageError}
-                              loading="lazy"
-                            />
-                            <span className="ip-thumb-overlay">
-                              <FaEye />
+            {viewMode === 'table' ? (
+              <div className="ip-table-wrap">
+                <table className="ip-table">
+                  <thead>
+                    <tr>
+                      <th className="ip-col-thumb"></th>
+                      <th className="ip-th-sortable" onClick={() => toggleSort('name')}>
+                        Name <SortIcon field="name" />
+                      </th>
+                      <th className="ip-th-sortable" onClick={() => toggleSort('breed')}>
+                        Breed <SortIcon field="breed" />
+                      </th>
+                      <th className="ip-th-sortable" onClick={() => toggleSort('price')}>
+                        Price <SortIcon field="price" />
+                      </th>
+                      <th>Status</th>
+                      <th className="ip-col-toggle">Visibility</th>
+                      <th className="ip-col-actions"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.map((animal, idx) => {
+                      const status = getStatusInfo(animal)
+                      const StatusIcon = status.icon
+                      return (
+                        <tr key={animal._id} className="ip-row" style={{ '--row-i': idx }}>
+                          <td className="ip-col-thumb">
+                            <div className="ip-thumb-wrapper">
+                              <img
+                                className="ip-thumb-img"
+                                src={getThumbnail(animal)}
+                                alt={animal.name}
+                                onError={handleImageError}
+                                loading="lazy"
+                              />
+                            </div>
+                          </td>
+                          <td>
+                            <div className="ip-name-cell">
+                              <span className="ip-name">{animal.name}</span>
+                              {animal.category && <span className="ip-category">{animal.category}</span>}
+                            </div>
+                          </td>
+                          <td><span className="ip-breed">{animal.breed || '—'}</span></td>
+                          <td>
+                            <span className="ip-price">{formatPrice(animal.price)}</span>
+                            {animal.discountPrice && (
+                              <span className="ip-price-discount">{formatPrice(animal.discountPrice)}</span>
+                            )}
+                          </td>
+                          <td>
+                            <span className={`ip-status ${status.className}`}>
+                              <StatusIcon />
+                              {status.label}
                             </span>
-                          </div>
-                        </td>
-                        <td>
-                          <span className="ip-name">{animal.name}</span>
-                          {animal.category && <span className="ip-name-sub">{animal.category}</span>}
-                        </td>
-                        <td><span className="ip-breed">{animal.breed}</span></td>
-                        <td>
-                          <span className="ip-price">{formatPrice(animal.price)}</span>
-                          {animal.discountPrice && (
-                            <span className="ip-price-old">{formatPrice(animal.discountPrice)}</span>
-                          )}
-                        </td>
-                        <td>
-                          <span className={`ip-status ${status.className}`}>
-                            <StatusIcon className="ip-status-icon" />
-                            {status.label}
-                          </span>
-                        </td>
-                        <td className="ip-col-toggle">
-                          <ToggleSwitch isActive={status.isActive} onToggle={() => handleToggle(animal)} />
-                        </td>
-                        <td className="ip-col-actions">
-                          <div className="ip-actions">
-                            <button className="ip-act ip-act--edit" onClick={() => handleEdit(animal)} title="Edit">
+                          </td>
+                          <td className="ip-col-toggle">
+                            <ToggleSwitch isActive={status.isActive} onToggle={() => handleToggle(animal)} />
+                          </td>
+                          <td className="ip-col-actions">
+                            <div className="ip-actions">
+                              <button className="ip-action ip-action--edit" onClick={() => handleEdit(animal)} title="Edit">
+                                <FaPen />
+                              </button>
+                              <button className="ip-action ip-action--delete" onClick={() => openDeleteModal(animal)} title="Delete">
+                                <FaTrashAlt />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="ip-grid-view">
+                {filtered.map((animal, idx) => {
+                  const status = getStatusInfo(animal)
+                  const StatusIcon = status.icon
+                  return (
+                    <div key={animal._id} className="ip-grid-card" style={{ '--card-i': idx }}>
+                      <div className="ip-grid-thumb">
+                        <img
+                          src={getThumbnail(animal)}
+                          alt={animal.name}
+                          onError={handleImageError}
+                          loading="lazy"
+                        />
+                        <span className={`ip-grid-badge ${status.className}`}>
+                          <StatusIcon />
+                          {status.label}
+                        </span>
+                      </div>
+                      <div className="ip-grid-content">
+                        <div className="ip-grid-header">
+                          <h3 className="ip-grid-name">{animal.name}</h3>
+                          <span className="ip-grid-price">{formatPrice(animal.price)}</span>
+                        </div>
+                        <div className="ip-grid-meta">
+                          <span className="ip-grid-breed">{animal.breed || '—'}</span>
+                          {animal.category && <span className="ip-grid-category">{animal.category}</span>}
+                        </div>
+                        <div className="ip-grid-footer">
+                          <ToggleSwitch isActive={status.isActive} onToggle={() => handleToggle(animal)} size="sm" />
+                          <div className="ip-grid-actions">
+                            <button className="ip-action ip-action--edit" onClick={() => handleEdit(animal)}>
                               <FaPen />
-                              <span className="ip-act-tooltip">Edit</span>
                             </button>
-                            <button className="ip-act ip-act--delete" onClick={() => openDeleteModal(animal)} title="Delete">
+                            <button className="ip-action ip-action--delete" onClick={() => openDeleteModal(animal)}>
                               <FaTrashAlt />
-                              <span className="ip-act-tooltip">Delete</span>
                             </button>
                           </div>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            {/* ═══════ MOBILE CARDS ═══════ */}
-            <div className="ip-cards-mobile">
-              {filtered.map((animal, idx) => {
-                const status = getStatusInfo(animal)
-                const StatusIcon = status.icon
-                return (
-                  <div key={animal._id} className="ip-card" style={{ '--card-i': idx }}>
-                    <div className="ip-card-thumb-wrap">
-                      <img
-                        className="ip-card-thumb"
-                        src={getThumbnail(animal)}
-                        alt={animal.name}
-                        onError={handleImageError}
-                        loading="lazy"
-                      />
-                      <span className={`ip-card-badge ${status.className}`}>
-                        <StatusIcon />
-                        {status.label}
-                      </span>
-                    </div>
-                    <div className="ip-card-body">
-                      <div className="ip-card-row-top">
-                        <div>
-                          <h3 className="ip-card-name">{animal.name}</h3>
-                          <span className="ip-card-breed">{animal.breed}</span>
-                        </div>
-                        <span className="ip-card-price">{formatPrice(animal.price)}</span>
-                      </div>
-                      <div className="ip-card-row-bottom">
-                        <ToggleSwitch isActive={status.isActive} onToggle={() => handleToggle(animal)} size="sm" />
-                        <div className="ip-card-actions">
-                          <button className="ip-act ip-act--edit" onClick={() => handleEdit(animal)}><FaPen /></button>
-                          <button className="ip-act ip-act--delete" onClick={() => openDeleteModal(animal)}><FaTrashAlt /></button>
                         </div>
                       </div>
                     </div>
-                  </div>
-                )
-              })}
-            </div>
+                  )
+                })}
+              </div>
+            )}
 
-            {/* ═══════ FOOTER ═══════ */}
             <footer className="ip-footer">
-              <p className="ip-footer-text">
-                <strong>{totalCount}</strong> total listings ·{' '}
-                <strong className="ip-c-active">{activeCount}</strong> active,{' '}
-                <strong className="ip-c-hidden">{hiddenCount}</strong> hidden
-              </p>
-              <button className="ip-footer-btn" onClick={() => navigate('/add-animal')}>
-                Add New Listing
-                <FaChevronRight className="ip-footer-btn-arrow" />
+              <div className="ip-footer-stats">
+                <span className="ip-footer-stat">
+                  <strong>{totalCount}</strong> total
+                </span>
+                <span className="ip-footer-divider">·</span>
+                <span className="ip-footer-stat ip-footer-stat--active">
+                  <strong>{activeCount}</strong> active
+                </span>
+                <span className="ip-footer-divider">·</span>
+                <span className="ip-footer-stat ip-footer-stat--hidden">
+                  <strong>{hiddenCount}</strong> hidden
+                </span>
+              </div>
+              <button className="ip-footer-add" onClick={() => navigate('/add-animal')}>
+                <FaPlusCircle />
+                <span>Add New</span>
+                <FaChevronRight className="ip-footer-arrow" />
               </button>
             </footer>
           </>
         )}
       </div>
 
-      {/* ═══════════════════════════════════════════
-          DELETE MODAL
-          ═══════════════════════════════════════════ */}
       {deleteModal && deleteTarget && (
         <div className={`ip-modal-overlay ${deleteClosing ? 'ip-modal-overlay--closing' : ''}`} onClick={closeDeleteModal}>
           <div className={`ip-modal ${deleteClosing ? 'ip-modal--closing' : ''}`} onClick={(e) => e.stopPropagation()}>
-            <button className="ip-modal-close" onClick={closeDeleteModal} disabled={deleteLoading} aria-label="Close">
+            <button className="ip-modal-close" onClick={closeDeleteModal} disabled={deleteLoading}>
               <FaTimes />
             </button>
 
             <div className="ip-modal-body">
-              <div className="ip-modal-preview">
+              <div className="ip-modal-thumb">
                 <img
-                  className="ip-modal-preview-img"
                   src={getThumbnail(deleteTarget)}
                   alt={deleteTarget.name}
                   onError={handleImageError}
                 />
-                <div className="ip-modal-preview-overlay">
+                <div className="ip-modal-thumb-overlay">
                   <FaTrashAlt />
                 </div>
               </div>
 
-              <div className="ip-modal-danger-icon">
-                <FaShieldAlt className="ip-modal-danger-svg" />
+              <div className="ip-modal-warning-icon">
+                <FaShieldAlt />
               </div>
 
-              <h3 className="ip-modal-title">Delete Listing</h3>
-
-              <p className="ip-modal-msg">
-                Are you sure you want to permanently delete
-                <strong> {deleteTarget.name}</strong>?
+              <h3 className="ip-modal-title">Delete "{deleteTarget.name}"?</h3>
+              <p className="ip-modal-message">
+                This action cannot be undone. All data will be permanently removed.
               </p>
 
               {((deleteTarget.images?.length > 0) || (deleteTarget.videos?.length > 0)) && (
-                <div className="ip-modal-file-info">
+                <div className="ip-modal-file-tags">
                   {deleteTarget.images?.length > 0 && (
-                    <span className="ip-modal-file-tag">
-                      <FaTag /> {deleteTarget.images.length} photo{deleteTarget.images.length > 1 && 's'}
+                    <span className="ip-modal-tag">
+                      <FaTag /> {deleteTarget.images.length} photo{deleteTarget.images.length > 1 ? 's' : ''}
                     </span>
                   )}
                   {deleteTarget.videos?.length > 0 && (
-                    <span className="ip-modal-file-tag">
-                      <FaInfoCircle /> {deleteTarget.videos.length} video{deleteTarget.videos.length > 1 && 's'}
+                    <span className="ip-modal-tag">
+                      <FaInfoCircle /> {deleteTarget.videos.length} video{deleteTarget.videos.length > 1 ? 's' : ''}
                     </span>
                   )}
                 </div>
               )}
-
-              <p className="ip-modal-warning">
-                <FaExclamationTriangle /> This action cannot be undone. All data will be permanently removed.
-              </p>
             </div>
 
             <div className="ip-modal-actions">
-              <button className="ip-modal-btn ip-modal-btn--cancel" onClick={closeDeleteModal} disabled={deleteLoading}>
+              <button className="ip-modal-btn ip-modal-btn--secondary" onClick={closeDeleteModal} disabled={deleteLoading}>
                 Cancel
               </button>
-              <button className="ip-modal-btn ip-modal-btn--delete" onClick={handleDelete} disabled={deleteLoading}>
-                <span className="ip-modal-btn-shine" />
+              <button className="ip-modal-btn ip-modal-btn--danger" onClick={handleDelete} disabled={deleteLoading}>
                 {deleteLoading ? (
-                  <><FaSpinner className="ip-modal-btn-spin" /> Deleting...</>
+                  <><FaSpinner className="ip-spinner" /> Deleting...</>
                 ) : (
-                  <><FaTrashAlt /> Delete Listing</>
+                  <><FaTrashAlt /> Delete</>
                 )}
               </button>
             </div>
