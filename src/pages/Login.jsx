@@ -85,9 +85,12 @@ const Login = () => {
         navigate(from, { replace: true })
       }
     } catch (err) {
-      const msg = err?.message || 'Login failed. Please try again.'
+      const status = err?.status
+      let msg = err?.message || 'Login failed. Please try again.'
+      if (status === 401) msg = 'Invalid email or password.'
+      if (status === 404) msg = 'No account found with this email. Please sign up first.'
       setError(msg)
-      setNeedsVerify(err?.status === 403 || /verify your email/i.test(msg))
+      setNeedsVerify(status === 403 || err?.code === 'EMAIL_NOT_VERIFIED' || /verify your email/i.test(msg))
     } finally {
       setLoading(false)
     }
@@ -106,7 +109,11 @@ const Login = () => {
       await authService.resendVerification(email)
       setResendOk('Verification email sent. Check your inbox.')
     } catch (e) {
-      setError(e?.message || 'Could not resend email.')
+      if (e?.status === 404) {
+        setError('No account found with this email. Check the email or sign up first.')
+      } else {
+        setError(e?.message || 'Could not resend email.')
+      }
     } finally {
       setResendBusy(false)
     }

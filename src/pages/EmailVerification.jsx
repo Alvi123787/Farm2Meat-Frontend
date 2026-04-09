@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, Link, useSearchParams } from 'react-router-dom';
+import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { FaSpinner, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import { authService } from '../services/authService';
 import '../css/EmailVerification.css';

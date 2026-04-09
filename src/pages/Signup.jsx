@@ -126,7 +126,11 @@ const Signup = () => {
       setSignupPhase('sent')
       setBtnState('idle')
     } catch (err) {
-      setError(err?.message || 'Signup failed')
+      const status = err?.status
+      let msg = err?.message || 'Signup failed'
+      if (status === 409) msg = 'An account with this email already exists. Please log in.'
+      if (status === 429) msg = 'Too many attempts. Please wait a moment and try again.'
+      setError(msg)
       setBtnState('error')
       setTimeout(() => setBtnState('idle'), 2000)
     } finally {
@@ -142,7 +146,11 @@ const Signup = () => {
       await authService.resendVerification(email)
       setResendHint('A new verification link has been sent. Check your inbox.')
     } catch (err) {
-      setError(err?.message || 'Could not resend email')
+      if (err?.status === 404) {
+        setError('No account found with this email.')
+      } else {
+        setError(err?.message || 'Could not resend email')
+      }
     }
   }
 
