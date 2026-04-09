@@ -11,7 +11,7 @@ import {
 import {
   FaArrowDown,
   FaArrowTrendUp,
-  FaCalendarAlt,
+  FaCalendar,
   FaChartBar,
   FaChartLine,
   FaDownload,
@@ -156,7 +156,7 @@ const SalesChart = ({ data, loading, error, period, onPeriodChange } = {}) => {
         </div>
         <div className="sc-stat-card">
           <div className="sc-stat-icon" style={{ background: '#1e4e6f12', color: '#1e4e6f' }}>
-            <FaCalendarAlt />
+            <FaCalendar />
           </div>
           <div className="sc-stat-info">
             <span className="sc-stat-label">Period Avg</span>
