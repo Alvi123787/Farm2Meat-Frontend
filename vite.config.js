@@ -16,8 +16,14 @@ export default defineConfig({
     tailwindcss(), 
     viteSingleFile(),
     VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg', 'icons/*.png'],
+      registerType: "autoUpdate",
+      manifestFilename: "manifest.json",
+      includeAssets: [
+        "favicon.ico",
+        "icons/icon-192.png",
+        "icons/icon-512.png",
+        "icons/icon-512-maskable.png",
+      ],
       manifest: {
         name: "Farm2Meat - Pakistan's #1 Livestock Marketplace",
         short_name: "Farm2Meat",
@@ -46,13 +52,13 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,json}"],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'CacheFirst',
+            handler: "CacheFirst",
             options: {
-              cacheName: 'google-fonts-cache',
+              cacheName: "google-fonts-cache",
               expiration: {
                 maxEntries: 10,
                 maxAgeSeconds: 60 * 60 * 24 * 365 // <mccoremem id="memento_id3" /> 1 year
@@ -64,9 +70,9 @@ export default defineConfig({
           },
           {
             urlPattern: /^https:\/\/farm2meat-api\.vercel\.app\/api\/.*/i, // Adjust this to your backend URL if needed
-            handler: 'NetworkFirst',
+            handler: "NetworkFirst",
             options: {
-              cacheName: 'api-cache',
+              cacheName: "api-cache",
               expiration: {
                 maxEntries: 50,
                 maxAgeSeconds: 60 * 60 * 24 // 24 hours
