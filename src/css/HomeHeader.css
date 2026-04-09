@@ -9,6 +9,72 @@
 }
 
 /* ===================================
+   INSTALL BUTTON (PWA)
+==================================== */
+.homeHeader-install-container {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 100;
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: homeHeader-installFadeIn 0.8s ease 1.5s forwards;
+}
+
+@keyframes homeHeader-installFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.homeHeader-install-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.homeHeader-install-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(212, 175, 55, 0.2);
+  color: var(--accent);
+}
+
+.homeHeader-install-btn svg {
+  color: var(--accent);
+}
+
+@media (max-width: 768px) {
+  .homeHeader-install-container {
+    top: 16px;
+    right: 16px;
+  }
+  
+  .homeHeader-install-text {
+    display: none;
+  }
+  
+  .homeHeader-install-btn {
+    padding: 10px;
+    border-radius: 50%;
+  }
+}
+
+/* ===================================
    HERO WRAPPER
 ==================================== */
 .homeHeader-wrapper {

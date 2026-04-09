@@ -44,7 +44,13 @@ const ForgotPassword = () => {
       await authService.forgotPassword({ email: email.trim() });
       setIsSubmitted(true);
     } catch (err) {
-      setError(err?.message || "Failed to send reset email");
+      // Anti-enumeration: always show success UI even on error (except server crash/validation)
+      // If it's a 429 (cooldown), we might want to show the error.
+      if (err?.status === 429) {
+        setError(err?.message || "Too many requests. Please wait.");
+      } else {
+        setIsSubmitted(true);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -55,9 +61,15 @@ const ForgotPassword = () => {
     setIsLoading(true);
     try {
       await authService.forgotPassword({ email: email.trim() });
+      // Keep isSubmitted true
     } catch (err) {
-      setError(err?.message || "Failed to resend email");
-      setIsSubmitted(false);
+      if (err?.status === 429) {
+        setError(err?.message || "Too many requests. Please wait.");
+      } else {
+        // Even on other errors, we keep showing success UI for anti-enumeration
+        // but maybe log it or show a subtle hint if needed.
+        // For now, let's just keep it simple.
+      }
     } finally {
       setIsLoading(false);
     }

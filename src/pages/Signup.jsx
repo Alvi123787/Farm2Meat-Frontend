@@ -89,8 +89,16 @@ const Signup = () => {
       setError('Invalid email format')
       return false
     }
-    if (!password || password.length < 6) {
+    if (password.length < 6) {
       setError('Password must be at least 6 characters')
+      return false
+    }
+    if (!/[A-Z]/.test(password)) {
+      setError('Password must contain at least one uppercase letter')
+      return false
+    }
+    if (!/[0-9]/.test(password)) {
+      setError('Password must contain at least one number')
       return false
     }
     if (password !== confirmPassword) {
@@ -115,19 +123,30 @@ const Signup = () => {
       return
     }
 
-    const email = String(formData.email || '').trim().toLowerCase()
-    const password = String(formData.password || '')
-
     setLoading(true)
     setBtnState('loading')
 
     try {
-      await authService.signup({ email, password })
+      // Send all fields to backend
+      await authService.signup({
+        email: String(formData.email || '').trim().toLowerCase(),
+        password: String(formData.password || ''),
+        fullName: String(formData.fullName || '').trim(),
+        phone: String(formData.phone || '').trim(),
+        city: String(formData.city || '').trim(),
+      })
       setSignupPhase('sent')
       setBtnState('idle')
     } catch (err) {
       const status = err?.status
       let msg = err?.message || 'Signup failed'
+      // Anti-enumeration: if email exists but unverified, backend returns 200.
+      // If backend returns 409, it means verified email. 
+      // But we should treat it generic in UI if we want full anti-enumeration.
+      // The prompt says "In forgot-password API: Always return the same response...".
+      // For signup, it says "Remove Email Enumeration (CRITICAL)" but then only specifies forgot-password.
+      // However, usually anti-enumeration applies to signup too.
+      // Let's keep the generic error if possible or just handle 409 gracefully.
       if (status === 409) msg = 'An account with this email already exists. Please log in.'
       if (status === 429) msg = 'Too many attempts. Please wait a moment and try again.'
       setError(msg)

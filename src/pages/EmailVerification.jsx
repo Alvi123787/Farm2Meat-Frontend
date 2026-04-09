@@ -5,9 +5,8 @@ import { authService } from '../services/authService';
 import '../css/EmailVerification.css';
 
 const EmailVerification = () => {
-  const { token: pathToken } = useParams();
+  const { token } = useParams();
   const [searchParams] = useSearchParams();
-  const token = pathToken || searchParams.get('token') || '';
   const email = searchParams.get('email') || '';
   const [status, setStatus] = useState('loading'); // loading, success, error
   const [message, setMessage] = useState('Verifying your account…');
@@ -19,17 +18,18 @@ const EmailVerification = () => {
   const verificationStarted = useRef(false);
 
   useEffect(() => {
+    // Prevent double execution in React Strict Mode
     if (verificationStarted.current) return;
+    verificationStarted.current = true;
     
     const verifyToken = async () => {
       try {
         if (!token) {
           setStatus('error');
-          setMessage('This verification link is missing a token. Open the link from your email or use “Resend verification” on the login page.');
+          setMessage('Invalid verification link. Please request a new one.');
           return;
         }
 
-        verificationStarted.current = true;
         const response = await authService.verifyEmail(token, email);
         setStatus('success');
         setMessage(response.message || 'Your account has been verified successfully.');

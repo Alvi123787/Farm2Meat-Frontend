@@ -55,9 +55,9 @@ export const authService = {
     }
   },
 
-  signup: async ({ email, password }, { signal } = {}) => {
+  signup: async ({ email, password, fullName, phone, city }, { signal } = {}) => {
     try {
-      const response = await api.post('/api/auth/signup', { email, password }, { signal })
+      const response = await api.post('/api/auth/signup', { email, password, fullName, phone, city }, { signal })
       return response.data
     } catch (error) {
       return normalizeAuthError(error, 'signup')
