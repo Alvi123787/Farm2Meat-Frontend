@@ -1,15 +1,71 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import usePwaInstall from "../hooks/usePwaInstall";
 import "../css/HomeHeader.css";
+
+const INSTALL_FEEDBACK_TIMEOUT_MS = 3200;
 
 const HomeHeader = () => {
   const navigate = useNavigate();
   const [loaded, setLoaded] = useState(false);
+  const [installFeedback, setInstallFeedback] = useState("");
+  const { isInstalled, needsManualInstall, promptInstall } = usePwaInstall();
 
   useEffect(() => {
     const timer = setTimeout(() => setLoaded(true), 100);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (!installFeedback) {
+      return undefined;
+    }
+
+    const feedbackTimer = window.setTimeout(() => {
+      setInstallFeedback("");
+    }, INSTALL_FEEDBACK_TIMEOUT_MS);
+
+    return () => window.clearTimeout(feedbackTimer);
+  }, [installFeedback]);
+
+  const handleInstallClick = async () => {
+    const installOutcome = await promptInstall();
+
+    if (installOutcome === "manual") {
+      setInstallFeedback(
+        "On iPhone, tap Share and then choose Add to Home Screen."
+      );
+      return;
+    }
+
+    if (installOutcome === "dismissed") {
+      setInstallFeedback("Install prompt was dismissed. You can try again anytime.");
+      return;
+    }
+
+    if (installOutcome === "accepted") {
+      setInstallFeedback("Installing Farm2Meat...");
+      return;
+    }
+
+    if (installOutcome === "installed") {
+      setInstallFeedback("Farm2Meat is already installed on this device.");
+      return;
+    }
+
+    setInstallFeedback("Install is not available in this browser right now.");
+  };
+
+  const installButtonLabel = isInstalled
+    ? "Installed"
+    : needsManualInstall
+      ? "Add to Home Screen"
+      : "Install App";
+  const installButtonStateClass = isInstalled
+    ? "homeHeader-install-btn-installed"
+    : needsManualInstall
+      ? "homeHeader-install-btn-manual"
+      : "homeHeader-install-btn-ready";
 
   return (
     <div className="container-fluid px-lg-3 px-2">
@@ -39,6 +95,38 @@ const HomeHeader = () => {
 
         {/* Left Accent Bar */}
         <div className="homeHeader-accent-bar"></div>
+
+        <div className="homeHeader-install-wrapper">
+          <button
+            className={`homeHeader-install-btn ${installButtonStateClass}`}
+            type="button"
+            onClick={handleInstallClick}
+            disabled={isInstalled}
+          >
+            <span className="homeHeader-install-icon" aria-hidden="true">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 3v12" />
+                <path d="m7 10 5 5 5-5" />
+                <path d="M5 21h14" />
+              </svg>
+            </span>
+            <span>{installButtonLabel}</span>
+          </button>
+
+          {installFeedback ? (
+            <p className="homeHeader-install-feedback">{installFeedback}</p>
+          ) : null}
+        </div>
 
         {/* Main Content */}
         <div className="homeHeader-content-wrapper">
