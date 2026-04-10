@@ -415,6 +415,10 @@ export default function OrderExperienceModal({
     }
   }, [open])
 
+  const handleClose = useCallback(() => {
+    onClose?.()
+  }, [onClose])
+
   useEffect(() => {
     if (!open) return undefined
     const handler = (e) => {
@@ -423,10 +427,6 @@ export default function OrderExperienceModal({
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [open, submitting, success, handleClose])
-
-  const handleClose = useCallback(() => {
-    onClose?.()
-  }, [onClose])
 
   const handleRatingSelect = (value) => {
     setRating(value)

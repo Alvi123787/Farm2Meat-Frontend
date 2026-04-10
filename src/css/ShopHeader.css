@@ -113,7 +113,43 @@
 
 @media (max-width: 768px) {
   .shopHeader-section {
-    padding: 80px 166px 36px;
+    padding: 60px 16px 30px;
+    text-align: left;
+  }
+  
+  .shopHeader-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .shopHeader-logo-wrap {
+     margin-bottom: 1.25rem !important;
+   }
+
+   .shopHeader-main {
+     gap: 15px;
+     align-items: flex-start;
+   }
+
+  .shopHeader-iconWrap {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    border-radius: 14px;
+  }
+
+  .shopHeader-icon {
+    font-size: 1.2rem;
+  }
+
+  .shopHeader-title {
+    font-size: 1.75rem;
+  }
+
+  .shopHeader-sub {
+    font-size: 0.85rem;
+    max-width: 260px;
   }
 }
 
