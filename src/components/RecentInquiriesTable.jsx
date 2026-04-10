@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import api from '../services/api'
 import '../css/RecentInquiriesTable.css'
 import { useAdminLiveRefresh } from '../hooks/useAdminLiveRefresh'
+import { formatPrice } from '../utils/priceUtils'
 
 /* ========================
    StatusBadge Component
@@ -241,12 +242,6 @@ export default function RecentInquiriesTable() {
   // ════════════════════════════════════════════
   // Helper Functions
   // ════════════════════════════════════════════
-
-  const formatPrice = (price) => {
-    if (!price) return 'Rs. 0'
-    const num = typeof price === 'number' ? price : parseInt(price, 10) || 0
-    return `Rs. ${num.toLocaleString()}`
-  }
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr)

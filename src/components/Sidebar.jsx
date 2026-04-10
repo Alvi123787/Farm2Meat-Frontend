@@ -124,7 +124,12 @@ const Sidebar = ({ isOpen, toggleSidebar, totalAnimals }) => {
         {/* Brand / Logo */}
         <div className="sidebar-brand">
           <div className="sidebar-logo-wrapper">
-            <FontAwesomeIcon icon={faHorse} className="sidebar-logo-icon" />
+            <img 
+              src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
+              alt="Farm2Meat Logo" 
+              className="sidebar-logo-img"
+              style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+            />
             <div className="logo-glow"></div>
             <div className="logo-shine"></div>
           </div>

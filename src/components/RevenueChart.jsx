@@ -22,18 +22,18 @@ import {
 import '../css/RevenueChart.css';
 import { dashboardService } from '../services/dashboardService';
 
-const formatCurrency = (value) =>
-  new Intl.NumberFormat('en-PK', {
-    style: 'currency',
-    currency: 'PKR',
+const formatCurrency = (value) => {
+  const formatted = new Intl.NumberFormat('en-PK', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(value);
+  return `Rs. ${formatted}`;
+};
 
 const formatCompact = (value) => {
-  if (value >= 1000000) return `₨${(value / 1000000).toFixed(1)}M`;
-  if (value >= 1000) return `₨${(value / 1000).toFixed(0)}k`;
-  return `₨${value}`;
+  if (value >= 1000000) return `Rs. ${(value / 1000000).toFixed(1)}M`;
+  if (value >= 1000) return `Rs. ${(value / 1000).toFixed(0)}k`;
+  return `Rs. ${value.toLocaleString('en-PK')}`;
 };
 
 const RevenueChartTooltip = ({ active, payload, label, showPrevious }) => {

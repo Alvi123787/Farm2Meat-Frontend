@@ -13,6 +13,7 @@ import api from '../services/api'
 import '../css/CardsGrid.css'
 import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl'
 import { WHATSAPP_NUMBER } from '../constants/contact'
+import { formatPrice } from '../utils/priceUtils'
 const SCROLL_THRESHOLD = 12
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -64,11 +65,6 @@ const weightLabel = (id) => {
   return m[id] || id
 }
 
-const formatPrice = (val) => {
-  const num = Number(String(val || '0').replace(/[^0-9]/g, ''))
-  return num.toLocaleString('en-PK')
-}
-
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    ProductCard
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -108,7 +104,7 @@ const ProductCard = ({ product, index, isAnimated }) => {
     e.stopPropagation()
     const msg =
       product.whatsappMsg ||
-      `Assalam o Alaikum! Mujhe *${product.name}* (Rs ${formatPrice(product.price)}) ke baare mein maloomat chahiye.`
+      `Assalam o Alaikum! Mujhe *${product.name}* (${formatPrice(product.price)}) ke baare mein maloomat chahiye.`
     window.open(
       `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`,
       '_blank'
@@ -189,11 +185,11 @@ const ProductCard = ({ product, index, isAnimated }) => {
           <div className="cg-bottom">
             <div className="cg-price-block">
               <span className="cg-price">
-                Rs {formatPrice(product.price)}
+                {formatPrice(product.price)}
               </span>
               {(product.discountPrice || product.oldPrice) && (
                 <span className="cg-price-old">
-                  Rs {formatPrice(product.discountPrice || product.oldPrice)}
+                  {formatPrice(product.discountPrice || product.oldPrice)}
                 </span>
               )}
             </div>

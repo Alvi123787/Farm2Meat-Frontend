@@ -154,6 +154,13 @@ const Login = () => {
         {/* Left Panel */}
         <div className="lg-hero">
           <div className="lg-hero-inner">
+            <div className="lg-logo-wrap" style={{ marginBottom: '2rem' }}>
+              <img 
+                src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
+                alt="Farm2Meat Logo" 
+                style={{ width: '80px', height: '80px', objectFit: 'contain' }}
+              />
+            </div>
             <div className="lg-hero-badge">
               <FaStar className="lg-hero-badge-star" />
               <span>Trusted Since 1990</span>

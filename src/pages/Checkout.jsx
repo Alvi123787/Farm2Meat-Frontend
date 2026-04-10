@@ -41,6 +41,7 @@ import { useCart } from '../contexts/cartContextCore'
 import ButcherModal from '../components/ButcherModal'
 import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl'
 import { WHATSAPP_NUMBER } from '../constants/contact'
+import { formatPrice } from '../utils/priceUtils'
 
 // ── Config ──
 const DELIVERY_CHARGE = 0
@@ -78,16 +79,6 @@ const trustBoosters = [
   { icon: <FaSeedling />, title: 'Farm Raised', desc: 'Organic feed, healthy janwar' },
   { icon: <FaFileInvoiceDollar />, title: 'Transparent Pricing', desc: 'No hidden charges ever' }
 ]
-
-// ── Helper: Format price for display ──
-const formatPrice = (price) => {
-  if (!price) return '0'
-  const num = typeof price === 'string'
-    ? parseInt(price.replace(/,/g, ''), 10)
-    : price
-  if (isNaN(num)) return price
-  return num.toLocaleString('en-PK')
-}
 
 // ── Helper: Parse price to number ──
 const priceToNumber = (price) => {
@@ -666,11 +657,11 @@ const Checkout = () => {
                                   <span className="co-review-price-label">
                                     <FaTag className="co-review-price-icon" />
                                     {qty > 1
-                                      ? `Rs ${formatPrice(item.price)} x ${qty}`
+                                      ? `${formatPrice(item.price)} x ${qty}`
                                       : 'Price'}
                                   </span>
                                   <span className="co-review-price">
-                                    Rs {formatPrice(itemTotal)}
+                                    {formatPrice(itemTotal)}
                                   </span>
                                 </div>
                               </div>
@@ -1029,7 +1020,7 @@ const Checkout = () => {
       <div className="co-sticky-bar">
         <div className="co-sticky-info">
           <span className="co-sticky-label">Grand Total</span>
-          <span className="co-sticky-value">Rs {formatPrice(grandTotal)}</span>
+          <span className="co-sticky-value">{formatPrice(grandTotal)}</span>
         </div>
         <button
           className="co-sticky-btn"

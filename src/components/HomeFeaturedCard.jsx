@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../css/HomeFeaturedCard.css";
+import { formatPrice } from "../utils/priceUtils";
 
 const HomeFeaturedCard = () => {
     const [isVisible, setIsVisible] = useState(false);
@@ -141,10 +142,9 @@ const HomeFeaturedCard = () => {
                                         <div className="homeFeatured-price-box">
                                             <span className="homeFeatured-price-label">Fixed Price</span>
                                             <div className="homeFeatured-price-main">
-                                                <span className="currency">Rs.</span>
-                                                <span className="amount">{goat.price}</span>
+                                                <span className="amount">{formatPrice(goat.price)}</span>
                                             </div>
-                                            <span className="homeFeatured-price-old">Rs. {goat.oldPrice}</span>
+                                            <span className="homeFeatured-price-old">{formatPrice(goat.oldPrice)}</span>
                                         </div>
                                     </div>
 

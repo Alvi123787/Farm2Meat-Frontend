@@ -285,11 +285,15 @@ const Signup = () => {
 
             {/* Brand */}
             <div className="su-brand">
-              <div className="su-brand-icon">
-                <span>🐐</span>
+              <div className="su-brand-icon" style={{ background: 'transparent' }}>
+                <img 
+                  src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
+                  alt="Farm2Meat Logo" 
+                  style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+                />
               </div>
               <div className="su-brand-name">
-                RYK <span>Mandi</span>
+                Farm2<span>Meat</span>
               </div>
             </div>
 

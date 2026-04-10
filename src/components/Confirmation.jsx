@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import OrderExperienceModal from './OrderExperienceModal';
 import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl';
 import { WHATSAPP_LINK } from '../constants/contact';
+import { formatPrice } from '../utils/priceUtils';
 const PURCHASE_STATE_KEY = 'postPurchaseConfirmationState';
 const REVIEW_DISMISSED_PREFIX = 'postPurchaseReviewDismissed:';
 
@@ -115,13 +116,6 @@ const Confirmation = () => {
     shipping: 0,
     total: s.grandTotal || 0,
     butcher: s.butcher || null,
-  };
-
-  const formatPrice = (price) => {
-    if (!price && price !== 0) return 'Rs 0';
-    const num = typeof price === 'string' ? parseInt(price.replace(/,/g, ''), 10) : price;
-    if (isNaN(num)) return `Rs ${price}`;
-    return `Rs ${num.toLocaleString('en-PK')}`;
   };
 
   const handleCopyOrderId = () => {

@@ -82,8 +82,12 @@ const ForgotPassword = () => {
         <div className="fp-overlay" />
         <div className="fp-branding">
           <div className="fp-logo">
-            <FontAwesomeIcon icon={faShieldAlt} />
-            <span>LiveStock Pro</span>
+            <img 
+              src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
+              alt="Farm2Meat Logo" 
+              style={{ width: '50px', height: '50px', objectFit: 'contain' }}
+            />
+            <span>Farm2Meat</span>
           </div>
           <div className="fp-quote">
             <h2>Secure Your Account</h2>

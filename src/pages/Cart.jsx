@@ -23,6 +23,7 @@ import { animalsService } from '../services/animalsService'
 import { useCart } from '../contexts/cartContextCore'
 import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl'
 import { WHATSAPP_NUMBER } from '../constants/contact'
+import { formatPrice } from '../utils/priceUtils'
 
 // ── Config ──
 const DELIVERY_CHARGE = 0
@@ -37,16 +38,6 @@ const stockConfig = {
   Reserved: { label: 'Reserved', className: 'cart-stock--reserved' },
   sold: { label: 'Sold', className: 'cart-stock--sold' },
   Sold: { label: 'Sold', className: 'cart-stock--sold' }
-}
-
-// ── Helper: Format price for display ──
-const formatPrice = (price) => {
-  if (!price) return '0'
-  const num = typeof price === 'string'
-    ? parseInt(price.replace(/,/g, ''), 10)
-    : price
-  if (isNaN(num)) return price
-  return num.toLocaleString('en-PK')
 }
 
 // ── Helper: Parse price to number ──
@@ -466,7 +457,7 @@ const Cart = () => {
                                   Price
                                 </span>
                                 <span className="cart-item-price">
-                                  Rs {formatPrice(item.price)}
+                                  {formatPrice(item.price)}
                                 </span>
                               </div>
 
@@ -538,7 +529,7 @@ const Cart = () => {
 
                       <div className="cart-summary-row">
                         <span className="cart-summary-label">Subtotal</span>
-                        <span className="cart-summary-value">Rs {formatPrice(subtotal)}</span>
+                        <span className="cart-summary-value">{formatPrice(subtotal)}</span>
                       </div>
 
                       <div className="cart-summary-row">
@@ -555,7 +546,7 @@ const Cart = () => {
 
                       <div className="cart-summary-row cart-summary-row--total">
                         <span className="cart-summary-total-label">Total Amount</span>
-                        <span className="cart-summary-total-value">Rs {formatPrice(total)}</span>
+                        <span className="cart-summary-total-value">{formatPrice(total)}</span>
                       </div>
 
                       <div className="cart-cod-badge">
@@ -598,7 +589,7 @@ const Cart = () => {
         <div className="cart-sticky-bar">
           <div className="cart-sticky-info">
             <span className="cart-sticky-total-label">Total</span>
-            <span className="cart-sticky-total-value">Rs {formatPrice(total)}</span>
+            <span className="cart-sticky-total-value">{formatPrice(total)}</span>
           </div>
           <div className="cart-sticky-actions">
             <button

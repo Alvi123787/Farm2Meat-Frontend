@@ -179,6 +179,16 @@ const HomeHeader = () => {
         {/* Left Accent Bar */}
         <div className="homeHeader-accent-bar"></div>
 
+        {/* Site Logo */}
+        <div className="homeHeader-logo-wrap" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+          <img 
+            src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
+            alt="Farm2Meat Logo" 
+            className="homeHeader-logo-img"
+            style={{ width: '60px', height: '60px', objectFit: 'contain' }}
+          />
+        </div>
+
         <div className="homeHeader-install-wrapper">
           <button
             className={`homeHeader-install-btn ${installButtonStateClass}`}

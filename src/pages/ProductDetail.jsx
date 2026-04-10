@@ -43,6 +43,7 @@ import { useCart } from '../contexts/cartContextCore'
 import api from '../services/api'
 import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl'
 import { WHATSAPP_NUMBER } from '../constants/contact'
+import { formatPrice } from '../utils/priceUtils'
 
 // ── Config ──
 
@@ -55,15 +56,6 @@ const trustElements = [
   { icon: <FaTruck />, title: 'Free Delivery', desc: 'Within RYK city' },
   { icon: <FaMoneyBillWave />, title: 'Cash on Delivery', desc: 'Pay when you receive' }
 ]
-
-// ── Helper: Format price ──
-const formatPrice = (price) => {
-  if (!price) return '0'
-  if (typeof price === 'string' && price.includes(',')) return price
-  const num = typeof price === 'string' ? parseInt(price.replace(/,/g, ''), 10) : price
-  if (isNaN(num)) return price
-  return num.toLocaleString('en-PK')
-}
 
 // ── Helper: Parse price to number ──
 const priceToNumber = (price) => {
@@ -569,15 +561,15 @@ const ProductDetail = () => {
                           Price
                         </span>
                         <div className="pdp-price-row">
-                          <span className="pdp-price">Rs {formatPrice(productData.price)}</span>
+                          <span className="pdp-price">{formatPrice(productData.price)}</span>
                           {hasDiscount && (
-                            <span className="pdp-old-price">Rs {formatPrice(oldPrice)}</span>
+                            <span className="pdp-old-price">{formatPrice(oldPrice)}</span>
                           )}
                         </div>
                         {savings > 0 && (
                           <span className="pdp-discount-tag">
                             <FaCheckCircle className="pdp-discount-tag-icon" />
-                            Save Rs {formatPrice(savings)}
+                            Save {formatPrice(savings)}
                           </span>
                         )}
                       </div>

@@ -30,6 +30,7 @@ import api from '../services/api'
 import '../css/InventoryPreview.css'
 import { useAdminLiveRefresh } from '../hooks/useAdminLiveRefresh'
 import { buildMediaUrl } from '../utils/mediaUrl'
+import { formatPrice } from '../utils/priceUtils'
 
 const fallbackSrc =
   'data:image/svg+xml,' +
@@ -47,11 +48,6 @@ const getThumbnail = (animal) => {
   if (animal.images?.length > 0) return buildMediaUrl(animal.images[0]) || fallbackSrc
   if (animal.imageUrl) return buildMediaUrl(animal.imageUrl) || fallbackSrc
   return fallbackSrc
-}
-
-const formatPrice = (price) => {
-  if (!price) return 'N/A'
-  return `Rs ${Number(price).toLocaleString()}`
 }
 
 const getStatusInfo = (animal) => {

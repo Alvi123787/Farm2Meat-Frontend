@@ -217,6 +217,15 @@ const PrivacyPolicy = () => {
                   <FaArrowLeft />
                   <span>Back to Home</span>
                 </a>
+                <div className="pp-logo-wrap" style={{ marginBottom: '1.5rem' }}>
+                  <a href="/">
+                    <img 
+                      src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
+                      alt="Farm2Meat Logo" 
+                      style={{ width: '60px', height: '60px', objectFit: 'contain' }}
+                    />
+                  </a>
+                </div>
                 <div className="pp-header-main">
                   <div className="pp-header-icon-wrap">
                     <FaShieldAlt className="pp-header-icon" />
