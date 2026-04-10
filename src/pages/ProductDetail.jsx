@@ -283,6 +283,48 @@ const ProductDetail = () => {
 
   return (
     <div className={`pdp-page ${isVisible ? 'pdp-page--visible' : ''}`}>
+      {/* ══════════════════════════════════════════
+          HEADER
+      ══════════════════════════════════════════ */}
+      <section className="pdp-header-section">
+        <div className="pdp-header-bg">
+          <div className="pdp-header-circle pdp-header-circle--1"></div>
+          <div className="pdp-header-circle pdp-header-circle--2"></div>
+          <div className="pdp-header-pattern"></div>
+        </div>
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-12">
+              <div className="pdp-header-content">
+                <div className="unified-header-top">
+                  <button className="pdp-back-link" onClick={() => navigate('/shop')}>
+                    <FaArrowLeft />
+                    <span>Back to Shop</span>
+                  </button>
+                  <div className="pdp-header-logo-wrap logo-visibility-wrapper" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+                    <img 
+                      src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
+                      alt="Farm2Meat Logo" 
+                      style={{ width: '50px', height: '50px', objectFit: 'contain' }}
+                    />
+                  </div>
+                </div>
+                <div className="pdp-header-main">
+                  <div className="pdp-header-title-row">
+                    <FaInfoCircle className="pdp-header-icon" />
+                    <h1 className="pdp-header-title">{productData.name}</h1>
+                  </div>
+                  <div className="pdp-header-badge">
+                    <FaTag />
+                    <span>Premium Livestock Details</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Lightbox */}
       {isLightboxOpen && (
         <div className="pdp-lightbox" onClick={() => setIsLightboxOpen(false)}>

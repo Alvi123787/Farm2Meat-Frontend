@@ -151,20 +151,22 @@ export default function About() {
         </div>
         <div className="container-fluid">
           <div className="row">
-            <div className="col-12">
-              <div className={`abt-header-content ${headerVisible ? 'abt-header-content--visible' : ''}`}>
+          <div className="col-12">
+            <div className={`abt-header-content ${headerVisible ? 'abt-header-content--visible' : ''}`}>
+              <div className="unified-header-top">
                 <button className="abt-back-link" type="button" onClick={() => navigate('/')}>
                   <FaArrowLeft />
                   <span>Back to Home</span>
                 </button>
-                <div className="abt-logo-wrap logo-visibility-wrapper" onClick={() => navigate('/')} style={{ cursor: 'pointer', marginBottom: '1.5rem' }}>
+                <div className="abt-logo-wrap logo-visibility-wrapper" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
                   <img 
                     src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
                     alt="Farm2Meat Logo" 
                     style={{ width: '50px', height: '50px', objectFit: 'contain' }}
                   />
                 </div>
-                <div className="abt-header-main">
+              </div>
+              <div className="abt-header-main">
                   <div className="abt-header-icon-wrap">
                     <FaUsers className="abt-header-icon" />
                   </div>

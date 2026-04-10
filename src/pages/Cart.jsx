@@ -319,13 +319,22 @@ const Cart = () => {
         </div>
         <div className="container-fluid">
           <div className="row">
-            <div className="col-12">
-              <div className="cart-header-content">
+          <div className="col-12">
+            <div className="cart-header-content">
+              <div className="unified-header-top">
                 <button className="cart-back-link" onClick={() => navigate('/shop')}>
                   <FaArrowLeft />
                   <span>Back to Shop</span>
                 </button>
-                <div className="cart-header-main">
+                <div className="cart-header-logo-wrap logo-visibility-wrapper" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+                  <img 
+                    src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
+                    alt="Farm2Meat Logo" 
+                    style={{ width: '50px', height: '50px', objectFit: 'contain' }}
+                  />
+                </div>
+              </div>
+              <div className="cart-header-main">
                   <div className="cart-header-title-row">
                     <FaShoppingCart className="cart-header-icon" />
                     <h1 className="cart-header-title">My Shopping Cart</h1>

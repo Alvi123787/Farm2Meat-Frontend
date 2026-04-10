@@ -434,9 +434,9 @@
   }
 
   .butcher-grid {
-    grid-template-columns: minmax(260px, 320px);
+    grid-template-columns: repeat(3, 1fr);
     justify-content: center;
-    gap: 24px;
+    gap: 12px;
   }
 
   .butcher-card {

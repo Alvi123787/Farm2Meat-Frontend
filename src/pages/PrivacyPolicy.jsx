@@ -211,13 +211,14 @@ const PrivacyPolicy = () => {
         </div>
         <div className="container-fluid">
           <div className="row">
-            <div className="col-12">
-              <div className="pp-header-content">
+          <div className="col-12">
+            <div className="pp-header-content">
+              <div className="unified-header-top">
                 <a href="/" className="pp-back-link">
                   <FaArrowLeft />
                   <span>Back to Home</span>
                 </a>
-                <div className="pp-logo-wrap logo-visibility-wrapper" style={{ marginBottom: '1.5rem' }}>
+                <div className="pp-logo-wrap logo-visibility-wrapper" style={{ cursor: 'pointer' }}>
                   <a href="/">
                     <img 
                       src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
@@ -226,7 +227,8 @@ const PrivacyPolicy = () => {
                     />
                   </a>
                 </div>
-                <div className="pp-header-main">
+              </div>
+              <div className="pp-header-main">
                   <div className="pp-header-icon-wrap">
                     <FaShieldAlt className="pp-header-icon" />
                   </div>
