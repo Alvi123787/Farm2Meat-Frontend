@@ -9,7 +9,7 @@ const HomeHeader = () => {
   const navigate = useNavigate();
   const [loaded, setLoaded] = useState(false);
   const [installFeedback, setInstallFeedback] = useState("");
-  const { isInstalled, needsManualInstall, promptInstall } = usePwaInstall();
+  const { canInstall, isInstalled, needsManualInstall, promptInstall } = usePwaInstall();
 
   useEffect(() => {
     const timer = setTimeout(() => setLoaded(true), 100);
@@ -55,6 +55,89 @@ const HomeHeader = () => {
 
     setInstallFeedback("Install is not available in this browser right now.");
   };
+
+  const showInstallButton = canInstall || needsManualInstall || isInstalled;
+
+  if (!showInstallButton) {
+    return (
+      <div className="container-fluid px-lg-3 px-2">
+        <div className={`homeHeader-wrapper ${loaded ? "homeHeader-loaded" : ""}`}>
+          {/* Background Image */}
+          <div className="homeHeader-bg">
+            <img
+              src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775621674/ulleo-goats-2719445_qgvc4s.jpg"
+              alt="Header"
+              className="homeHeader-bg-img"
+            />
+          </div>
+
+          {/* Gradient Overlays */}
+          <div className="homeHeader-gradient-main"></div>
+          <div className="homeHeader-gradient-radial"></div>
+          <div className="homeHeader-gradient-bottom"></div>
+
+          {/* Floating Particles */}
+          <div className="homeHeader-particles">
+            <span className="homeHeader-particle homeHeader-particle-1"></span>
+            <span className="homeHeader-particle homeHeader-particle-2"></span>
+            <span className="homeHeader-particle homeHeader-particle-3"></span>
+            <span className="homeHeader-particle homeHeader-particle-4"></span>
+            <span className="homeHeader-particle homeHeader-particle-5"></span>
+          </div>
+
+          {/* Left Accent Bar */}
+          <div className="homeHeader-accent-bar"></div>
+
+          {/* Main Content */}
+          <div className="homeHeader-content-wrapper">
+            <div className="homeHeader-content-inner">
+              {/* Top Badge - Hidden on Mobile */}
+              <div className="homeHeader-badge-row homeHeader-hide-mobile">
+                <span className="homeHeader-badge">
+                  <span className="homeHeader-badge-dot"></span>
+                  Since 1990
+                </span>
+              </div>
+
+              {/* Main Title - Always Visible */}
+              <h1 className="homeHeader-title">
+                <span className="homeHeader-title-line homeHeader-title-line-1">
+                  <span className="homeHeader-title-word">Healthy</span>
+                  <span className="homeHeader-title-word homeHeader-title-highlight">Bakray.</span>
+                </span>
+                <span className="homeHeader-title-line homeHeader-title-line-2">
+                  <span className="homeHeader-title-word">Honest</span>
+                  <span className="homeHeader-title-word homeHeader-title-highlight">Weight.</span>
+                </span>
+              </h1>
+
+              {/* Subtitle - Always Visible */}
+              <p className="homeHeader-subtitle">
+                Farm2Meat brings the farm directly to your home. We provide healthy, quality animals with guaranteed weight and premium service.
+              </p>
+
+              {/* CTA Buttons */}
+              <div className="homeHeader-cta-group">
+                <button
+                  className="homeHeader-btn-primary"
+                  onClick={() => navigate("/shop")}
+                >
+                  <span className="homeHeader-btn-text">Shop Now</span>
+                  <span className="homeHeader-btn-icon">→</span>
+                </button>
+                <button
+                  className="homeHeader-btn-secondary"
+                  onClick={() => navigate("/about")}
+                >
+                  Learn More
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const installButtonLabel = isInstalled
     ? "Installed"

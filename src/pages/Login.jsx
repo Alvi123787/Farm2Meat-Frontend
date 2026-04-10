@@ -86,9 +86,7 @@ const Login = () => {
       }
     } catch (err) {
       const status = err?.status
-      let msg = err?.message || 'Login failed. Please try again.'
-      if (status === 401) msg = 'Invalid email or password.'
-      if (status === 404) msg = 'No account found with this email. Please sign up first.'
+      const msg = err?.message || 'Login failed. Please try again.'
       setError(msg)
       setNeedsVerify(status === 403 || err?.code === 'EMAIL_NOT_VERIFIED' || /verify your email/i.test(msg))
     } finally {

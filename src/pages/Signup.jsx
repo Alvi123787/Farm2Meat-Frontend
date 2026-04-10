@@ -138,17 +138,7 @@ const Signup = () => {
       setSignupPhase('sent')
       setBtnState('idle')
     } catch (err) {
-      const status = err?.status
-      let msg = err?.message || 'Signup failed'
-      // Anti-enumeration: if email exists but unverified, backend returns 200.
-      // If backend returns 409, it means verified email. 
-      // But we should treat it generic in UI if we want full anti-enumeration.
-      // The prompt says "In forgot-password API: Always return the same response...".
-      // For signup, it says "Remove Email Enumeration (CRITICAL)" but then only specifies forgot-password.
-      // However, usually anti-enumeration applies to signup too.
-      // Let's keep the generic error if possible or just handle 409 gracefully.
-      if (status === 409) msg = 'An account with this email already exists. Please log in.'
-      if (status === 429) msg = 'Too many attempts. Please wait a moment and try again.'
+      const msg = err?.message || 'Signup failed'
       setError(msg)
       setBtnState('error')
       setTimeout(() => setBtnState('idle'), 2000)
