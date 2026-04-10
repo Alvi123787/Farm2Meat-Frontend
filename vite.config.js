@@ -108,7 +108,6 @@ export default defineConfig({
         enabled: false,
       },
     }),
-    viteSingleFile(),
   ],
   resolve: {
     alias: {
