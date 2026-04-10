@@ -49,11 +49,11 @@ const Footer = () => {
 
               {/* ---- BRAND COLUMN ---- */}
               <div className="footer-col footer-brand-col">
-                <div className="footer-logo-wrap" style={{ marginBottom: '1.5rem' }}>
+                <div className="footer-logo-wrap logo-visibility-wrapper" style={{ marginBottom: '1.5rem' }}>
                   <img 
                     src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
                     alt="Farm2Meat Logo" 
-                    style={{ width: '80px', height: '80px', objectFit: 'contain' }}
+                    style={{ width: '60px', height: '60px', objectFit: 'contain' }}
                   />
                 </div>
                 <h3 className="footer-brand">

@@ -82,12 +82,14 @@ const ForgotPassword = () => {
         <div className="fp-overlay" />
         <div className="fp-branding">
           <div className="fp-logo">
-            <img 
-              src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-              alt="Farm2Meat Logo" 
-              style={{ width: '50px', height: '50px', objectFit: 'contain' }}
-            />
-            <span>Farm2Meat</span>
+            <div className="logo-visibility-wrapper" style={{ padding: '8px' }}>
+              <img 
+                src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
+                alt="Farm2Meat Logo" 
+                style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+              />
+            </div>
+            <span style={{ marginLeft: '14px', color: 'white' }}>Farm2Meat</span>
           </div>
           <div className="fp-quote">
             <h2>Secure Your Account</h2>

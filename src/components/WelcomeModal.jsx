@@ -52,12 +52,14 @@ const WelcomeModal = () => {
 
         {/* Refined Header with better spacing */}
         <div className="wm-header">
-          <div className="wm-logo-wrap" style={{ marginBottom: '1rem' }}>
-            <img 
-              src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-              alt="Farm2Meat Logo" 
-              style={{ width: '70px', height: '70px', objectFit: 'contain' }}
-            />
+          <div className="wm-logo-wrap" style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'center' }}>
+            <div className="logo-visibility-wrapper" style={{ background: 'rgba(128, 0, 0, 0.05)', border: '1px solid rgba(128, 0, 0, 0.1)', padding: '10px' }}>
+              <img 
+                src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
+                alt="Farm2Meat Logo" 
+                style={{ width: '60px', height: '60px', objectFit: 'contain' }}
+              />
+            </div>
           </div>
           <div className="wm-icon-badge">
             <FaMapMarkerAlt className="wm-icon" />
