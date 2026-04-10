@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import About from './pages/About'
@@ -41,13 +41,13 @@ const withPageTitle = (element, title) => (
   </PageTitle>
 )
 
-function App() {
+function AppShell() {
+  const location = useLocation()
   return (
-    <Router>
-      <AuthProvider>
-        <CartProvider>
-          <WelcomeModal />
-          <Navbar />
+    <AuthProvider>
+      <CartProvider>
+        {location.pathname === '/' && <WelcomeModal />}
+        <Navbar />
         <Routes>
           <Route path="/" element={withPageTitle(<Home />, 'Home')} />
           <Route path="/about" element={withPageTitle(<About />, 'About')} />
@@ -97,8 +97,15 @@ function App() {
           <Route path="/verify-email" element={withPageTitle(<EmailVerification />, 'Verify Email')} />
         </Routes>
         <Footer />
-        </CartProvider>
-      </AuthProvider>
+      </CartProvider>
+    </AuthProvider>
+  )
+}
+
+function App() {
+  return (
+    <Router>
+      <AppShell />
     </Router>
   )
 }

@@ -65,16 +65,13 @@ const Confirmation = () => {
   }, [ok, navigate]);
 
   useEffect(() => {
-    if (!s.orderId || !reviewDismissedKey) return undefined;
+    if (!s.orderId || !reviewDismissedKey) return;
     try {
-      if (sessionStorage.getItem(reviewDismissedKey) === '1') return undefined;
+      if (sessionStorage.getItem(reviewDismissedKey) === '1') return;
     } catch (e) {
       void e;
     }
-    const timer = setTimeout(() => {
-      setShowExperienceModal(true);
-    }, 900);
-    return () => clearTimeout(timer);
+    setShowExperienceModal(true);
   }, [s.orderId, reviewDismissedKey]);
 
   const handleExperienceModalClose = () => {

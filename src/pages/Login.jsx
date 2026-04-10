@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import {
   FaEnvelope,
   FaLock,
@@ -13,7 +13,10 @@ import {
   FaLeaf,
   FaTruck,
   FaVideo,
-  FaHandshake
+  FaHandshake,
+  FaCrown,
+  FaUsers,
+  FaAward
 } from 'react-icons/fa'
 import '../css/Login.css'
 import { authService } from '../services/authService'
@@ -108,7 +111,7 @@ const Login = () => {
       setResendOk('Verification email sent. Check your inbox.')
     } catch (e) {
       if (e?.status === 404) {
-        setError('No account found with this email. Check the email or sign up first.')
+        setError('No account found with this email.')
       } else {
         setError(e?.message || 'Could not resend email.')
       }
@@ -124,69 +127,45 @@ const Login = () => {
     { icon: <FaHandshake />, title: 'COD Available', desc: 'Pay on delivery' }
   ]
 
+  const stats = [
+    { icon: <FaUsers />, value: '5,000+', label: 'Animals Sold' },
+    { icon: <FaStar />, value: '4.9', label: 'User Rating' },
+    { icon: <FaAward />, value: '1990', label: 'Since' }
+  ]
+
   return (
     <div className={`lg-page ${isVisible ? 'lg-page--visible' : ''}`}>
-      {/* Background */}
+      {/* Clean Background */}
       <div className="lg-bg">
-        <div className="lg-bg-gradient"></div>
-        <div className="lg-bg-pattern"></div>
-        <div className="lg-bg-noise"></div>
+        <div className="lg-bg-base"></div>
+        <div className="lg-bg-glow lg-bg-glow--1"></div>
+        <div className="lg-bg-glow lg-bg-glow--2"></div>
       </div>
 
-      {/* Animated Shapes */}
-      <div className="lg-shapes">
-        <div className="lg-shape lg-shape--1"></div>
-        <div className="lg-shape lg-shape--2"></div>
-        <div className="lg-shape lg-shape--3"></div>
-        <div className="lg-shape lg-shape--4"></div>
-        <div className="lg-shape lg-shape--5"></div>
-      </div>
-
-      {/* Floating Particles */}
-      <div className="lg-particles">
-        {[...Array(8)].map((_, i) => (
-          <span key={i} className={`lg-dot lg-dot--${i + 1}`}></span>
-        ))}
-      </div>
-
-      {/* Main Layout */}
-      <div className="lg-layout">
-        {/* Left Panel */}
+      <div className="lg-container">
+        {/* Left Panel - Clean Hero */}
         <div className="lg-hero">
-          <div className="lg-hero-inner">
-            <div className="lg-logo-wrap" style={{ marginBottom: '2rem' }}>
-              <img 
-                src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-                alt="Farm2Meat Logo" 
-                style={{ width: '80px', height: '80px', objectFit: 'contain' }}
-              />
-            </div>
+          <div className="lg-hero-content">
             <div className="lg-hero-badge">
-              <FaStar className="lg-hero-badge-star" />
-              <span>Trusted Since 1990</span>
+              <FaCrown className="lg-hero-badge-icon" />
+              <span>Pakistan's #1 Livestock Marketplace</span>
             </div>
 
             <h1 className="lg-hero-title">
-              <span className="lg-hero-title-line">Pakistan Ka</span>
-              <span className="lg-hero-title-accent">Sabse Bharosemand</span>
-              <span className="lg-hero-title-line">Livestock Platform</span>
+              Welcome back to
+              <span className="lg-hero-title-accent"> Farm2Meat</span>
             </h1>
 
             <p className="lg-hero-desc">
-              Farm2Meat par login karein aur hazaron sehatmand, farm-raised
-              janwaron mein se apna pasandida chunein — ghar baithe, poori
-              tasalli ke saath.
+              Sign in to access your account and continue browsing verified animals,
+              connecting with professional butchers, and enjoying seamless delivery.
             </p>
 
             <div className="lg-hero-features">
               {features.map((f, i) => (
-                <div
-                  className="lg-hero-feat"
-                  key={i}
-                  style={{ animationDelay: `${0.6 + i * 0.1}s` }}
-                >
-                  <div className="lg-hero-feat-icon">{f.icon}</div>
-                  <div className="lg-hero-feat-text">
+                <div className="lg-hero-feature" key={i}>
+                  <div className="lg-hero-feature-icon">{f.icon}</div>
+                  <div className="lg-hero-feature-info">
                     <strong>{f.title}</strong>
                     <span>{f.desc}</span>
                   </div>
@@ -195,247 +174,168 @@ const Login = () => {
             </div>
 
             <div className="lg-hero-stats">
-              <div className="lg-hero-stat">
-                <span className="lg-hero-stat-num">5,000+</span>
-                <span className="lg-hero-stat-label">Animals Sold</span>
-              </div>
-              <div className="lg-hero-stat-divider"></div>
-              <div className="lg-hero-stat">
-                <span className="lg-hero-stat-num">2,500+</span>
-                <span className="lg-hero-stat-label">Happy Buyers</span>
-              </div>
-              <div className="lg-hero-stat-divider"></div>
-              <div className="lg-hero-stat">
-                <span className="lg-hero-stat-num">4.9★</span>
-                <span className="lg-hero-stat-label">User Rating</span>
-              </div>
+              {stats.map((s, i) => (
+                <React.Fragment key={i}>
+                  <div className="lg-hero-stat">
+                    <div className="lg-hero-stat-icon">{s.icon}</div>
+                    <div className="lg-hero-stat-content">
+                      <span className="lg-hero-stat-value">{s.value}</span>
+                      <span className="lg-hero-stat-label">{s.label}</span>
+                    </div>
+                  </div>
+                  {i < stats.length - 1 && <div className="lg-hero-stat-divider" />}
+                </React.Fragment>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Right Panel — White Form */}
+        {/* Right Panel - Clean Form */}
         <div className="lg-form-panel">
           <div className="lg-card">
-            {/* Top accent bar */}
-            <div className="lg-card-accent"></div>
+            <div className="lg-card-header">
+              <div className="lg-brand">
+                <img 
+                  src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
+                  alt="Farm2Meat" 
+                  className="lg-brand-logo"
+                />
+                <span className="lg-brand-text">Farm2<span>Meat</span></span>
+              </div>
 
-            {/* Brand */}
-            <div className="lg-brand">
-              <div className="lg-brand-icon">
-                <span>🐐</span>
-              </div>
-              <div className="lg-brand-name">
-                RYK <span>Mandi</span>
-              </div>
+              <h2 className="lg-title">Sign in to your account</h2>
+              <p className="lg-subtitle">Welcome back! Please enter your details</p>
             </div>
 
-            {/* Header */}
-            <div className="lg-header">
-              <h2 className="lg-title">Welcome Back</h2>
-              <p className="lg-subtitle">Sign in to continue to your account</p>
-            </div>
-
-            {/* Form */}
             <form className="lg-form" onSubmit={handleSubmit} noValidate>
-              {/* Email */}
-              <div
-                className={`lg-field ${
-                  focusedField === 'email' ? 'lg-field--focused' : ''
-                } ${formData.email ? 'lg-field--filled' : ''}`}
-              >
-                <label className="lg-label" htmlFor="lg-email">
-                  Email Address
-                </label>
-                <div className="lg-input-wrap">
-                  <FaEnvelope className="lg-input-icon" />
-                  <input
-                    id="lg-email"
-                    type="email"
-                    name="email"
-                    className="lg-input"
-                    placeholder="you@example.com"
-                    value={formData.email}
-                    onChange={handleChange}
-                    onFocus={() => setFocusedField('email')}
-                    onBlur={() => setFocusedField(null)}
-                    autoComplete="email"
-                    disabled={loading}
-                    required
-                  />
-                  {formData.email && isValidEmail(formData.email) && (
-                    <FaCheckCircle className="lg-input-check" />
-                  )}
-                  <div className="lg-input-focus-ring"></div>
+              <div className="lg-form-fields">
+                <div className={`lg-field ${focusedField === 'email' ? 'focused' : ''} ${formData.email ? 'filled' : ''}`}>
+                  <label>Email Address</label>
+                  <div className="lg-field-input">
+                    <FaEnvelope className="lg-field-icon" />
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="you@example.com"
+                      value={formData.email}
+                      onChange={handleChange}
+                      onFocus={() => setFocusedField('email')}
+                      onBlur={() => setFocusedField(null)}
+                      autoComplete="email"
+                      disabled={loading}
+                    />
+                    {formData.email && isValidEmail(formData.email) && (
+                      <FaCheckCircle className="lg-field-check" />
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              {/* Password */}
-              <div
-                className={`lg-field ${
-                  focusedField === 'password' ? 'lg-field--focused' : ''
-                } ${formData.password ? 'lg-field--filled' : ''}`}
-              >
-                <div className="lg-label-row">
-                  <label className="lg-label" htmlFor="lg-password">
-                    Password
+                <div className={`lg-field ${focusedField === 'password' ? 'focused' : ''} ${formData.password ? 'filled' : ''}`}>
+                  <div className="lg-field-label-row">
+                    <label>Password</label>
+                    <Link to="/forgot-password" className="lg-forgot-link">
+                      Forgot password?
+                    </Link>
+                  </div>
+                  <div className="lg-field-input">
+                    <FaLock className="lg-field-icon" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      name="password"
+                      placeholder="Enter your password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      onFocus={() => setFocusedField('password')}
+                      onBlur={() => setFocusedField(null)}
+                      autoComplete="current-password"
+                      disabled={loading}
+                    />
+                    <button
+                      type="button"
+                      className="lg-field-eye"
+                      onClick={() => setShowPassword(!showPassword)}
+                      disabled={loading}
+                    >
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="lg-remember">
+                  <label className="lg-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={rememberMe}
+                      onChange={() => setRememberMe(!rememberMe)}
+                      disabled={loading}
+                    />
+                    <span className="lg-checkbox-custom"></span>
+                    <span className="lg-checkbox-text">Keep me signed in</span>
                   </label>
-                  <a href="/forgot-password" className="lg-forgot">
-                    Forgot password?
-                  </a>
                 </div>
-                <div className="lg-input-wrap">
-                  <FaLock className="lg-input-icon" />
-                  <input
-                    id="lg-password"
-                    type={showPassword ? 'text' : 'password'}
-                    name="password"
-                    className="lg-input lg-input--pw"
-                    placeholder="Enter your password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    onFocus={() => setFocusedField('password')}
-                    onBlur={() => setFocusedField(null)}
-                    autoComplete="current-password"
-                    disabled={loading}
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="lg-eye"
-                    onClick={() => setShowPassword(!showPassword)}
-                    aria-label="Toggle password visibility"
-                    disabled={loading}
-                  >
-                    {showPassword ? <FaEyeSlash /> : <FaEye />}
-                  </button>
-                  <div className="lg-input-focus-ring"></div>
-                </div>
-
-                {/* Strength */}
-                {formData.password && (
-                  <div className="lg-strength">
-                    <div className="lg-strength-track">
-                      <div
-                        className={`lg-strength-fill ${
-                          formData.password.length >= 8
-                            ? 'lg-strength--strong'
-                            : formData.password.length >= 6
-                            ? 'lg-strength--medium'
-                            : 'lg-strength--weak'
-                        }`}
-                      ></div>
-                    </div>
-                    <span className="lg-strength-label">
-                      {formData.password.length >= 8
-                        ? 'Strong'
-                        : formData.password.length >= 6
-                        ? 'Medium'
-                        : 'Weak'}
-                    </span>
-                  </div>
-                )}
               </div>
 
-              {/* Remember */}
-              <div className="lg-remember">
-                <label className="lg-toggle-label">
-                  <input
-                    type="checkbox"
-                    className="lg-toggle-native"
-                    checked={rememberMe}
-                    onChange={() => setRememberMe(!rememberMe)}
-                    disabled={loading}
-                  />
-                  <div
-                    className={`lg-toggle-track ${
-                      rememberMe ? 'lg-toggle-track--on' : ''
-                    }`}
-                  >
-                    <div className="lg-toggle-thumb"></div>
-                  </div>
-                  <span className="lg-toggle-text">Keep me signed in</span>
-                </label>
-              </div>
-
-              {/* Notifications */}
               {(message || error) && (
-                <div
-                  className={`lg-alert ${
-                    error ? 'lg-alert--error' : 'lg-alert--success'
-                  }`}
-                >
-                  <div className="lg-alert-icon">
-                    {error ? <FaShieldAlt /> : <FaCheckCircle />}
-                  </div>
-                  <p className="lg-alert-text">{error || message}</p>
+                <div className={`lg-alert ${error ? 'lg-alert--error' : 'lg-alert--success'}`}>
+                  {error ? <FaShieldAlt /> : <FaCheckCircle />}
+                  <span>{error || message}</span>
                 </div>
               )}
 
               {needsVerify && (
-                <div className="lg-verify-banner">
-                  <p className="lg-verify-banner-text">
-                    Please verify your email to continue. Didn&apos;t get the link?
-                  </p>
+                <div className="lg-verify-box">
+                  <p>Please verify your email to continue.</p>
                   <button
                     type="button"
-                    className="lg-verify-resend"
+                    className="lg-verify-btn"
                     onClick={handleResendVerification}
                     disabled={resendBusy || loading}
                   >
-                    {resendBusy ? 'Sending…' : 'Resend verification email'}
+                    {resendBusy ? 'Sending...' : 'Resend verification email'}
                   </button>
-                  {resendOk ? <p className="lg-verify-ok">{resendOk}</p> : null}
+                  {resendOk && <p className="lg-verify-success">{resendOk}</p>}
                 </div>
               )}
 
-              {/* Submit */}
               <button
                 type="submit"
                 className={`lg-submit ${loading ? 'lg-submit--loading' : ''}`}
                 disabled={loading}
               >
-                <span className="lg-submit-shine"></span>
-                <span className="lg-submit-content">
-                  <span>{loading ? 'Signing in…' : 'Sign In'}</span>
+                <span className="lg-submit-text">
                   {loading ? (
-                    <FaSpinner className="lg-submit-icon lg-spin" />
+                    <>Signing in <FaSpinner className="lg-spinner" /></>
                   ) : (
-                    <FaArrowRight className="lg-submit-icon" />
+                    <>Sign In <FaArrowRight /></>
                   )}
                 </span>
               </button>
 
-              {/* Secure note */}
-              <div className="lg-secure">
+              <div className="lg-secure-badge">
                 <FaShieldAlt />
                 <span>Protected by 256-bit SSL encryption</span>
               </div>
             </form>
 
-            {/* Footer */}
             <div className="lg-footer">
-              <p>
-                Don't have an account?{' '}
-                <a href="/signup" className="lg-footer-link">
-                  Create one free
-                  <FaArrowRight className="lg-footer-arrow" />
-                </a>
-              </p>
+              <span>Don't have an account?</span>
+              <Link to="/signup" className="lg-footer-link">
+                Create an account <FaArrowRight />
+              </Link>
             </div>
           </div>
 
-          {/* Trust Strip */}
-          <div className="lg-trust">
+          <div className="lg-trust-badge">
             <div className="lg-trust-item">
               <FaShieldAlt />
               <span>Verified</span>
             </div>
-            <div className="lg-trust-dot"></div>
+            <div className="lg-trust-divider" />
             <div className="lg-trust-item">
               <FaCheckCircle />
               <span>Trusted</span>
             </div>
-            <div className="lg-trust-dot"></div>
+            <div className="lg-trust-divider" />
             <div className="lg-trust-item">
               <FaLock />
               <span>Secure</span>
