@@ -26,6 +26,31 @@ const getUserIdFromStorage = () => {
   }
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.3
+    }
+  }
+}
+
+const emojiVariants = {
+  hidden: { opacity: 0, scale: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    scale: 1, 
+    y: 0,
+    transition: { 
+      type: "spring",
+      stiffness: 400,
+      damping: 15
+    }
+  }
+}
+
 /* ── 3D Emoji Reaction Component ─────────────────────── */
 const ReactionEmoji = ({ level, isSelected, onSelect, index, hoveredEmoji, setHoveredEmoji }) => {
   const controls = useAnimation()
@@ -36,70 +61,58 @@ const ReactionEmoji = ({ level, isSelected, onSelect, index, hoveredEmoji, setHo
   const handleHoverEnd = () => setHoveredEmoji(null)
   
   const handleClick = async () => {
-    // Burst animation sequence
+    // Strong bounce/spring sequence
     await controls.start({
-      scale: [1, 1.45, 1.15, 1.25],
-      rotateY: [0, 15, -10, 0],
-      rotateX: [0, -10, 5, 0],
+      scale: [1, 1.4, 0.9, 1.1, 1],
+      rotate: [0, 15, -15, 10, 0],
       transition: {
-        duration: 0.6,
-        times: [0, 0.3, 0.6, 1],
-        ease: "easeOut"
+        duration: 0.5,
+        ease: "easeInOut"
       }
     })
     
     onSelect(level.value)
   }
   
-  // Idle floating animation when selected
+  // Idle breathing/floating animation
   useEffect(() => {
     if (isSelected) {
       controls.start({
-        y: [0, -6, 0],
-        rotateY: [0, 5, -5, 0],
-        rotateX: [0, -3, 3, 0],
+        y: [0, -8, 0],
+        scale: [1, 1.05, 1],
         transition: {
           duration: 3,
           repeat: Infinity,
           ease: "easeInOut"
         }
       })
+    } else if (isHovered) {
+      controls.start({
+        scale: 1.25,
+        rotate: 8,
+        y: -10,
+        transition: { type: "spring", stiffness: 400, damping: 15 }
+      })
     } else {
-      controls.start({ y: 0, rotateY: 0, rotateX: 0 })
-    }
-  }, [isSelected, controls])
-  
-  // Hover animation
-  useEffect(() => {
-    if (isHovered && !isSelected) {
-      controls.start({
-        y: -14,
-        scale: 1.3,
-        rotateY: 8,
-        rotateX: -5,
-        transition: {
-          type: "spring",
-          stiffness: 300,
-          damping: 20
-        }
-      })
-    } else if (!isSelected) {
-      controls.start({
-        y: 0,
+      controls.start({ 
+        y: [0, -3, 0],
         scale: 1,
-        rotateY: 0,
-        rotateX: 0,
+        rotate: 0,
         transition: {
-          type: "spring",
-          stiffness: 400,
-          damping: 25
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: index * 0.2
         }
       })
     }
-  }, [isHovered, isSelected, controls])
+  }, [isSelected, isHovered, controls, index])
   
   return (
-    <div className="er-emoji-container">
+    <motion.div 
+      className="er-emoji-container"
+      variants={emojiVariants}
+    >
       <motion.button
         ref={emojiRef}
         className={`er-emoji-3d ${isSelected ? 'er-emoji-selected' : ''}`}
@@ -111,56 +124,33 @@ const ReactionEmoji = ({ level, isSelected, onSelect, index, hoveredEmoji, setHo
         onHoverStart={handleHoverStart}
         onHoverEnd={handleHoverEnd}
         onClick={handleClick}
-        whileTap={{ scale: 0.95 }}
-        initial={{ opacity: 0, y: 20 }}
-        animate={isSelected || hoveredEmoji === level.value ? controls : { 
-          opacity: 1, 
-          y: 0,
-          transition: { 
-            delay: index * 0.05,
-            type: "spring",
-            stiffness: 400,
-            damping: 20
-          }
-        }}
+        whileTap={{ scale: 0.9 }}
+        animate={controls}
       >
-        {/* 3D lighting layers */}
         <div className="er-emoji-shadow-layer" />
         <div className="er-emoji-highlight" />
         <div className="er-emoji-inner-shadow" />
         
         <span className="er-emoji-char">{level.emoji}</span>
         
-        {/* Selection ring glow */}
         {isSelected && (
           <motion.div
             className="er-emoji-ring"
+            layoutId="selection-ring"
             initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1.2, opacity: 1 }}
+            animate={{ scale: 1.1, opacity: 1 }}
             transition={{ type: "spring", stiffness: 300, damping: 15 }}
-          />
-        )}
-        
-        {/* Hover glow effect */}
-        {isHovered && !isSelected && (
-          <motion.div
-            className="er-emoji-hover-glow"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
           />
         )}
       </motion.button>
       
-      {/* Tooltip */}
       <AnimatePresence>
         {isHovered && !isSelected && (
           <motion.div
             className="er-emoji-tooltip"
-            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+            initial={{ opacity: 0, y: 10, scale: 0.8 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 5, scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 500, damping: 25 }}
+            exit={{ opacity: 0, y: 5, scale: 0.9 }}
           >
             <span className="er-tooltip-emoji">{level.emoji}</span>
             <span className="er-tooltip-text">{level.tooltip}</span>
@@ -168,20 +158,18 @@ const ReactionEmoji = ({ level, isSelected, onSelect, index, hoveredEmoji, setHo
         )}
       </AnimatePresence>
       
-      {/* Label */}
       <motion.span
         className="er-emoji-label-3d"
-        initial={{ opacity: 0 }}
         animate={{ 
-          opacity: isSelected || isHovered ? 1 : 0,
-          y: isSelected || isHovered ? 0 : 10
+          opacity: isSelected || isHovered ? 1 : 0.4,
+          y: isSelected || isHovered ? 0 : 5,
+          scale: isSelected ? 1.1 : 1
         }}
-        transition={{ duration: 0.2 }}
-        style={{ color: level.color }}
+        style={{ color: isSelected || isHovered ? level.color : '#666' }}
       >
         {level.short}
       </motion.span>
-    </div>
+    </motion.div>
   )
 }
 
@@ -433,6 +421,12 @@ export default function OrderExperienceModal({
     setShowBurst(true)
     setTimeout(() => setShowBurst(false), 600)
     setError('')
+    
+    // Bonus: Trigger confetti for high ratings immediately
+    if (value >= 4) {
+      setShowConfetti(true)
+      setTimeout(() => setShowConfetti(false), 2000)
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -486,13 +480,12 @@ export default function OrderExperienceModal({
             ref={modalRef}
             className="er-modal"
             style={{ '--er-accent': activeColor }}
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            initial={{ opacity: 0, scale: 0.9, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ 
-              type: "spring",
-              stiffness: 400,
-              damping: 30
+              duration: 0.4,
+              ease: [0.23, 1, 0.32, 1] // Custom cubic-bezier for smooth entrance
             }}
           >
             <AnimatedOrbs />
@@ -577,9 +570,9 @@ export default function OrderExperienceModal({
                 {/* Emoji Reactions */}
                 <motion.div 
                   className="er-reactions-container"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.25, type: "spring", stiffness: 300 }}
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
                 >
                   <BurstEffect color={activeColor} isActive={showBurst} />
                   

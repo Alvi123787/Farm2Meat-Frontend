@@ -10,8 +10,9 @@
   --er-text: #1a1a1a;
   --er-text-secondary: #666;
   --er-radius: 32px;
-  --er-shadow-soft: 0 20px 60px rgba(0, 0, 0, 0.15);
-  --er-shadow-strong: 0 30px 80px rgba(0, 0, 0, 0.25);
+  --er-shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.08);
+  --er-shadow-strong: 0 25px 70px rgba(0, 0, 0, 0.15);
+  --er-font-heading: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
 /* Overlay & Backdrop */
@@ -22,7 +23,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 1.5rem;
   pointer-events: none;
 }
 
@@ -33,9 +34,9 @@
 .er-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(12px) saturate(1.5);
-  -webkit-backdrop-filter: blur(12px) saturate(1.5);
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(16px) saturate(1.8);
+  -webkit-backdrop-filter: blur(16px) saturate(1.8);
   z-index: -1;
 }
 
@@ -43,17 +44,17 @@
 .er-modal {
   position: relative;
   width: 100%;
-  max-width: 480px;
+  max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
   overflow-x: hidden;
-  background: linear-gradient(135deg, var(--er-glass-bg), rgba(255, 255, 255, 0.85));
-  backdrop-filter: blur(20px) saturate(2);
-  -webkit-backdrop-filter: blur(20px) saturate(2);
-  border: 1px solid var(--er-glass-border);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(25px) saturate(2);
+  -webkit-backdrop-filter: blur(25px) saturate(2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: var(--er-radius);
   box-shadow: var(--er-shadow-soft);
-  transition: box-shadow 0.3s ease;
+  transition: box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .er-modal:hover {
@@ -179,36 +180,35 @@
 /* Title */
 .er-title {
   margin: 0;
-  font-size: 1.5rem;
+  font-family: var(--er-font-heading);
+  font-size: 1.75rem;
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   text-align: center;
-  background: linear-gradient(135deg, #800000, #a52a2a);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #1a1a1a;
+  line-height: 1.2;
 }
 
 .er-subtitle {
-  margin: -0.5rem 0 0.5rem;
-  font-size: 0.9rem;
+  margin: 0.25rem 0 0.5rem;
+  font-size: 1rem;
   color: var(--er-text-secondary);
   text-align: center;
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 /* 3D Emoji Reactions Container */
 .er-reactions-container {
   position: relative;
-  padding: 1.5rem 0;
+  padding: 2rem 0;
 }
 
 .er-reactions-grid {
   display: flex;
   justify-content: center;
-  align-items: flex-end;
-  gap: 0.75rem;
-  perspective: 1000px;
+  align-items: center;
+  gap: 0.85rem;
+  perspective: 1200px;
 }
 
 /* Individual Emoji Container */
@@ -217,31 +217,27 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 /* 3D Emoji Button */
 .er-emoji-3d {
   position: relative;
-  width: 70px;
-  height: 70px;
+  width: 72px;
+  height: 72px;
   border: none;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 20px;
+  background: #fff;
+  border-radius: 22px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 
-    0 8px 20px rgba(0, 0, 0, 0.08),
-    0 2px 6px rgba(0, 0, 0, 0.05),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.05),
-    inset 0 2px 4px rgba(255, 255, 255, 0.8);
-  transition: box-shadow 0.3s ease;
+    0 10px 25px rgba(0, 0, 0, 0.05),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.03),
+    inset 0 3px 6px rgba(255, 255, 255, 0.8);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   transform-style: preserve-3d;
-  will-change: transform;
 }
 
 /* 3D Lighting Layers */
@@ -304,11 +300,10 @@
 
 /* Selected State */
 .er-emoji-selected {
+  background: #fff;
   box-shadow: 
-    0 12px 28px rgba(0, 0, 0, 0.15),
-    0 4px 12px rgba(0, 0, 0, 0.1),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.08),
-    inset 0 2px 6px rgba(255, 255, 255, 0.9),
+    0 15px 35px rgba(0, 0, 0, 0.1),
+    0 0 0 3px var(--glow-color),
     0 0 30px var(--glow-color);
 }
 
@@ -354,11 +349,11 @@
 
 /* Label */
 .er-emoji-label-3d {
-  font-size: 0.7rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  transition: all 0.2s ease;
+  letter-spacing: 0.08em;
+  transition: all 0.3s ease;
 }
 
 /* Burst Effect */
