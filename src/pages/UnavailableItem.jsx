@@ -1,20 +1,49 @@
-// UnavailableItem.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import api from "../services/api";
+import { formatPrice } from "../utils/priceUtils";
+import { buildMediaUrl, isAbsoluteUrl } from "../utils/mediaUrl";
 import "../css/UnavailableItem.css";
 
 const UnavailableItem = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isVisible, setIsVisible] = useState(false);
-  const [countdown, setCountdown] = useState(8);
+  const [countdown, setCountdown] = useState(12);
   const [productName, setProductName] = useState("");
+  const [customMessage, setCustomMessage] = useState("");
+  const [recommendedAnimals, setRecommendedAnimals] = useState([]);
+  const [loadingRecommendations, setLoadingRecommendations] = useState(true);
 
   useEffect(() => {
-    // Get product name from location state if available
+    // Get product name and message from location state if available
     if (location.state?.productName) {
       setProductName(location.state.productName);
     }
+    if (location.state?.message) {
+      setCustomMessage(location.state.message);
+    }
+
+    // Fetch recommended animals
+    const fetchRecommendations = async () => {
+      try {
+        setLoadingRecommendations(true);
+        const response = await api.get("/api/animals");
+        if (response.data.success) {
+          // Filter available animals and take first 3
+          const available = response.data.data
+            .filter(a => a.status === "available" || a.status === "new")
+            .slice(0, 3);
+          setRecommendedAnimals(available);
+        }
+      } catch (err) {
+        console.error("Failed to fetch recommendations:", err);
+      } finally {
+        setLoadingRecommendations(false);
+      }
+    };
+
+    fetchRecommendations();
 
     // Trigger entrance animation
     const timer = setTimeout(() => setIsVisible(true), 50);
@@ -45,6 +74,12 @@ const UnavailableItem = () => {
 
   const handleViewSimilar = () => {
     navigate("/shop", { state: { filter: "similar" } });
+  };
+
+  const getImageUrl = (animal) => {
+    const firstImg = animal.images?.[0] || animal.imageUrl || animal.img;
+    if (!firstImg) return "/placeholder.jpg";
+    return isAbsoluteUrl(firstImg) ? firstImg : buildMediaUrl(firstImg);
   };
 
   return (
@@ -165,14 +200,14 @@ const UnavailableItem = () => {
             {/* Status Badge */}
             <div className="status-badge">
               <span className="status-badge__dot"></span>
-              Unavailable
+              Sold Out
             </div>
 
             {/* Main Heading */}
             <h1 className="unavailable-card__title">
               {productName ? (
                 <>
-                  <span className="title-product">{productName}</span>
+                  Oops! <span className="title-product">{productName}</span>
                   <br />
                   <span className="title-status">is no longer available</span>
                 </>
@@ -187,9 +222,13 @@ const UnavailableItem = () => {
 
             {/* Description */}
             <p className="unavailable-card__description">
-              Another customer has already completed the purchase of this item.
-              <br className="hide-mobile" />
-              Don't worry — we have plenty of other fresh options waiting for you!
+              {customMessage || (
+                <>
+                  Another customer has already completed the purchase of this item.
+                  <br className="hide-mobile" />
+                  Don't worry — we have plenty of other fresh options waiting for you!
+                </>
+              )}
             </p>
 
             {/* Action Buttons */}
@@ -201,7 +240,7 @@ const UnavailableItem = () => {
                 <svg className="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path d="M3 12h18M3 6h18M3 18h18" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
-                Browse Other Products
+                Browse Other Animals
               </button>
               
               <button 
@@ -212,7 +251,7 @@ const UnavailableItem = () => {
                   <circle cx="12" cy="12" r="10" strokeWidth="2"/>
                   <path d="M12 8v8M8 12h8" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
-                View Similar Items
+                View Similar Animals
               </button>
               
               <button 
@@ -234,61 +273,39 @@ const UnavailableItem = () => {
         </div>
 
         {/* Recommended Products Section */}
-        <div className="recommended-section">
-          <h2 className="recommended-section__title">
-            You might also like
-          </h2>
-          
-          <div className="recommended-grid">
-            {/* Product Card 1 */}
-            <div className="product-card" onClick={() => navigate("/shop")}>
-              <div className="product-card__image">
-                <img 
-                  src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775621674/ulleo-goats-2719445_qgvc4s.jpg"
-                  alt="Fresh Goat Meat"
-                />
-                <span className="product-card__badge">Fresh</span>
-              </div>
-              <div className="product-card__info">
-                <h3>Premium Goat Meat</h3>
-                <p>Farm fresh, halal certified</p>
-                <span className="product-card__price">From $12.99/lb</span>
-              </div>
-            </div>
-
-            {/* Product Card 2 */}
-            <div className="product-card" onClick={() => navigate("/shop")}>
-              <div className="product-card__image">
-                <img 
-                  src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775621674/ulleo-goats-2719445_qgvc4s.jpg"
-                  alt="Organic Lamb"
-                />
-                <span className="product-card__badge product-card__badge--organic">Organic</span>
-              </div>
-              <div className="product-card__info">
-                <h3>Organic Lamb</h3>
-                <p>Grass-fed, premium quality</p>
-                <span className="product-card__price">From $14.99/lb</span>
-              </div>
-            </div>
-
-            {/* Product Card 3 */}
-            <div className="product-card" onClick={() => navigate("/shop")}>
-              <div className="product-card__image">
-                <img 
-                  src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775621674/ulleo-goats-2719445_qgvc4s.jpg"
-                  alt="Beef Selection"
-                />
-                <span className="product-card__badge">Best Seller</span>
-              </div>
-              <div className="product-card__info">
-                <h3>Premium Beef Cuts</h3>
-                <p>Aged to perfection</p>
-                <span className="product-card__price">From $16.99/lb</span>
-              </div>
+        {!loadingRecommendations && recommendedAnimals.length > 0 && (
+          <div className="recommended-section">
+            <h2 className="recommended-section__title">
+              You might also like these available animals
+            </h2>
+            
+            <div className="recommended-grid">
+              {recommendedAnimals.map((animal) => (
+                <div 
+                  key={animal._id} 
+                  className="product-card" 
+                  onClick={() => navigate(`/shop/${animal._id}`)}
+                >
+                  <div className="product-card__image">
+                    <img 
+                      src={getImageUrl(animal)}
+                      alt={animal.name}
+                      onError={(e) => { e.target.src = "/placeholder.jpg"; }}
+                    />
+                    <span className={`product-card__badge ${animal.status === 'new' ? 'product-card__badge--new' : ''}`}>
+                      {animal.status === 'new' ? 'New Arrival' : 'Available'}
+                    </span>
+                  </div>
+                  <div className="product-card__info">
+                    <h3>{animal.name}</h3>
+                    <p>{animal.breed} • {animal.weight}</p>
+                    <span className="product-card__price">{formatPrice(animal.price)}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

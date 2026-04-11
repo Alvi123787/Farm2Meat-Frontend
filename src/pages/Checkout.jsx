@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState, useRef, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
   FaLock,
@@ -16,7 +16,6 @@ import {
   FaMoneyBillWave,
   FaCheckCircle,
   FaWhatsapp,
-  FaArrowRight,
   FaWeightHanging,
   FaDna,
   FaTag,
@@ -30,7 +29,6 @@ import {
   FaChevronDown,
   FaChevronUp,
   FaVideo,
-  FaBoxOpen,
   FaSpinner
 } from 'react-icons/fa'
 import api from '../services/api'
@@ -50,6 +48,14 @@ const PURCHASE_STATE_KEY = 'postPurchaseConfirmationState'
 const normalize = (v) => String(v || '').trim().toLowerCase()
 
 const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || '').trim())
+const validatePhone = (phone) => {
+  const cleaned = phone.replace(/\D/g, '')
+  return (
+    /^03\d{9}$/.test(cleaned) || 
+    /^92\d{10}$/.test(cleaned) || 
+    /^\+92\d{10}$/.test(phone.trim())
+  )
+}
 
 const isMultiQuantityItem = (item) => {
   const mode = normalize(item?.purchaseMode)
@@ -84,7 +90,7 @@ const trustBoosters = [
 const priceToNumber = (price) => {
   if (!price) return 0
   if (typeof price === 'number') return price
-  return parseInt(price.replace(/,/g, ''), 10) || 0
+  return parseInt(String(price).replace(/[^\d]/g, ''), 10) || 0
 }
 
 // ── Helper: Build full image URL ──
@@ -122,15 +128,32 @@ const Checkout = () => {
 
   const [orderItems, setOrderItems] = useState([])
   const [loading, setLoading] = useState(true)
+  const [checkingAvailability, setCheckingAvailability] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [isButcherModalOpen, setIsButcherModalOpen] = useState(false)
   const [hasShownButcherModal, setHasShownButcherModal] = useState(false)
+
+  // ── Refs ──
+  const checkingRef = useRef(false)
+  const orderItemsRef = useRef([])
+  const lastCheckRef = useRef(0)
+  const fullNameRef = useRef(null)
+  const phoneRef = useRef(null)
+  const emailRef = useRef(null)
+  const cityRef = useRef(null)
+  const addressRef = useRef(null)
 
   const [expandedSection, setExpandedSection] = useState({
     review: true,
     customer: true,
     delivery: true
   })
+
+  // Sync ref with state
+  useEffect(() => {
+    orderItemsRef.current = orderItems
+  }, [orderItems])
+
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
@@ -146,23 +169,15 @@ const Checkout = () => {
     termsAgree: false
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [hasCheckedOnce, setHasCheckedOnce] = useState(false)
   const [notices, setNotices] = useState([])
-  const [hasRefreshed, setHasRefreshed] = useState(false) // Prevent multiple refreshes
 
   useEffect(() => {
-    // Check if we already did a controlled refresh in this session
-    const refreshed = sessionStorage.getItem('checkout_has_refreshed')
-    if (refreshed === 'true') {
-      setHasRefreshed(true)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!loading && orderItems.length > 0 && !hasShownButcherModal) {
+    if (!loading && orderItems.length > 0 && !hasShownButcherModal && !selectedButcher) {
       setIsButcherModalOpen(true)
       setHasShownButcherModal(true)
     }
-  }, [loading, orderItems.length, hasShownButcherModal])
+  }, [loading, orderItems.length, hasShownButcherModal, selectedButcher])
 
   // ════════════════════════════════════════════
   // Load order items from Cart page or localStorage
@@ -196,6 +211,16 @@ const Checkout = () => {
   }, [location.state, cart, cartLoading, navigate])
 
   useEffect(() => {
+    let cancelled = false
+    if (!loading && orderItems.length === 0 && !cancelled) {
+      navigate('/unavailable-item', { replace: true })
+    }
+    return () => {
+      cancelled = true
+    }
+  }, [loading, orderItems, navigate])
+
+  useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100)
     return () => clearTimeout(timer)
   }, [])
@@ -205,27 +230,35 @@ const Checkout = () => {
   }, [])
 
   // ════════════════════════════════════════════
-  // Calculations
+  // Calculations (Memoized)
   // ════════════════════════════════════════════
 
-  const subtotal = orderItems.reduce(
-    (sum, item) => sum + priceToNumber(item.price) * getEffectiveQuantity(item),
-    0
-  )
-  const delivery = orderItems.length > 0 ? DELIVERY_CHARGE : 0
-  const grandTotal = subtotal + delivery
-  const totalItems = orderItems.reduce(
-    (sum, item) => sum + getEffectiveQuantity(item),
-    0
+  const subtotal = useMemo(() => 
+    orderItems.reduce(
+      (sum, item) => sum + priceToNumber(item.price) * getEffectiveQuantity(item),
+      0
+    ), [orderItems]
   )
 
+  const totalItems = useMemo(() => 
+    orderItems.reduce(
+      (sum, item) => sum + getEffectiveQuantity(item),
+      0
+    ), [orderItems]
+  )
+
+  const delivery = useMemo(() => (orderItems.length > 0 ? DELIVERY_CHARGE : 0), [orderItems.length])
+  const grandTotal = useMemo(() => subtotal + delivery, [subtotal, delivery])
+
   const allConfirmed = confirmations.weightCheck && confirmations.termsAgree
-  const isFormValid =
+  const isFormValid = useMemo(() => 
     formData.fullName &&
-    formData.phone &&
+    validatePhone(formData.phone) &&
     validateEmail(formData.email) &&
     formData.city &&
-    formData.address
+    formData.address,
+    [formData]
+  )
 
   // ════════════════════════════════════════════
   // Handlers
@@ -244,14 +277,42 @@ const Checkout = () => {
     setExpandedSection((prev) => ({ ...prev, [key]: !prev[key] }))
   }
 
+  const createOrderPayload = (paymentMethod) => {
+    const currentItems = orderItemsRef.current
+    return {
+      customerName: formData.fullName,
+      phone: formData.phone,
+      email: formData.email,
+      items: currentItems.map((item) => ({
+        _id: item._id || item.id,
+        name: item.name,
+        tagId: item.tagId || item._id || '',
+        breed: item.breed || '',
+        weight: item.weight || '',
+        price: item.price,
+        quantity: getEffectiveQuantity(item),
+        itemType: item.itemType || 'livestock',
+        purchaseMode: item.purchaseMode || 'single'
+      })),
+      deliveryAddress: formData.address,
+      city: formData.city,
+      deliveryCharge: 0,
+      paymentMethod: paymentMethod || 'cod',
+      orderSource: 'checkout',
+      notes: formData.instructions || '',
+      butcher: selectedButcher?._id || null
+    }
+  }
+
   const buildWhatsAppOrder = (orderId) => {
+    const currentItems = orderItemsRef.current
     let msg = `Assalam o Alaikum!%0A%0A✅ *ORDER CONFIRMATION — Farm2Meat*%0A%0A`
     if (orderId) {
       msg += `*Order ID: ${orderId}*%0A`
     }
     msg += `━━━━━━━━━━━━━━━%0A`
 
-    orderItems.forEach((item, i) => {
+    currentItems.forEach((item, i) => {
       const qty = getEffectiveQuantity(item)
       const itemTotal = priceToNumber(item.price) * qty
 
@@ -289,35 +350,34 @@ const Checkout = () => {
     return msg
   }
 
+  const focusFirstInvalid = () => {
+    if (!formData.fullName) return fullNameRef.current?.focus()
+    if (!validatePhone(formData.phone)) return phoneRef.current?.focus()
+    if (!validateEmail(formData.email)) return emailRef.current?.focus()
+    if (!formData.city) return cityRef.current?.focus()
+    if (!formData.address) return addressRef.current?.focus()
+  }
+
   const handlePlaceOrder = async () => {
-    if (!isFormValid || !allConfirmed) return
+    if (isSubmitting) return
+    if (!isFormValid) {
+      focusFirstInvalid()
+      return
+    }
+    if (!allConfirmed) return
+    
+    // Final check before placement
     setIsSubmitting(true)
+    const itemsChanged = await pruneUnavailable(orderItemsRef.current)
+    if (itemsChanged) {
+      setIsSubmitting(false)
+      return // Re-render will show new notices or redirect
+    }
+
     setNotices([])
 
     try {
-      const response = await api.post('/api/inquiries/bulk', {
-        customerName: formData.fullName,
-        phone: formData.phone,
-        email: formData.email,
-        items: orderItems.map((item) => ({
-          _id: item._id || item.id,
-          name: item.name,
-          tagId: item.tagId || item._id || '',
-          breed: item.breed || '',
-          weight: item.weight || '',
-          price: item.price,
-          quantity: getEffectiveQuantity(item),
-          itemType: item.itemType || 'livestock',
-          purchaseMode: item.purchaseMode || 'single'
-        })),
-        deliveryAddress: formData.address,
-        city: formData.city,
-        deliveryCharge: 0,
-        paymentMethod: 'cod',
-        orderSource: 'checkout',
-        notes: formData.instructions || '',
-        butcher: selectedButcher?._id || null
-      })
+      const response = await api.post('/api/inquiries/bulk', createOrderPayload('cod'))
 
       const data = response.data
       
@@ -327,7 +387,6 @@ const Checkout = () => {
 
       clearCart()
       setSelectedButcher(null)
-      sessionStorage.removeItem('checkout_has_refreshed') // Clear refresh flag on success
 
       const confirmationState = {
         fromPurchase: true,
@@ -341,7 +400,7 @@ const Checkout = () => {
         city: formData.city,
         email: formData.email,
         paymentMethod: 'Cash On Delivery',
-        items: orderItems.map((item) => ({
+        items: orderItemsRef.current.map((item) => ({
           _id: item._id || item.id,
           name: item.name,
           tagId: item.tagId || item._id || '',
@@ -369,8 +428,6 @@ const Checkout = () => {
         void e
       }
 
-      // WhatsApp redirection removed as requested
-
       navigate('/confirmation', {
         replace: true,
         state: confirmationState
@@ -379,13 +436,110 @@ const Checkout = () => {
       console.error('Error saving inquiries:', err)
 
       if (err.response && err.response.status === 409) {
-        // Atomic conflict: Animal already sold or reserved
-        // Instead of just a notice, redirect to unavailable page for clarity
-        navigate('/unavailable-item', { replace: true })
+        navigate('/unavailable-item', { 
+          replace: true,
+          state: { message: 'Some items were just sold. Please review your cart again.' }
+        })
         return
       }
 
-      setNotices([{ type: 'warning', text: err.response?.data?.message || err.message || 'Order could not be placed.' }])
+      const message = err.response?.data?.message || err.response?.data?.error || 'Order could not be placed. Please try again.'
+      setNotices([{ type: 'warning', text: message }])
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleWhatsAppOrder = async () => {
+    if (isSubmitting) return
+    if (!isFormValid) {
+      focusFirstInvalid()
+      return
+    }
+    if (!allConfirmed) return
+
+    // Final check before placement
+    setIsSubmitting(true)
+    const itemsChanged = await pruneUnavailable(orderItemsRef.current)
+    if (itemsChanged) {
+      setIsSubmitting(false)
+      return
+    }
+
+    setNotices([])
+
+    try {
+      // First, create the inquiry in our database (without redirecting)
+      const response = await api.post('/api/inquiries/bulk', createOrderPayload('whatsapp'))
+
+      const data = response.data
+      const orderIdFromApi = String(data?.data?.orderId || data?.orderId || '').trim()
+
+      const orderText = buildWhatsAppOrder(orderIdFromApi)
+      const encodedMsg = encodeURIComponent(orderText)
+      const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMsg}`
+      
+      const newWin = window.open(waUrl, '_blank')
+      if (!newWin || newWin.closed || typeof newWin.closed === 'undefined') {
+        alert('Please allow popups to complete your WhatsApp order redirection.')
+      }
+
+      // Clear cart and redirect to success/confirmation page
+      clearCart()
+      setSelectedButcher(null)
+
+      const confirmationState = {
+        fromPurchase: true,
+        orderId: orderIdFromApi,
+        grandTotal,
+        totalItems,
+        subtotal,
+        customerName: formData.fullName,
+        phone: formData.phone,
+        address: formData.address,
+        city: formData.city,
+        email: formData.email,
+        paymentMethod: 'WhatsApp Inquiry',
+        items: orderItemsRef.current.map((item) => ({
+          _id: item._id || item.id,
+          name: item.name,
+          tagId: item.tagId || item._id || '',
+          breed: item.breed || '',
+          weight: item.weight || '',
+          price: item.price,
+          quantity: getEffectiveQuantity(item),
+          image: getThumbnail(item)
+        })),
+        butcher: selectedButcher ? {
+          id: selectedButcher._id,
+          name: selectedButcher.name,
+          phone: selectedButcher.phone || 'Contact support',
+          specialty: selectedButcher.specialty || selectedButcher.experience || 'Professional Butcher'
+        } : null,
+        timestamp: new Date().toISOString()
+      }
+
+      try {
+        sessionStorage.setItem(PURCHASE_STATE_KEY, JSON.stringify(confirmationState))
+      } catch (e) {
+        void e
+      }
+
+      navigate('/confirmation', {
+        replace: true,
+        state: confirmationState
+      })
+    } catch (err) {
+      console.error('Error saving WhatsApp inquiry:', err)
+      if (err.response && err.response.status === 409) {
+        navigate('/unavailable-item', { 
+          replace: true,
+          state: { message: 'Some items were just sold. Please review your cart again.' }
+        })
+        return
+      }
+      const message = err.response?.data?.message || err.response?.data?.error || 'Could not initiate WhatsApp order. Please try again.'
+      setNotices([{ type: 'warning', text: message }])
     } finally {
       setIsSubmitting(false)
     }
@@ -393,16 +547,40 @@ const Checkout = () => {
 
   const pruneUnavailable = useCallback(
     async (items) => {
+      if (checkingRef.current) return false
+      
+      const now = Date.now()
+      if (now - lastCheckRef.current < 15000) return false // Debounce
+      lastCheckRef.current = now
+
+      checkingRef.current = true
+
+      // Safety timeout to prevent permanent lock if API fails
+      const safetyTimeout = setTimeout(() => {
+        checkingRef.current = false
+      }, 8000)
+      
       const ids = (items || [])
         .filter((it) => !isMultiQuantityItem(it))
         .map((it) => String(it._id || it.id || '').trim())
         .filter(Boolean)
-      if (ids.length === 0) return
+      if (ids.length === 0) {
+        clearTimeout(safetyTimeout)
+        checkingRef.current = false
+        return false
+      }
 
       try {
+        setCheckingAvailability(true)
         const result = await animalsService.checkAvailability({ ids })
         const unavailable = Array.isArray(result?.unavailable) ? result.unavailable : []
-        if (unavailable.length === 0) return
+        
+        if (unavailable.length === 0) {
+          clearTimeout(safetyTimeout)
+          checkingRef.current = false
+          setCheckingAvailability(false)
+          return false
+        }
 
         const setIds = new Set(unavailable)
         const removed = (items || []).filter((it) => setIds.has(String(it._id || it.id)))
@@ -412,43 +590,76 @@ const Checkout = () => {
             .filter((it) => !setIds.has(String(it._id || it.id)))
             .map(normalizeOrderItem)
 
-          const msgs = removed.map((it) => ({
-            type: 'info',
-            text: availabilityMessage(it.name || 'This item')
-          }))
-          setNotices((prev) => [...msgs, ...prev].slice(0, 3))
+          const names = removed.map((it) => it.name).filter(Boolean)
+          let message = ''
+
+          if (names.length === 1) {
+            message = `“${names[0]}” has already been purchased by another customer.`
+          } else if (names.length <= 3) {
+            message = `Some items are no longer available: ${names.join(', ')}`
+          } else {
+            message = `Few of your selected items are no longer available (already purchased by another customer).`
+          }
+
+          setNotices((prev) => [
+            { type: 'warning', text: message },
+            ...prev
+          ].slice(0, 3))
+
+          // 🔥 If ALL items gone → redirect 
+          if (kept.length === 0) {
+            navigate('/unavailable-item', { 
+              replace: true,
+              state: { message: 'All items in your cart have just been purchased by others.' }
+            })
+            return true // Signifies redirection or all items gone
+          }
+
+          // ✅ Otherwise update remaining items 
+          await updateCart(kept)
           setOrderItems(kept)
-          updateCart(kept)
+          return true // Signifies some items removed
         }
+        return false
       } catch (e) {
         void e
+        return false
+      } finally {
+        clearTimeout(safetyTimeout)
+        setCheckingAvailability(false)
+        checkingRef.current = false
       }
     },
-    [updateCart]
+    [updateCart, navigate]
   )
 
   useEffect(() => {
-    if (loading || isSubmitting) return
+    if (loading || isSubmitting || hasCheckedOnce) return
     
     // Initial check
-    pruneUnavailable(orderItems)
+    pruneUnavailable(orderItemsRef.current)
+    setHasCheckedOnce(true)
     
     const onFocus = () => {
-      if (!isSubmitting) pruneUnavailable(orderItems)
+      if (!isSubmitting && !checkingRef.current && document.visibilityState === 'visible') {
+        pruneUnavailable(orderItemsRef.current)
+      }
     }
     
     window.addEventListener('focus', onFocus)
     
     // Increased interval to 60s to reduce flickering/load
     const interval = setInterval(() => {
-      if (!isSubmitting) pruneUnavailable(orderItems)
+      if (!isSubmitting && !checkingRef.current && document.visibilityState === 'visible') {
+        pruneUnavailable(orderItemsRef.current)
+      }
     }, 60000)
     
     return () => {
       window.removeEventListener('focus', onFocus)
       clearInterval(interval)
     }
-  }, [loading, orderItems, pruneUnavailable, isSubmitting])
+  }, [loading, pruneUnavailable, isSubmitting, hasCheckedOnce])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -458,7 +669,7 @@ const Checkout = () => {
         setOrderItems([])
         setNotices([{ type: 'warning', text: 'Your cart expired and was cleared.' }])
       }
-    }, 5000)
+    }, 30000)
     return () => clearInterval(interval)
   }, [clearCart])
 
@@ -482,31 +693,9 @@ const Checkout = () => {
   if (!loading && orderItems.length === 0) {
     return (
       <div className="checkout-page checkout-page--visible">
-        <div className="co-empty-state">
-          <div className="co-empty-icon-wrap">
-            <FaBoxOpen className="co-empty-icon" />
-          </div>
-          <h2 className="co-empty-title">No Items to Checkout</h2>
-          <p className="co-empty-text">
-            Aapki cart khali hai. Pehle apni pasand ka janwar cart mein
-            daalein, phir checkout karen.
-          </p>
-          <div className="co-empty-actions">
-            <button
-              className="co-empty-btn co-empty-btn--shop"
-              onClick={() => navigate('/shop')}
-            >
-              <span>Browse Animals</span>
-              <FaArrowRight />
-            </button>
-            <button
-              className="co-empty-btn co-empty-btn--cart"
-              onClick={() => navigate('/cart')}
-            >
-              <FaArrowLeft />
-              <span>Go to Cart</span>
-            </button>
-          </div>
+        <div className="co-loading-state">
+          <FaSpinner className="co-loading-spinner" />
+          <p>Redirecting...</p>
         </div>
       </div>
     )
@@ -517,6 +706,13 @@ const Checkout = () => {
   // ════════════════════════════════════════════
   return (
     <div className={`checkout-page ${isVisible ? 'checkout-page--visible' : ''}`}>
+      {/* Inline Checking Indicator */}
+      {checkingAvailability && (
+        <div className="co-availability-indicator">
+          <FaSpinner className="co-spin" />
+          <span>Verifying latest availability...</span>
+        </div>
+      )}
 
       {/* ══════════ HEADER ══════════ */}
       <section className="co-header">
@@ -617,7 +813,10 @@ const Checkout = () => {
                                   src={getThumbnail(item)}
                                   alt={item.name}
                                   className="co-review-img"
-                                  onError={(e) => { e.target.src = '/placeholder.jpg' }}
+                                  onError={(e) => { 
+                                    e.target.onerror = null
+                                    e.target.src = '/placeholder.jpg' 
+                                  }}
                                 />
                                 {qty > 1 && (
                                   <span className="co-review-qty-badge">x{qty}</span>
@@ -957,11 +1156,20 @@ const Checkout = () => {
 
                       <button
                         className="co-btn co-btn--whatsapp"
-                        onClick={handlePlaceOrder}
+                        onClick={handleWhatsAppOrder}
                         disabled={!allConfirmed || !isFormValid || isSubmitting}
                       >
-                        <FaWhatsapp className="co-btn-icon" />
-                        <span>Place via WhatsApp</span>
+                        {isSubmitting ? (
+                          <>
+                            <span className="co-spinner"></span>
+                            <span>Opening WhatsApp...</span>
+                          </>
+                        ) : (
+                          <>
+                            <FaWhatsapp className="co-btn-icon" />
+                            <span>Place via WhatsApp</span>
+                          </>
+                        )}
                       </button>
                     </div>
 
@@ -981,7 +1189,7 @@ const Checkout = () => {
                     <div className="co-summary-security">
                       <FaLock className="co-summary-security-icon" />
                       <span>
-                        Your data is secure & encrypted. No information is shared with third parties.
+                        Your data is securely transmitted and protected. No information is shared with third parties.
                       </span>
                     </div>
                   </div>

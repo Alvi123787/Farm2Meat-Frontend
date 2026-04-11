@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
   FaShoppingCart,
@@ -110,6 +110,7 @@ const Cart = () => {
 
   const [isVisible, setIsVisible] = useState(false)
   const [removingId, setRemovingId] = useState(null)
+  const checkingRef = useRef(false)
   const [notices, setNotices] = useState([])
 
   // ── Entrance animation ──
@@ -173,11 +174,17 @@ const Cart = () => {
 
   const pruneUnavailable = useCallback(
     async (items) => {
+      if (checkingRef.current) return
+      checkingRef.current = true
+
       const ids = (items || [])
         .filter((it) => !isMultiQuantityItem(it))
         .map((it) => String(it._id || it.id || '').trim())
         .filter(Boolean)
-      if (ids.length === 0) return
+      if (ids.length === 0) {
+        checkingRef.current = false
+        return
+      }
 
       try {
         const result = await animalsService.checkAvailability({ ids })
@@ -191,25 +198,50 @@ const Cart = () => {
           .map(normalizeCartItem)
 
         if (removed.length > 0) {
-          const msgs = removed.map((it) => ({
-            type: 'info',
-            text: availabilityMessage(it.name || 'This item')
-          }))
-          setNotices((prev) => [...msgs, ...prev].slice(0, 3))
-          updateCart(kept)
+          const names = removed.map((it) => it.name).filter(Boolean)
+          let message = ''
+
+          if (names.length === 1) {
+            message = `“${names[0]}” has already been purchased by another customer.`
+          } else if (names.length <= 3) {
+            message = `Some items are no longer available: ${names.join(', ')}`
+          } else {
+            message = `Few of your selected items are no longer available (already purchased by another customer).`
+          }
+
+          setNotices((prev) => [
+            { type: 'warning', text: message },
+            ...prev
+          ].slice(0, 3))
+
+          if (kept.length === 0) {
+            navigate('/unavailable-item', { replace: true })
+            return
+          }
+          await updateCart(kept)
         }
       } catch (e) {
         void e
+      } finally {
+        checkingRef.current = false
       }
     },
-    [updateCart]
+    [updateCart, navigate]
   )
 
   useEffect(() => {
     pruneUnavailable(cartItems)
-    const onFocus = () => pruneUnavailable(cartItems)
+    const onFocus = () => {
+      if (!checkingRef.current && document.visibilityState === 'visible') {
+        pruneUnavailable(cartItems)
+      }
+    }
     window.addEventListener('focus', onFocus)
-    const interval = setInterval(() => pruneUnavailable(cartItems), 20000)
+    const interval = setInterval(() => {
+      if (!checkingRef.current && document.visibilityState === 'visible') {
+        pruneUnavailable(cartItems)
+      }
+    }, 20000)
     return () => {
       window.removeEventListener('focus', onFocus)
       clearInterval(interval)

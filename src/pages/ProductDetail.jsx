@@ -175,7 +175,10 @@ const ProductDetail = () => {
           const isReserved = status === 'reserved' || status === 'Reserved'
 
           if (isSold || isReserved) {
-            navigate('/unavailable-item', { replace: true })
+            navigate('/unavailable-item', { 
+              replace: true,
+              state: { productName: animal.name } 
+            })
             return
           }
           setProductData(animal)
@@ -295,7 +298,10 @@ const ProductDetail = () => {
       const isStillAvailable = status === 'available' || status === 'new' || status === 'Available'
 
       if (!isStillAvailable) {
-        navigate('/unavailable-item', { replace: true })
+        navigate('/unavailable-item', { 
+          replace: true,
+          state: { productName: productData.name } 
+        })
         return
       }
 
