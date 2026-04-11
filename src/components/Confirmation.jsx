@@ -71,7 +71,11 @@ const Confirmation = () => {
     } catch (e) {
       void e;
     }
-    setShowExperienceModal(true);
+    // Small delay before showing the experience modal to ensure user sees success message
+    const timer = setTimeout(() => {
+      setShowExperienceModal(true);
+    }, 1500);
+    return () => clearTimeout(timer);
   }, [s.orderId, reviewDismissedKey]);
 
   const handleExperienceModalClose = () => {
@@ -105,7 +109,7 @@ const Confirmation = () => {
       address: `${s.address || ''}, ${s.city || ''}`,
     },
     delivery: {
-      expectedDate: '2-3 Business Days',
+      expectedDate: '2-3 hours',
       message: 'Our team will contact you for delivery confirmation.',
     },
     products: s.items || [],

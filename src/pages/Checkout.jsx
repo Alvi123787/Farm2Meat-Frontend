@@ -244,8 +244,11 @@ const Checkout = () => {
     setExpandedSection((prev) => ({ ...prev, [key]: !prev[key] }))
   }
 
-  const buildWhatsAppOrder = () => {
+  const buildWhatsAppOrder = (orderId) => {
     let msg = `Assalam o Alaikum!%0A%0A✅ *ORDER CONFIRMATION — Farm2Meat*%0A%0A`
+    if (orderId) {
+      msg += `*Order ID: ${orderId}*%0A`
+    }
     msg += `━━━━━━━━━━━━━━━%0A`
 
     orderItems.forEach((item, i) => {
@@ -319,7 +322,8 @@ const Checkout = () => {
       const data = response.data
       
       // Axios throws for non-2xx status codes, so 409 will be handled in catch
-      const orderIdFromApi = String(data?.orderId || '').trim()
+      // The backend returns { success: true, data: { orderId: '...' } }
+      const orderIdFromApi = String(data?.data?.orderId || data?.orderId || '').trim()
 
       clearCart()
       setSelectedButcher(null)
@@ -365,8 +369,7 @@ const Checkout = () => {
         void e
       }
 
-      const msg = buildWhatsAppOrder()
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank')
+      // WhatsApp redirection removed as requested
 
       navigate('/confirmation', {
         replace: true,
