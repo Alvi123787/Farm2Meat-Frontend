@@ -434,13 +434,56 @@
   }
 
   .butcher-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     justify-content: center;
-    gap: 12px;
+    gap: 16px;
+    padding: 0 12px;
   }
 
   .butcher-card {
-    padding: 24px 20px 24px;
+    padding: 24px 16px 20px;
+    max-width: none;
+  }
+
+  .experience-badge {
+    top: 12px;
+    left: 12px;
+    padding: 4px 10px;
+    font-size: 0.7rem;
+  }
+
+  .butcher-avatar-wrapper {
+    width: 90px;
+    height: 90px;
+    margin-bottom: 16px;
+  }
+
+  .butcher-name {
+    font-size: 1.15rem;
+  }
+
+  .butcher-specialty span {
+    font-size: 0.7rem;
+    padding: 3px 10px;
+  }
+
+  .butcher-location {
+    font-size: 0.85rem;
+    padding: 6px 0;
+  }
+
+  .contact-btn {
+    min-height: 48px;
+    padding: 10px 14px;
+    border-radius: 12px;
+  }
+
+  .contact-text {
+    font-size: 0.85rem;
+  }
+
+  .contact-label {
+    display: none;
   }
 }
 
@@ -462,9 +505,20 @@
     font-size: 0.88rem;
   }
 
+  .butcher-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 8px;
+  }
+
+  .butcher-card {
+    max-width: 320px;
+    padding: 28px 20px;
+  }
+
   .butcher-avatar-wrapper {
-    width: 100px;
-    height: 100px;
+    width: 110px;
+    height: 110px;
   }
 
   .contact-btn {
@@ -473,11 +527,12 @@
   }
 
   .contact-text {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
   }
 
   .contact-label {
-    font-size: 0.68rem;
+    display: block;
+    font-size: 0.7rem;
   }
 
   .footer-text {
