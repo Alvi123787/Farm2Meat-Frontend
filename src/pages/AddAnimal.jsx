@@ -291,7 +291,7 @@ const AddAnimal = () => {
 
   const addImages = (fileList) => {
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
-    const maxSize = 5 * 1024 * 1024
+    const maxSize = 20 * 1024 * 1024 // 20MB for images
 
     const validFiles = Array.from(fileList).filter(file => {
       if (!validTypes.includes(file.type)) return false
@@ -300,7 +300,7 @@ const AddAnimal = () => {
     })
 
     if (validFiles.length === 0 && fileList.length > 0) {
-      setErrorMsg('Invalid files. Only JPEG, PNG, WebP under 5MB allowed.')
+      setErrorMsg('Invalid files. Only JPEG, PNG, WebP under 20MB allowed.')
       return
     }
 
@@ -330,7 +330,7 @@ const AddAnimal = () => {
 
   const addVideos = (fileList) => {
     const validTypes = ['video/mp4', 'video/webm', 'video/quicktime']
-    const maxSize = 50 * 1024 * 1024
+    const maxSize = 100 * 1024 * 1024 // 100MB for videos
 
     const validFiles = Array.from(fileList).filter(file => {
       if (!validTypes.includes(file.type)) return false
@@ -339,7 +339,7 @@ const AddAnimal = () => {
     })
 
     if (validFiles.length === 0 && fileList.length > 0) {
-      setErrorMsg('Invalid files. Only MP4, WebM under 50MB allowed.')
+      setErrorMsg('Invalid files. Only MP4, WebM under 100MB allowed.')
       return
     }
 
