@@ -539,10 +539,12 @@ const Checkout = () => {
           <div className="row">
             <div className="col-12">
               <div className="co-header-content">
-                <button className="co-back-link" onClick={() => navigate('/cart')}>
-                  <FaArrowLeft />
-                  <span>Back to Cart</span>
-                </button>
+                <div className="co-header-top-nav">
+                  <button className="co-back-link" onClick={() => navigate('/cart')}>
+                    <FaArrowLeft />
+                    <span>Back to Cart</span>
+                  </button>
+                </div>
                 <div className="co-header-main">
                   <div className="co-header-lock">
                     <FaLock className="co-header-lock-icon" />

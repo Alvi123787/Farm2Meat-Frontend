@@ -271,19 +271,14 @@
     align-items: center;
   }
 
-  .cart-header-logo-wrap {
-    flex: 0 0 50px;
-  }
-
-  .header-spacer {
-    display: block;
-    width: 50px;
-    flex: 0 0 50px;
+  .unified-header-top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
   }
 
   .cart-back-link {
-    margin-left: auto;
-    margin-right: auto;
     margin-bottom: 0;
   }
 

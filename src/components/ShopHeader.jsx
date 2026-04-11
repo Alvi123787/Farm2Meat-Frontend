@@ -26,20 +26,11 @@ export default function ShopHeader({ activeCategory }) {
           <div className="col-12">
             <div className={`shopHeader-content ${visible ? 'shopHeader-content--visible' : ''}`}>
               <div className="unified-header-top">
-                <div className="shopHeader-logo-wrap logo-visibility-wrapper" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-                  <img 
-                    src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-                    alt="Farm2Meat Logo" 
-                    style={{ width: '50px', height: '50px', objectFit: 'contain' }}
-                  />
-                </div>
                 <button className="shopHeader-backLink" type="button" onClick={() => navigate('/')}>
                   <FaArrowLeft />
                   <span>Back to Home</span>
                 </button>
-                {/* Spacer to keep backLink centered on mobile when logo is on the left */}
-                 <div className="shopHeader-header-spacer"></div>
-               </div>
+              </div>
                <div className="shopHeader-main">
                 <div className="shopHeader-iconWrap">
                   <FaStore className="shopHeader-icon" />
