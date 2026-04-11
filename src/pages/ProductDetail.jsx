@@ -160,26 +160,50 @@ const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState('details')
 
   useEffect(() => {
-    const fetchProduct = async () => {
+    const fetchProduct = async (isManualCheck = false) => {
       try {
-        setLoading(true)
+        if (!isManualCheck) setLoading(true)
         setError('')
         const response = await api.get(`/api/animals/${id}`)
         const result = response.data
         if (result.success && result.data) {
-          setProductData(result.data)
+          const animal = result.data
+          const status = animal.status || 'available'
+          const isSold = status === 'sold' || status === 'Sold'
+          const isReserved = status === 'reserved' || status === 'Reserved'
+
+          if (isSold || isReserved) {
+            navigate('/unavailable-item', { replace: true })
+            return
+          }
+          setProductData(animal)
         } else {
-          setError('Animal not found. It may have been removed.')
+          navigate('/unavailable-item', { replace: true })
         }
       } catch (err) {
         console.error('Fetch error:', err)
-        setError('Cannot connect to server. Please try again later.')
+        if (!isManualCheck) setError('Cannot connect to server. Please try again later.')
       } finally {
-        setLoading(false)
+        if (!isManualCheck) setLoading(false)
       }
     }
-    if (id) fetchProduct()
-  }, [id])
+
+    if (id) {
+      fetchProduct()
+
+      // Real-time check when user returns to tab
+      const handleFocus = () => fetchProduct(true)
+      window.addEventListener('focus', handleFocus)
+      
+      // Periodic check every 30s
+      const interval = setInterval(() => fetchProduct(true), 30000)
+
+      return () => {
+        window.removeEventListener('focus', handleFocus)
+        clearInterval(interval)
+      }
+    }
+  }, [id, navigate])
 
   useEffect(() => {
     if (productData) {
@@ -257,10 +281,31 @@ const ProductDetail = () => {
     setTimeout(() => setAddedToCart(false), 3000)
   }
 
-  const handleBuyNow = () => {
-    if (!productData || !isAvailable) return
-    addItem(productData)
-    navigate('/cart', { state: { fromBuyNow: true } })
+  const handleBuyNow = async () => {
+    if (!productData) return
+
+    // Final availability check before checkout
+    try {
+      setLoading(true)
+      const response = await api.get(`/api/animals/${id}`)
+      const result = response.data
+      const status = result?.data?.status || 'available'
+      const isStillAvailable = status === 'available' || status === 'new' || status === 'Available'
+
+      if (!isStillAvailable) {
+        navigate('/unavailable-item', { replace: true })
+        return
+      }
+
+      addItem(productData)
+      navigate('/cart', { state: { fromBuyNow: true } })
+    } catch (err) {
+      console.error('Pre-checkout check failed:', err)
+      addItem(productData)
+      navigate('/cart', { state: { fromBuyNow: true } })
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleShare = async () => {

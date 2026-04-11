@@ -380,21 +380,8 @@ const Checkout = () => {
 
       if (err.response && err.response.status === 409) {
         // Atomic conflict: Animal already sold or reserved
-        setNotices([{ 
-          type: 'warning', 
-          text: "This animal was just sold to another user. Please refresh your cart." 
-        }])
-        
-        // Controlled one-time refresh
-        if (!hasRefreshed) {
-          sessionStorage.setItem('checkout_has_refreshed', 'true')
-          setHasRefreshed(true)
-          
-          // Wait a bit so the user can see the message before refresh
-          setTimeout(() => {
-            window.location.reload()
-          }, 3500)
-        }
+        // Instead of just a notice, redirect to unavailable page for clarity
+        navigate('/unavailable-item', { replace: true })
         return
       }
 
