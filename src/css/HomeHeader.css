@@ -62,46 +62,55 @@
 }
 
 /* ===== INSTALL BUTTON ===== */
-.hero__install {
+.hero__header-row {
   position: absolute;
   top: 20px;
+  left: 20px;
   right: 20px;
   z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .hero__header-row {
+    top: 40px;
+    left: 48px;
+    right: 48px;
+  }
+}
+
+.hero__install {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 8px;
 }
 
-@media (min-width: 768px) {
-  .hero__install {
-    top: 32px;
-    right: 32px;
-  }
-}
-
 .install-btn {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 18px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 100px;
   color: var(--color-light);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s var(--transition-smooth);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s var(--transition-smooth);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .install-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--color-accent);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .install-btn:disabled {
@@ -120,58 +129,67 @@
 }
 
 .install-feedback {
-  padding: 10px 16px;
-  background: rgba(15, 15, 15, 0.9);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 12px;
-  color: rgba(255, 255, 255, 0.9);
+  padding: 12px 20px;
+  background: rgba(15, 15, 15, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 16px;
+  color: rgba(255, 255, 255, 0.95);
   font-size: 13px;
-  max-width: 260px;
+  font-weight: 500;
+  max-width: 280px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  animation: slideDown 0.3s ease;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-20px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 /* ===== LOGO ===== */
 .hero__logo {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 10;
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
 .hero__logo:hover {
-  transform: scale(1.05);
+  transform: scale(1.08) translateY(-3px);
+  background: rgba(255, 255, 255, 0.18);
+  border-color: var(--color-accent);
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
 }
 
 .hero__logo img {
-  width: 100%;
-  height: 100%;
+  width: 75%;
+  height: 75%;
   object-fit: contain;
-  filter: brightness(0) invert(1);
 }
 
 @media (min-width: 768px) {
   .hero__logo {
-    top: 32px;
-    left: 32px;
-    width: 56px;
-    height: 56px;
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
   }
 }
 
@@ -377,53 +395,88 @@
 }
 
 .feature-card {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 16px 18px;
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  gap: 16px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  transition: all 0.3s ease;
+  border-radius: 20px;
+  transition: all 0.4s var(--transition-smooth);
+  overflow: hidden;
+}
+
+.feature-card__glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(212, 175, 55, 0.15) 0%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
 }
 
 .feature-card:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(212, 175, 55, 0.3);
-  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(212, 175, 55, 0.4);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.feature-card:hover .feature-card__glow {
+  opacity: 1;
 }
 
 .feature-card__icon {
-  font-size: 24px;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(212, 175, 55, 0.15);
-  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(139, 0, 0, 0.1));
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 14px;
+  color: var(--color-accent);
+  flex-shrink: 0;
+  transition: all 0.4s ease;
+}
+
+.feature-card:hover .feature-card__icon {
+  transform: scale(1.1) rotate(5deg);
+  background: var(--color-accent);
+  color: var(--color-dark);
+}
+
+.feature-card__icon svg {
+  width: 24px;
+  height: 24px;
 }
 
 .feature-card__content {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .feature-card__value {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
   color: var(--color-light);
+  letter-spacing: -0.5px;
 }
 
 .feature-card__label {
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 /* ===== SCROLL INDICATOR ===== */

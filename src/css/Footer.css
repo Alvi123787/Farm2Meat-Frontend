@@ -287,6 +287,12 @@ a.footer-contact-value:hover {
   .footer-logo-wrap {
     display: flex;
     justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .footer-brand {
+    text-align: center;
   }
 
   .footer-col-title::after {

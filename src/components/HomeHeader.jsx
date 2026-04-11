@@ -54,31 +54,32 @@ const HomeHeader = () => {
         <div className="hero__overlay" />
       </div>
 
-      {/* Install Button */}
-      {showInstallButton && (
-        <div className="hero__install">
-          <button
-            className={`install-btn ${isInstalled ? "install-btn--installed" : ""}`}
-            onClick={handleInstallClick}
-            disabled={isInstalled}
-          >
-            <svg className="install-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <span>{installButtonLabel}</span>
-          </button>
-          {installFeedback && (
-            <div className="install-feedback">{installFeedback}</div>
-          )}
+      {/* Top Header Row (Logo & Install) */}
+      <div className="hero__header-row">
+        <div className="hero__logo" onClick={() => navigate('/')}>
+          <img 
+            src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
+            alt="Farm2Meat" 
+          />
         </div>
-      )}
 
-      {/* Logo */}
-      <div className="hero__logo" onClick={() => navigate('/')}>
-        <img 
-          src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-          alt="Farm2Meat" 
-        />
+        {showInstallButton && (
+          <div className="hero__install">
+            <button
+              className={`install-btn ${isInstalled ? "install-btn--installed" : ""}`}
+              onClick={handleInstallClick}
+              disabled={isInstalled}
+            >
+              <svg className="install-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span>{installButtonLabel}</span>
+            </button>
+            {installFeedback && (
+              <div className="install-feedback">{installFeedback}</div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Content */}
@@ -123,24 +124,45 @@ const HomeHeader = () => {
 
           <div className="hero__features">
             <div className="feature-card">
-              <div className="feature-card__icon">⚖️</div>
+              <div className="feature-card__glow" />
+              <div className="feature-card__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  <path d="m9 12 2 2 4-4" />
+                </svg>
+              </div>
               <div className="feature-card__content">
                 <span className="feature-card__value">100%</span>
-                <span className="feature-card__label">Accurate Weight</span>
+                <span className="feature-card__label">Verified Weight</span>
               </div>
             </div>
+
             <div className="feature-card">
-              <div className="feature-card__icon">🌿</div>
+              <div className="feature-card__glow" />
+              <div className="feature-card__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+              </div>
               <div className="feature-card__content">
-                <span className="feature-card__value">Organic</span>
+                <span className="feature-card__value">Premium</span>
                 <span className="feature-card__label">Farm Raised</span>
               </div>
             </div>
+
             <div className="feature-card">
-              <div className="feature-card__icon">🚚</div>
+              <div className="feature-card__glow" />
+              <div className="feature-card__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="1" y="3" width="15" height="13" />
+                  <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                  <circle cx="5.5" cy="18.5" r="2.5" />
+                  <circle cx="18.5" cy="18.5" r="2.5" />
+                </svg>
+              </div>
               <div className="feature-card__content">
-                <span className="feature-card__value">Same Day</span>
-                <span className="feature-card__label">Delivery</span>
+                <span className="feature-card__value">Free</span>
+                <span className="feature-card__label">RYK Delivery</span>
               </div>
             </div>
           </div>
