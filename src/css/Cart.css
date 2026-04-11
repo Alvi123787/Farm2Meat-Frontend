@@ -248,6 +248,69 @@
   margin: 0 auto;
 }
 
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1024px) {
+  .cart-layout {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cart-header-section {
+    padding: 60px 16px 30px;
+    text-align: center;
+  }
+  
+  .cart-header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .cart-header-logo-wrap {
+    flex: 0 0 50px;
+  }
+
+  .header-spacer {
+    display: block;
+    width: 50px;
+    flex: 0 0 50px;
+  }
+
+  .cart-back-link {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0;
+  }
+
+  .cart-header-main {
+    align-items: center;
+    text-align: center;
+  }
+
+  .cart-header-title-row {
+    gap: 12px;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .cart-header-icon {
+    font-size: 1.5rem;
+  }
+
+  .cart-header-title {
+    font-size: 1.75rem;
+  }
+
+  .cart-free-delivery-badge {
+    margin: 0 auto;
+  }
+}
+
 .cart-empty-icon-wrap {
   width: 100px;
   height: 100px;

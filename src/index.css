@@ -44,39 +44,68 @@ body {
   width: 100%;
 }
 
-/* Logo Visibility Utility for Dark Backgrounds - Perfect Circle & Premium Style */
+/* Logo Visibility Utility for Dark Backgrounds - Amazing & Clean Design */
 .logo-visibility-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 64px; /* Fixed width to ensure circle */
-  height: 64px; /* Fixed height to ensure circle */
-  padding: 0; /* Remove padding to avoid ovaling */
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
   border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border: 1.5px solid rgba(212, 175, 55, 0.3); /* Subtle Golden Border */
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.2),
-    inset 0 0 15px rgba(255, 255, 255, 0.05);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  overflow: hidden; /* Ensure image doesn't bleed out */
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 0 12px rgba(212, 175, 55, 0.1);
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.logo-visibility-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    transparent, 
+    rgba(212, 175, 55, 0.1), 
+    transparent 20%
+  );
+  animation: logoRotate 4s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes logoRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .logo-visibility-wrapper img {
-  width: 75%; /* Control logo size inside circle */
+  width: 70%;
   height: 75%;
   object-fit: contain;
+  z-index: 2;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .logo-visibility-wrapper:hover {
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+  border-color: rgba(212, 175, 55, 0.6);
   transform: translateY(-4px) scale(1.05);
   box-shadow: 
-    0 15px 45px rgba(0, 0, 0, 0.3),
-    inset 0 0 200px rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.4);
+    0 15px 45px rgba(0, 0, 0, 0.4),
+    inset 0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+.logo-visibility-wrapper:hover img {
+  transform: scale(1.1);
 }
 
 /* Unified Header Styling for Consistency */
@@ -91,5 +120,29 @@ body {
 @media (max-width: 768px) {
   .unified-header-top {
     margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .unified-header-top > .logo-visibility-wrapper {
+    order: -1;
+    margin: 0 !important;
+  }
+
+  .unified-header-top > *:not(.logo-visibility-wrapper) {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* Add a spacer if there's only one other element to keep it centered */
+  .unified-header-top:has(> .logo-visibility-wrapper):not(:has(> .header-spacer))::after {
+    content: '';
+    width: 50px; /* Match logo width on mobile */
+    height: 1px;
+    display: block;
   }
 }

@@ -284,6 +284,11 @@ a.footer-contact-value:hover {
     text-align: center;
   }
 
+  .footer-logo-wrap {
+    display: flex;
+    justify-content: center;
+  }
+
   .footer-col-title::after {
     left: 50%;
     transform: translateX(-50%);

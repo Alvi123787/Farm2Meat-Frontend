@@ -297,17 +297,18 @@ const ProductDetail = () => {
             <div className="col-12">
               <div className="pdp-header-content">
                 <div className="unified-header-top">
-                  <button className="pdp-back-link" onClick={() => navigate('/shop')}>
-                    <FaArrowLeft />
-                    <span>Back to Shop</span>
-                  </button>
-                  <div className="pdp-header-logo-wrap logo-visibility-wrapper" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+                  <div className="pdp-logo-wrap logo-visibility-wrapper" onClick={() => navigate('/')}>
                     <img 
                       src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
                       alt="Farm2Meat Logo" 
                       style={{ width: '50px', height: '50px', objectFit: 'contain' }}
                     />
                   </div>
+                  <button className="pdp-back-btn" onClick={() => navigate(-1)}>
+                    <FaArrowLeft />
+                    <span>Back</span>
+                  </button>
+                  <div className="header-spacer"></div>
                 </div>
                 <div className="pdp-header-main">
                   <div className="pdp-header-title-row">

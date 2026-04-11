@@ -155,18 +155,59 @@
 @media (max-width: 768px) {
   .pdp-header-section {
     padding: 60px 16px 30px;
+    text-align: center;
   }
   
+  .pdp-header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .pdp-logo-wrap {
+    flex: 0 0 50px;
+  }
+
+  .header-spacer {
+    display: block;
+    width: 50px;
+    flex: 0 0 50px;
+  }
+
+  .pdp-back-btn {
+    margin-left: auto;
+    margin-right: auto;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+  }
+
+  .pdp-header-main {
+    align-items: center;
+    text-align: center;
+  }
+
   .pdp-header-title-row {
     gap: 12px;
+    flex-direction: column;
+    align-items: center;
   }
 
   .pdp-header-icon {
     font-size: 1.5rem;
+    margin-bottom: 4px;
   }
 
   .pdp-header-title {
     font-size: 1.75rem;
+  }
+
+  .pdp-header-badge {
+    margin: 0 auto;
   }
 }
 

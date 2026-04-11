@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- White Rounded Background (Pill-like rounded corners) -->
+  <rect width="32" height="32" rx="10" fill="white"/>
+  
+  <!-- Logo Centered with Padding -->
+  <image 
+    href="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
+    x="5" y="5" 
+    width="22" height="22"
+  />
+</svg>
