@@ -276,13 +276,8 @@ const Cart = () => {
       console.error('Error saving inquiry:', err)
       
       if (err.response && err.response.status === 409) {
-        setNotices([{ 
-          type: 'warning', 
-          text: "This animal was just sold to another user. Please refresh your cart." 
-        }])
-        setTimeout(() => {
-          window.location.reload()
-        }, 3500)
+        // Atomic conflict: Animal already sold or reserved
+        navigate('/unavailable-item', { replace: true })
         return
       }
     }

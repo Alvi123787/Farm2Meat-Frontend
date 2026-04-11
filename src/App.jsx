@@ -31,6 +31,7 @@ import AdminReviews from './pages/AdminReviews'
 import AdminUsers from './pages/AdminUsers'
 import AdminButchers from './pages/AdminButchers'
 import WelcomeModal from './components/WelcomeModal';
+import UnavailableItem from './pages/UnavailableItem'
 import { AuthProvider } from './contexts/AuthContext.jsx';
 import { CartProvider } from './contexts/CartContext';
 import PageTitle from './components/PageTitle'
@@ -63,6 +64,7 @@ function AppShell() {
           <Route path="/signup" element={withPageTitle(<Signup />, 'Sign Up')} />
           <Route path="/login" element={withPageTitle(<Login />, 'Login')} />
           <Route path="/shop/:id" element={withPageTitle(<ProductDetail />, 'Product Details')} />
+          <Route path="/unavailable-item" element={withPageTitle(<UnavailableItem />, 'Unavailable Item')} />
           <Route path="/admin-dashboard" element={<Navigate to="/admin" replace />} />
           <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
 

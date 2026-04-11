@@ -162,8 +162,10 @@ const ProductDetail = () => {
   useEffect(() => {
     const fetchProduct = async (isManualCheck = false) => {
       try {
-        if (!isManualCheck) setLoading(true)
-        setError('')
+        if (!isManualCheck) {
+          setLoading(true)
+          setError('')
+        }
         const response = await api.get(`/api/animals/${id}`)
         const result = response.data
         if (result.success && result.data) {
