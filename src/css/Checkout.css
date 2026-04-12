@@ -662,6 +662,154 @@
 }
 
 /* ============================================================
+   ANIMAL CARE SECTION (SUCCESS PAGE)
+   ============================================================ */
+
+.co-success-care-card {
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  margin-top: 24px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  animation: coSlideUp 0.6s ease-out forwards;
+}
+
+.co-success-care-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(128, 0, 0, 0.03);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.co-success-care-header-icon {
+  font-size: 1.2rem;
+  color: var(--primary);
+}
+
+.co-success-care-header h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.co-success-care-body {
+  padding: 20px;
+}
+
+.co-success-care-status-msg {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.co-success-care-status-msg--selected {
+  color: var(--success-dark, #2e7d32);
+}
+
+.co-success-care-payment-box {
+  margin-top: 16px;
+}
+
+.co-success-care-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #856404;
+  margin-bottom: 16px;
+}
+
+.co-success-care-alert-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.co-success-care-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--bg-main);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px dashed var(--border-light);
+}
+
+.co-success-care-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.co-highlight-price {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.co-success-care-explanation {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.co-success-care-explanation p {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+  position: relative;
+  padding-left: 15px;
+}
+
+.co-success-care-explanation p::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-weight: bold;
+}
+
+.co-success-care-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: #f8f9fa;
+  border-top: 1px solid var(--border-light);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.co-success-care-footer-icon {
+  color: var(--primary);
+  opacity: 0.7;
+}
+
+@media (max-width: 576px) {
+  .co-success-care-card {
+    border-radius: 0;
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+}
+
+/* ============================================================
    FORM ELEMENTS
    ============================================================ */
 

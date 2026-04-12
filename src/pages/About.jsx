@@ -65,26 +65,26 @@ function useReveal(threshold = 0.15) {
 const values = [
   {
     icon: <FaHandshake />,
-    title: 'Amanat Dari',
-    desc: 'Hum apne har customer ke saath poori imaandari se deal karte hain. Janwar ka wazan, sehat aur nasl — sab kuch bilkul transparent hota hai. Humara maqsad sirf ek baar bechna nahi, balke aapka bharosa jeetna hai jo zindagi bhar qaim rahe.',
+    title: 'Trust & Integrity',
+    desc: 'We deal with every customer with complete honesty. Animal weight, health, and breed — everything is fully transparent. Our goal is not just to sell once, but to win your trust that lasts a lifetime.',
     color: '128, 0, 0'
   },
   {
     icon: <FaHeart />,
-    title: 'Janwaron Ki Dekhbhaal',
-    desc: 'Humare yahan har janwar ko puri mohabbat aur ehtyaat se rakha jaata hai. Unki khoraak, saaf paani, aur sehat ka poora khayal rakha jaata hai. Hum yakin rakhte hain ke ek sehatmand janwar hi aapke ghar mein barkat laata hai.',
+    title: 'Animal Care',
+    desc: 'Every animal here is kept with full love and care. Their feed, clean water, and health are fully taken care of. We believe that only a healthy animal brings blessings to your home.',
     color: '139, 69, 19'
   },
   {
     icon: <FaShieldAlt />,
-    title: 'Quality Ka Waada',
-    desc: 'Farm2Meat ka har janwar carefully selected hota hai. Hum kabhi bhi quality par samjhauta nahi karte. Har bakra, bakri aur patth ko experts ki nigrani mein check kiya jaata hai taake aapko sirf behtareen milway.',
+    title: 'Quality Promise',
+    desc: 'Every animal at Farm2Meat is carefully selected. We never compromise on quality. Every goat and sheep is checked under the supervision of experts to ensure you get only the best.',
     color: '34, 85, 34'
   },
   {
     icon: <FaGem />,
     title: 'Customer First',
-    desc: 'Aap humari sabse bari priority hain. Aapki har zaroorat, har sawaal, aur har concern ka jawaab dena humari zimmedari hai. Chahe raat ho ya din, humari team aapki khidmat ke liye hamesha tayyar rehti hai — kyunke aap humara asal sarmaya hain.',
+    desc: 'You are our top priority. Answering your every need, question, and concern is our responsibility. Whether day or night, our team is always ready for your service — because you are our true asset.',
     color: '128, 0, 0'
   }
 ]
@@ -93,32 +93,32 @@ const offerings = [
   {
     icon: <FaBalanceScale />,
     title: 'Honest Weight System',
-    desc: 'Digital weighing machine se accurate wazan — koi andaza nahi, koi dhoka nahi. Aap khud apni aankhon se wazan dekh sakte hain aur poori tasalli ke saath khareedari kar sakte hain.'
+    desc: 'Accurate weight from a digital weighing machine — no guesses, no deception. You can see the weight with your own eyes and shop with complete satisfaction.'
   },
   {
     icon: <FaWhatsapp />,
     title: 'Live Video Inspection',
-    desc: 'Ghar baithe WhatsApp par live video call ke zariye apna janwar dekh sakte hain. Har angle se, har detail — taake aapko koi bhi shak na rahe aur faisla karna aasan ho jaye.'
+    desc: 'You can see your animal via live video call on WhatsApp from the comfort of your home. Every angle, every detail — so that you have no doubt and making a decision becomes easy.'
   },
   {
     icon: <FaTruck />,
     title: 'Safe Home Delivery',
-    desc: 'Rahim Yar Khan aur aas paas ke ilaqon mein safe aur timely delivery. Janwar ko poori hifazat ke saath aapke darwaze tak pohunchaya jaata hai — bilkul waise jaisa aapne video mein dekha tha.'
+    desc: 'Safe and timely delivery in Rahim Yar Khan and surrounding areas. The animal is delivered to your doorstep with full safety — exactly as you saw in the video.'
   },
   {
     icon: <FaSeedling />,
     title: 'Farm-Raised Animals',
-    desc: 'Sab janwar khule aur saaf mahol mein paale jaate hain. Qudrati charagah, saaf paani aur poori ghiza — yahi wajah hai ke humare janwar sehatmand aur active hote hain.'
+    desc: 'All animals are raised in open and clean environments. Natural pastures, clean water, and full nutrition — this is why our animals are healthy and active.'
   },
   {
     icon: <FaMedal />,
-    title: 'Premium Naslein',
-    desc: 'Hum sirf behtareen naslon ke janwar rakhte hain jo apni khoobsurati, wazan aur sehat ke liye mashhoor hain. Chahe Qurbani ke liye ho ya palne ke liye — har nasl ka apna maqaam hai.'
+    title: 'Premium Breeds',
+    desc: 'We only keep the best breeds of animals that are famous for their beauty, weight, and health. Whether for Qurbani or for raising — every breed has its own place.'
   },
   {
     icon: <FaPhoneAlt />,
     title: '24/7 Support',
-    desc: 'Humari team hamesha aapki madad ke liye haazir hai. Koi bhi sawaal ho, koi bhi mushkil — bas ek call ya message karein. Hum aapki baat sunne aur masla hal karne mein yakeen rakhte hain.'
+    desc: 'Our team is always present for your help. Any question, any difficulty — just a call or message away. We believe in listening to you and solving the problem.'
   }
 ]
 
@@ -173,7 +173,7 @@ export default function About() {
                   <div>
                     <h1 className="abt-header-title">About Farm2Meat</h1>
                     <p className="abt-header-sub">
-                      Bharosa, quality aur sahi daam — hamara waada, aapka itmaad.
+                      Trust, quality, and fair prices — our promise, your confidence.
                     </p>
                   </div>
                 </div>
@@ -196,7 +196,7 @@ export default function About() {
             <div className="col-12">
               <span className="abt-section-badge">OUR STORY</span>
               <h2 className="abt-section-title">
-                Hamari <span className="abt-section-highlight">Kahani</span>
+                Our <span className="abt-section-highlight">Story</span>
               </h2>
               <div className="abt-section-divider">
                 <span className="abt-sec-div-dot"></span>
@@ -215,32 +215,26 @@ export default function About() {
                     <FaQuoteLeft />
                   </div>
                   <p className="abt-story-text">
-                    Yeh safar shuru hua ek bohat seedhi si soch se — ke Rahim Yar Khan
-                    ke logon ko ghar baithe behtareen janwar milne chahiye bina kisi
-                    dhoke ya pareshani ke. Hum ne dekha ke mandi mein aksar log
-                    pareshan hote hain — wazan mein farq hota hai, quality ka pata nahi
-                    chalta, aur bharosa karna mushkil hota hai.
+                    This journey started with a very simple thought — that the people of Rahim Yar Khan
+                    should get the best animals at home without any deception or trouble. We saw that
+                    in the market (mandi), people are often troubled — there is a difference in weight,
+                    quality is unknown, and it's hard to trust.
                   </p>
                   <p className="abt-story-text">
-                    Isi mushkil ko hal karne ke liye Farm2Meat ka tasawwur paida hua.
-                    Humne socha ke agar hum technology aur imaandari ko ek saath laye
-                    — toh ek aisa platform bana sakte hain jahan logon ko na sirf
-                    achi quality milay, balke poora bharosa bhi ho. Aur yahi humne kiya.
+                    To solve this problem, the concept of Farm2Meat was born. We thought that if we
+                    bring technology and honesty together — then we can create a platform where people
+                    not only get good quality but also have complete trust. And that's exactly what we did.
                   </p>
                   <p className="abt-story-text">
-                    Aaj Farm2Meat Rahim Yar Khan ka ek jaana-pehchana naam hai. Humare
-                    customers ki meherbani se hum rooz barh rahe hain. Har janwar jo
-                    hum bechte hain, uske peeche humari poori team ki mehnat, lagan
-                    aur aapke liye dua hoti hai. Yeh sirf karobaar nahi — yeh humara
-                    junoon hai, humari zimmedari hai, aur humara waada hai ke hum
-                    hamesha aapke saath imaandari se pesh aayenge.
+                    Today, Farm2Meat is a well-known name in Rahim Yar Khan. Thanks to our customers,
+                    we are growing every day. Behind every animal we sell is the hard work, dedication
+                    of our entire team, and prayers for you. This is not just a business — it's our
+                    passion, our responsibility, and our promise that we will always deal with you honestly.
                   </p>
                   <p className="abt-story-text">
-                    Humne chhoti si shuruat ki thi — bas chand janwaron se. Lekin aapke
-                    bharose ne humein itna aagay barhaya ke aaj hum bakre, bakriyan,
-                    patth aur dumbe tak — sab kuch pesh karte hain. Aur humara iraada
-                    hai ke aagay chal kar hum aur bhi zyada categories aur services
-                    laye taake aapki har zaroorat poori ho sake.
+                    We started small — with just a few animals. But your trust has brought us so far
+                    that today we offer goats, sheep, and even lambs. And our intention is to bring
+                    even more categories and services in the future so that your every need can be met.
                   </p>
                 </div>
               </div>
@@ -259,7 +253,7 @@ export default function About() {
             <div className="col-12">
               <span className="abt-section-badge">MISSION & VISION</span>
               <h2 className="abt-section-title">
-                Humara <span className="abt-section-highlight">Maqsad</span>
+                Our <span className="abt-section-highlight">Purpose</span>
               </h2>
               <div className="abt-section-divider">
                 <span className="abt-sec-div-dot"></span>
@@ -277,14 +271,12 @@ export default function About() {
                 </div>
                 <h3 className="abt-mv-title">Our Mission</h3>
                 <p className="abt-mv-text">
-                  Humara mission hai ke Rahim Yar Khan aur uske aas paas ke har ghar
-                  tak sehatmand aur farm-raised janwar pohunchayein — bilkul sahi
-                  daam par, poori transparency ke saath. Hum chahte hain ke har
-                  insaan ko janwar khareedne ka tajurba aasan, bharosemand aur
-                  khushgawar lage. Koi dhoka nahi, koi chhupana nahi — sirf saaf
-                  aur seedha muamla. Hum technology ko istemal karte hue is poore
-                  amal ko itna aasan banana chahte hain ke aap ghar baithe apna
-                  janwar chunein aur poori tasalli se khareed sakein.
+                  Our mission is to deliver healthy and farm-raised animals to every home in
+                  Rahim Yar Khan and its surroundings — at exactly the right price, with full
+                  transparency. We want every person to find the experience of buying an animal
+                  easy, reliable, and pleasant. No deception, no hiding — just a clean and
+                  straightforward matter. Using technology, we want to make this entire process
+                  so easy that you can choose your animal from home and buy with complete satisfaction.
                 </p>
               </div>
             </div>
@@ -296,14 +288,12 @@ export default function About() {
                 </div>
                 <h3 className="abt-mv-title">Our Vision</h3>
                 <p className="abt-mv-text">
-                  Humara vision hai ke Farm2Meat sirf Rahim Yar Khan tak mehdood na
-                  rahe — balke poore Pakistan mein ek aisi mandi bane jahan log
-                  online janwar khareedne par utna hi bharosa karein jitna apni
-                  aankhon se dekh kar karte hain. Hum chahte hain ke aglay kuch
-                  saalon mein livestock ki online trading mein humara naam sabse
-                  pehle liya jaye. Ek aisa platform jahan quality, trust aur customer
-                  satisfaction sabse upar ho — yahi humara sapna hai aur iske liye
-                  hum rozana mehnat karte hain.
+                  Our vision is that Farm2Meat should not be limited only to Rahim Yar Khan — but
+                  should become such a market across Pakistan where people trust online animal buying
+                  as much as they do seeing it with their own eyes. We want our name to be the first
+                  one taken in livestock online trading in the next few years. A platform where quality,
+                  trust, and customer satisfaction are above all — this is our dream and we work
+                  hard for it every day.
                 </p>
               </div>
             </div>
@@ -326,10 +316,10 @@ export default function About() {
             <div className="col-12">
               <span className="abt-section-badge">WHAT WE OFFER</span>
               <h2 className="abt-section-title">
-                Hum Kya <span className="abt-section-highlight">Pesh Karte Hain</span>
+                What We <span className="abt-section-highlight">Offer</span>
               </h2>
               <p className="abt-section-subtitle">
-                Farm2Meat par aapko milta hai behtareen tajurba — shuru se aakhir tak
+                At Farm2Meat, you get the best experience — from start to finish
               </p>
               <div className="abt-section-divider">
                 <span className="abt-sec-div-dot"></span>
@@ -367,10 +357,10 @@ export default function About() {
             <div className="col-12">
               <span className="abt-section-badge">OUR VALUES</span>
               <h2 className="abt-section-title">
-                Humari <span className="abt-section-highlight">Buniyadi Qadrein</span>
+                Our <span className="abt-section-highlight">Core Values</span>
               </h2>
               <p className="abt-section-subtitle">
-                Yeh woh usool hain jin par Farm2Meat ki bunyaad rakhi gayi hai
+                These are the principles on which the foundation of Farm2Meat was laid
               </p>
               <div className="abt-section-divider">
                 <span className="abt-sec-div-dot"></span>
@@ -416,7 +406,7 @@ export default function About() {
             <div className="col-12">
               <span className="abt-section-badge">FOUNDER</span>
               <h2 className="abt-section-title">
-                Hamara <span className="abt-section-highlight">Bani</span>
+                Our <span className="abt-section-highlight">Founder</span>
               </h2>
               <div className="abt-section-divider">
                 <span className="abt-sec-div-dot"></span>
@@ -463,34 +453,28 @@ export default function About() {
                     <FaQuoteLeft />
                   </div>
                   <p className="abt-founder-text">
-                    Mera naam Muhammad Ahmad hai aur mein Rahim Yar Khan ka rehne wala
-                    hoon. Bachpan se mera taluq farming aur janwaron ki parwarish se
-                    raha hai. Mere walid sahab bhi is kaam se judhe the aur unhon ne
-                    mujhe sikhaya ke janwaron ki dekhbhaal kaise ki jaati hai aur logon
-                    se kaise imaandari se muamla kiya jaata hai.
+                    My name is Muhammad Ahmad and I am a resident of Rahim Yar Khan. Since childhood,
+                    I have been associated with farming and animal husbandry. My father was also
+                    involved in this work and he taught me how to take care of animals and how to
+                    deal with people honestly.
                   </p>
                   <p className="abt-founder-text">
-                    Jab mein ne dekha ke aaj ke daur mein log online shopping toh
-                    karte hain lekin janwar khareedne ke liye abhi bhi purani mandi ka
-                    tareeqa istemal karte hain — jahan aksar dhoka hota hai, wazan mein
-                    farq hota hai, aur bharosa karna mushkil hota hai — toh mein ne
-                    socha ke kyun na ek aisa platform banaya jaye jahan logon ko ghar
-                    baithe quality janwar mil sakein poori transparency ke saath.
+                    When I saw that in today's era, people do online shopping but still use the old
+                    market method to buy animals — where there is often deception, weight differences,
+                    and it's hard to trust — then I thought why not create a platform where people
+                    can get quality animals from home with full transparency.
                   </p>
                   <p className="abt-founder-text">
-                    Isi soch ne Farm2Meat ko janam diya. Shuru mein bohat mushkilat
-                    aayin — logon ka bharosa jeetna aasan nahi tha. Lekin humne
-                    imaandari, quality aur customer care ko apna usool banaya aur
-                    dheere dheere logon ne humari mehnat ko saraha. Aaj hum faqr se keh
-                    sakte hain ke Farm2Meat ne bohat se gharon mein khushiyan
-                    pohunchayi hain.
+                    This thought gave birth to Farm2Meat. In the beginning, there were many difficulties —
+                    it was not easy to win people's trust. But we made honesty, quality, and customer
+                    care our principle and gradually people appreciated our hard work. Today, we can say
+                    with pride that Farm2Meat has brought happiness to many homes.
                   </p>
                   <p className="abt-founder-text">
-                    Mera yakeen hai ke agar niyat saaf ho aur mehnat sachchi ho toh
-                    Allah Taala zaroor kamyabi ata farmate hain. Mein apne har customer
-                    ko apna mehman samajhta hoon aur unki khushi meri sabse bari
-                    kamyabi hai. Farm2Meat mera khwaab tha — aur aapke bharose se yeh
-                    khwaab haqeeqat ban raha hai.
+                    I believe that if the intention is pure and the hard work is sincere, then Allah
+                    Almighty definitely grants success. I consider every customer as my guest and
+                    their happiness is my biggest success. Farm2Meat was my dream — and with your
+                    trust, this dream is becoming a reality.
                   </p>
                   <p className="abt-founder-text abt-founder-sign">
                     — Muhammad Ahmad, Founder Farm2Meat
@@ -513,16 +497,15 @@ export default function About() {
               <div className="abt-cta-card">
                 <div className="abt-cta-glow"></div>
                 <FaUsers className="abt-cta-icon" />
-                <h2 className="abt-cta-title">Aayein, Humse Judein!</h2>
+                <h2 className="abt-cta-title">Come, Join Us!</h2>
                 <p className="abt-cta-text">
-                  Agar aap bhi ek bharosemand jagah dhundh rahe hain jahan se sehatmand
-                  aur behtareen janwar mil sakein — toh Farm2Meat aapka apna platform
-                  hai. Humse aaj hi rabta karein aur apna pasandida janwar chunein.
-                  Hum aapki khidmat ke liye hamesha tayyar hain.
+                  If you are also looking for a reliable place where you can get healthy and best
+                  animals — then Farm2Meat is your own platform. Contact us today and choose your
+                  favorite animal. We are always ready for your service.
                 </p>
                 <div className="abt-cta-actions">
                   <a href="/contact" className="abt-cta-btn abt-cta-btn-primary">
-                    <span>Rabta Karein</span>
+                    <span>Contact Us</span>
                     <FaArrowRight />
                   </a>
                   <a
@@ -532,7 +515,7 @@ export default function About() {
                     className="abt-cta-btn abt-cta-btn-wa"
                   >
                     <FaWhatsapp />
-                    <span>WhatsApp Par Baat Karein</span>
+                    <span>Chat on WhatsApp</span>
                   </a>
                 </div>
               </div>

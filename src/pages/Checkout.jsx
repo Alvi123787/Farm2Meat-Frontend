@@ -135,6 +135,7 @@ const Checkout = () => {
   const [hasShownButcherModal, setHasShownButcherModal] = useState(false)
   const [isAnimalCareModalOpen, setIsAnimalCareModalOpen] = useState(false)
   const [hasShownAnimalCareModal, setHasShownAnimalCareModal] = useState(false)
+  const [animalCareSelected, setAnimalCareSelected] = useState(false)
 
   // ── Refs ──
   const checkingRef = useRef(false)
@@ -174,6 +175,7 @@ const Checkout = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [hasCheckedOnce, setHasCheckedOnce] = useState(false)
   const [notices, setNotices] = useState([])
+  const [errors, setErrors] = useState({})
 
   useEffect(() => {
     // Current flow: Open AnimalCareModal instead of ButcherModal
@@ -271,12 +273,62 @@ const Checkout = () => {
   )
 
   // ════════════════════════════════════════════
+  // Validation Logic
+  // ════════════════════════════════════════════
+
+  const validateField = (name, value) => {
+    let error = ''
+    switch (name) {
+      case 'fullName':
+        if (!value.trim()) error = 'Full name is required'
+        break
+      case 'phone':
+        if (!value.trim()) error = 'Phone number is required'
+        else if (!validatePhone(value)) error = 'Enter a valid phone number (e.g., 03XXXXXXXXX)'
+        break
+      case 'altPhone':
+        if (value.trim() && !validatePhone(value)) error = 'Enter a valid alternative phone number'
+        break
+      case 'email':
+        if (!value.trim()) error = 'Email is required'
+        else if (!validateEmail(value)) error = 'Enter a valid email address (e.g., example@gmail.com)'
+        break
+      case 'city':
+        if (!value.trim()) error = 'City is required'
+        break
+      case 'address':
+        if (!value.trim()) error = 'Full address is required'
+        break
+      default:
+        break
+    }
+    return error
+  }
+
+  const validateForm = () => {
+    const newErrors = {}
+    Object.keys(formData).forEach(key => {
+      const error = validateField(key, formData[key])
+      if (error) newErrors[key] = error
+    })
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  // ════════════════════════════════════════════
   // Handlers
   // ════════════════════════════════════════════
 
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+    
+    // Real-time validation
+    const error = validateField(name, value)
+    setErrors((prev) => ({
+      ...prev,
+      [name]: error
+    }))
   }
 
   const handleConfirmationChange = (key) => {
@@ -361,16 +413,25 @@ const Checkout = () => {
   }
 
   const focusFirstInvalid = () => {
-    if (!formData.fullName) return fullNameRef.current?.focus()
-    if (!validatePhone(formData.phone)) return phoneRef.current?.focus()
-    if (!validateEmail(formData.email)) return emailRef.current?.focus()
-    if (!formData.city) return cityRef.current?.focus()
-    if (!formData.address) return addressRef.current?.focus()
+    const errorKeys = Object.keys(errors)
+    if (errorKeys.length > 0) {
+      const firstField = errorKeys[0]
+      switch (firstField) {
+        case 'fullName': fullNameRef.current?.focus(); break;
+        case 'phone': phoneRef.current?.focus(); break;
+        case 'email': emailRef.current?.focus(); break;
+        case 'city': cityRef.current?.focus(); break;
+        case 'address': addressRef.current?.focus(); break;
+        default: break;
+      }
+      return true
+    }
+    return false
   }
 
   const handlePlaceOrder = async () => {
     if (isSubmitting) return
-    if (!isFormValid) {
+    if (!validateForm()) {
       focusFirstInvalid()
       return
     }
@@ -404,6 +465,7 @@ const Checkout = () => {
         grandTotal,
         totalItems,
         subtotal,
+        animalCareSelected,
         customerName: formData.fullName,
         phone: formData.phone,
         address: formData.address,
@@ -462,7 +524,7 @@ const Checkout = () => {
 
   const handleWhatsAppOrder = async () => {
     if (isSubmitting) return
-    if (!isFormValid) {
+    if (!validateForm()) {
       focusFirstInvalid()
       return
     }
@@ -504,6 +566,7 @@ const Checkout = () => {
         grandTotal,
         totalItems,
         subtotal,
+        animalCareSelected,
         customerName: formData.fullName,
         phone: formData.phone,
         address: formData.address,
@@ -1252,10 +1315,13 @@ const Checkout = () => {
 
       <AnimalCareModal
         isOpen={isAnimalCareModalOpen}
-        onClose={() => setIsAnimalCareModalOpen(false)}
-        onProceed={() => {
-          // Continue flow: In this case, just close modal to allow form filling
+        onClose={() => {
           setIsAnimalCareModalOpen(false);
+          setAnimalCareSelected(false);
+        }}
+        onProceed={() => {
+          setIsAnimalCareModalOpen(false);
+          setAnimalCareSelected(true);
         }}
         animalName={orderItems.length > 0 ? orderItems[0].name : "your animal"}
       />
