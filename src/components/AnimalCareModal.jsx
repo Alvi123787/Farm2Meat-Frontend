@@ -1,4 +1,18 @@
 import React, { useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faPaw, 
+  faTimes, 
+  faShieldAlt, 
+  faHome, 
+  faHeart, 
+  faEye, 
+  faTag, 
+  faCalendarCheck, 
+  faInfoCircle, 
+  faTimesCircle, 
+  faCheckCircle 
+} from '@fortawesome/free-solid-svg-icons';
 import '../css/AnimalCareModal.css';
 
 const AnimalCareModal = ({ isOpen, onClose, onProceed, animalName = "your animal" }) => {
@@ -42,7 +56,7 @@ const AnimalCareModal = ({ isOpen, onClose, onProceed, animalName = "your animal
         {/* Header */}
         <div className="modal-header">
           <div className="header-icon-wrapper">
-            <i className="fas fa-paw"></i>
+            <FontAwesomeIcon icon={faPaw} />
           </div>
           <h2>Need Space for {animalName}?</h2>
           <button 
@@ -50,7 +64,7 @@ const AnimalCareModal = ({ isOpen, onClose, onProceed, animalName = "your animal
             onClick={handleClose}
             aria-label="Close modal"
           >
-            <i className="fas fa-times"></i>
+            <FontAwesomeIcon icon={faTimes} />
           </button>
         </div>
 
@@ -59,7 +73,7 @@ const AnimalCareModal = ({ isOpen, onClose, onProceed, animalName = "your animal
           
           {/* Trust Badge */}
           <div className="trust-badge">
-            <i className="fas fa-shield-alt"></i>
+            <FontAwesomeIcon icon={faShieldAlt} />
             <span>Trusted Animal Care Service</span>
           </div>
 
@@ -73,7 +87,7 @@ const AnimalCareModal = ({ isOpen, onClose, onProceed, animalName = "your animal
           <div className="features-grid">
             <div className="feature-item">
               <div className="feature-icon">
-                <i className="fas fa-home"></i>
+                <FontAwesomeIcon icon={faHome} />
               </div>
               <div className="feature-text">
                 <h3>Safe & Secure Facility</h3>
@@ -83,7 +97,7 @@ const AnimalCareModal = ({ isOpen, onClose, onProceed, animalName = "your animal
 
             <div className="feature-item">
               <div className="feature-icon">
-                <i className="fas fa-heart"></i>
+                <FontAwesomeIcon icon={faHeart} />
               </div>
               <div className="feature-text">
                 <h3>Full Responsibility</h3>
@@ -93,7 +107,7 @@ const AnimalCareModal = ({ isOpen, onClose, onProceed, animalName = "your animal
 
             <div className="feature-item">
               <div className="feature-icon">
-                <i className="fas fa-eye"></i>
+                <FontAwesomeIcon icon={faEye} />
               </div>
               <div className="feature-text">
                 <h3>Visit Anytime</h3>
@@ -106,7 +120,7 @@ const AnimalCareModal = ({ isOpen, onClose, onProceed, animalName = "your animal
           <div className="pricing-section">
             <div className="pricing-card">
               <div className="price-header">
-                <i className="fas fa-tag"></i>
+                <FontAwesomeIcon icon={faTag} />
                 <span>Daily Rate</span>
               </div>
               <div className="price-amount">
@@ -119,7 +133,7 @@ const AnimalCareModal = ({ isOpen, onClose, onProceed, animalName = "your animal
 
             <div className="advance-payment-card">
               <div className="advance-header">
-                <i className="fas fa-calendar-check"></i>
+                <FontAwesomeIcon icon={faCalendarCheck} />
                 <span>Advance Payment</span>
               </div>
               <div className="advance-amount">
@@ -132,7 +146,7 @@ const AnimalCareModal = ({ isOpen, onClose, onProceed, animalName = "your animal
 
           {/* Info */}
           <div className="info-note">
-            <i className="fas fa-info-circle"></i>
+            <FontAwesomeIcon icon={faInfoCircle} />
             <p>
               Your animal will be kept in a secure environment with proper attention and care.
             </p>
@@ -143,11 +157,11 @@ const AnimalCareModal = ({ isOpen, onClose, onProceed, animalName = "your animal
         {/* Footer */}
         <div className="modal-footer">
           <button className="btn-cancel" onClick={handleClose}>
-            <i className="fas fa-times-circle"></i>
+            <FontAwesomeIcon icon={faTimesCircle} />
             Cancel
           </button>
           <button className="btn-proceed" onClick={handleProceed}>
-            <i className="fas fa-check-circle"></i>
+            <FontAwesomeIcon icon={faCheckCircle} />
             Proceed with Service
           </button>
         </div>
