@@ -37,6 +37,7 @@ import { cartStorage } from '../utils/cartStorage'
 import { animalsService } from '../services/animalsService'
 import { useCart } from '../contexts/cartContextCore'
 import ButcherModal from '../components/ButcherModal'
+import AnimalCareModal from '../components/AnimalCareModal'
 import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl'
 import { WHATSAPP_NUMBER } from '../constants/contact'
 import { formatPrice } from '../utils/priceUtils'
@@ -132,6 +133,8 @@ const Checkout = () => {
   const [isVisible, setIsVisible] = useState(false)
   const [isButcherModalOpen, setIsButcherModalOpen] = useState(false)
   const [hasShownButcherModal, setHasShownButcherModal] = useState(false)
+  const [isAnimalCareModalOpen, setIsAnimalCareModalOpen] = useState(false)
+  const [hasShownAnimalCareModal, setHasShownAnimalCareModal] = useState(false)
 
   // ── Refs ──
   const checkingRef = useRef(false)
@@ -173,11 +176,18 @@ const Checkout = () => {
   const [notices, setNotices] = useState([])
 
   useEffect(() => {
+    // Current flow: Open AnimalCareModal instead of ButcherModal
+    if (!loading && orderItems.length > 0 && !hasShownAnimalCareModal) {
+      setIsAnimalCareModalOpen(true)
+      setHasShownAnimalCareModal(true)
+    }
+    /* Original ButcherModal trigger logic preserved:
     if (!loading && orderItems.length > 0 && !hasShownButcherModal && !selectedButcher) {
       setIsButcherModalOpen(true)
       setHasShownButcherModal(true)
     }
-  }, [loading, orderItems.length, hasShownButcherModal, selectedButcher])
+    */
+  }, [loading, orderItems.length, hasShownAnimalCareModal])
 
   // ════════════════════════════════════════════
   // Load order items from Cart page or localStorage
@@ -1232,9 +1242,22 @@ const Checkout = () => {
         </button>
       </div>
 
-      <ButcherModal 
-        isOpen={isButcherModalOpen} 
-        onClose={() => setIsButcherModalOpen(false)} 
+      {/* Butcher Modal disabled for now, replaced by AnimalCareModal */}
+      {false && (
+        <ButcherModal 
+          isOpen={isButcherModalOpen} 
+          onClose={() => setIsButcherModalOpen(false)} 
+        />
+      )}
+
+      <AnimalCareModal
+        isOpen={isAnimalCareModalOpen}
+        onClose={() => setIsAnimalCareModalOpen(false)}
+        onProceed={() => {
+          // Continue flow: In this case, just close modal to allow form filling
+          setIsAnimalCareModalOpen(false);
+        }}
+        animalName={orderItems.length > 0 ? orderItems[0].name : "your animal"}
       />
     </div>
   )
