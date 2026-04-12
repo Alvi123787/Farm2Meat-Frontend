@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import './AnimalCareModal.css';
+import '../css/AnimalCareModal.css';
 
 const AnimalCareModal = ({ isOpen, onClose, onProceed, animalName = "your animal" }) => {
 
