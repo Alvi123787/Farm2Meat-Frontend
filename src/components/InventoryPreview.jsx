@@ -160,7 +160,7 @@ const InventoryPreview = () => {
 
   useEffect(() => { fetchAnimals() }, [fetchAnimals])
 
-  useAdminLiveRefresh(fetchAnimals, { intervalMs: 8000, enabled: true })
+  useAdminLiveRefresh(fetchAnimals, { intervalMs: 30000, enabled: true })
 
   const showToast = useCallback((message, type = 'success') => {
     const id = ++toastId.current

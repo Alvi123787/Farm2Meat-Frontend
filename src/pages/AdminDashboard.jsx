@@ -294,7 +294,7 @@ const AdminDashboard = () => {
     const controller = new AbortController();
     const id = setInterval(() => {
       refreshAll({ signal: controller.signal });
-    }, 15000);
+    }, 60000);
 
     return () => {
       clearInterval(id);
