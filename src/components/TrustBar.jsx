@@ -12,7 +12,7 @@ const trustItems = [
   {
     icon: faTruck,
     title: "Free Delivery",
-    subtitle: "On orders above ₹500",
+    subtitle: "On all orders",
     color: "45, 135, 90",
     accentHex: "#2D875A",
   },
