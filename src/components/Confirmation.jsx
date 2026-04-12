@@ -117,6 +117,7 @@ const Confirmation = () => {
     shipping: 0,
     total: s.grandTotal || 0,
     butcher: s.butcher || null,
+    animalCare: s.animalCareSelected || false,
   };
 
   const handleCopyOrderId = () => {
@@ -328,6 +329,26 @@ const Confirmation = () => {
                   <div className="butcher-details">
                     <div>{orderData.butcher.specialty}</div>
                     <div>{orderData.butcher.phone}</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {orderData.animalCare && (
+              <div className="info-section animal-care-section">
+                <h3>Animal Care Service</h3>
+                <div className="animal-care-info">
+                  <div className="service-status">
+                    <span className="status-dot"></span>
+                    Selected for this order
+                  </div>
+                  <div className="service-details">
+                    <p>Our team will provide safe and clean facility care for your animals.</p>
+                    <div className="service-meta">
+                      <span>Rate: Rs. 100/day</span>
+                      <span>•</span>
+                      <span>Visit anytime</span>
+                    </div>
                   </div>
                 </div>
               </div>

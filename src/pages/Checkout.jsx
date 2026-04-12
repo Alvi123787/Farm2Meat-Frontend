@@ -362,6 +362,7 @@ const Checkout = () => {
       paymentMethod: paymentMethod || 'cod',
       orderSource: 'checkout',
       notes: formData.instructions || '',
+      animalCare: animalCareSelected,
       butcher: selectedButcher?._id || null
     }
   }
@@ -407,6 +408,12 @@ const Checkout = () => {
       msg += `%0A*Butcher Service*%0A`
       msg += `Selected Butcher: ${selectedButcher.name}%0A`
       msg += `Location: ${selectedButcher.location || 'Rahim Yar Khan'}%0A`
+    }
+
+    if (animalCareSelected) {
+      msg += `%0A*Animal Care Service*%0A`
+      msg += `Service: Enabled ✅%0A`
+      msg += `Rate: Rs. 100/day%0A`
     }
 
     return msg
