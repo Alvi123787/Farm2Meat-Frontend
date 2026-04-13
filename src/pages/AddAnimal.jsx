@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../contexts/authContextCore'
 import ReactQuill from 'react-quill-new'
@@ -170,28 +170,7 @@ const AddAnimal = () => {
   // Fetch animal data when in edit mode
   // ════════════════════════════════════════════
 
-  useEffect(() => {
-    // Wait for auth to load
-    if (authLoading) return
-
-    // Check if user is logged in and is admin
-    if (!token || role !== 'admin') {
-      navigate('/login', {
-        state: {
-          from: isEditMode ? `/admin/edit-animal/${id}` : '/admin/add-animal',
-          message: !token ? 'Please login to continue.' : 'Admin access required.'
-        }
-      })
-      return
-    }
-
-    // If we get here, user is authenticated and is admin
-    if (isEditMode && id) {
-      fetchAnimalData()
-    }
-  }, [id, navigate, isEditMode, token, role, authLoading])
-
-  const fetchAnimalData = async () => {
+  const fetchAnimalData = useCallback(async () => {
     setFetchLoading(true)
     setFetchError('')
 
@@ -249,7 +228,25 @@ const AddAnimal = () => {
     } finally {
       setFetchLoading(false)
     }
-  }
+  }, [id])
+
+  useEffect(() => {
+    if (authLoading) return
+
+    if (!token || role !== 'admin') {
+      navigate('/login', {
+        state: {
+          from: isEditMode ? `/admin/edit-animal/${id}` : '/admin/add-animal',
+          message: !token ? 'Please login to continue.' : 'Admin access required.'
+        }
+      })
+      return
+    }
+
+    if (isEditMode && id) {
+      fetchAnimalData()
+    }
+  }, [id, navigate, isEditMode, token, role, authLoading, fetchAnimalData])
 
   // ════════════════════════════════════════════
   // Form Input Handlers
@@ -278,7 +275,7 @@ const AddAnimal = () => {
     // Simple validation for URL
     try {
       new URL(val)
-    } catch (e) {
+    } catch {
       setErrorMsg('Please enter a valid image URL.')
       return
     }
@@ -299,7 +296,7 @@ const AddAnimal = () => {
 
     try {
       new URL(val)
-    } catch (e) {
+    } catch {
       setErrorMsg('Please enter a valid video URL.')
       return
     }
@@ -1430,7 +1427,7 @@ const AddAnimal = () => {
                                     src={url}
                                     className="aa-preview-video"
                                     controls
-                                    onError={(e) => {
+                                    onError={() => {
                                       console.error('Video URL failed to load:', url)
                                     }}
                                   />
