@@ -168,21 +168,52 @@ const AddAnimal = () => {
   // Fetch animal data when in edit mode
   // ════════════════════════════════════════════
 
-  useEffect(() => {
-    // Check if user is logged in and is admin
-    const token = localStorage.getItem('token')
-    const user = JSON.parse(localStorage.getItem('user') || '{}')
+ useEffect(() => {
+  // Check if user is logged in and is admin
+  const token = localStorage.getItem('token')
+  const userStr = localStorage.getItem('user')
+  
+  if (!token || !userStr) {
+    navigate('/login', { 
+      state: { 
+        from: isEditMode ? `/edit-animal/${id}` : '/add-animal', 
+        message: 'Please login to continue.' 
+      } 
+    })
+    return
+  }
+
+  try {
+    const user = JSON.parse(userStr)
     
-    if (!token || user.role !== 'admin') {
-      navigate('/login', { state: { from: '/add-animal', message: 'Admin access required.' } })
+    // Check for role in different possible locations
+    const userRole = user.role || user.data?.role || user.user?.role
+    
+    // Case-insensitive comparison
+    if (!userRole || userRole.toLowerCase() !== 'admin') {
+      navigate('/login', { 
+        state: { 
+          from: isEditMode ? `/edit-animal/${id}` : '/add-animal', 
+          message: 'Admin access required.' 
+        } 
+      })
       return
     }
-
+    
+    // If we get here, user is authenticated and is admin
     if (isEditMode && id) {
       fetchAnimalData()
     }
-    // eslint-disable-next-line
-  }, [id, navigate, isEditMode])
+  } catch (error) {
+    console.error('Error parsing user data:', error)
+    navigate('/login', { 
+      state: { 
+        from: isEditMode ? `/edit-animal/${id}` : '/add-animal', 
+        message: 'Session error. Please login again.' 
+      } 
+    })
+  }
+}, [id, navigate, isEditMode])
 
   const fetchAnimalData = async () => {
     setFetchLoading(true)
