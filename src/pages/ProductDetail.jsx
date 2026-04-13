@@ -93,8 +93,19 @@ const buildLocation = (animal) => {
 const buildDetails = (animal) => {
   const details = []
   if (animal.breed) details.push({ icon: <FaDna />, label: 'Breed', value: animal.breed })
-  if (animal.age) details.push({ icon: <FaClock />, label: 'Age', value: animal.age })
-  if (animal.weight) details.push({ icon: <FaWeightHanging />, label: 'Weight (Zinda)', value: animal.weight })
+  
+  // Handle Age with Unit
+  if (animal.age) {
+    const ageUnit = animal.ageUnit === 'years' ? (animal.age > 1 ? 'years' : 'year') : (animal.age > 1 ? 'months' : 'month')
+    details.push({ icon: <FaClock />, label: 'Age', value: `${animal.age} ${ageUnit}` })
+  }
+  
+  if (animal.weight) {
+    // Add KG if not present
+    const weightValue = animal.weight.toString().toLowerCase().includes('kg') ? animal.weight : `${animal.weight} KG`
+    details.push({ icon: <FaWeightHanging />, label: 'Weight (Zinda)', value: weightValue })
+  }
+
   if (animal.gender) {
     details.push({
       icon: animal.gender === 'male' ? <FaMars /> : <FaVenus />,
@@ -108,13 +119,6 @@ const buildDetails = (animal) => {
       icon: <FaHeartbeat />,
       label: 'Health',
       value: healthLabels[animal.healthStatus] || animal.healthStatus
-    })
-  }
-  if (animal.vaccinated !== undefined) {
-    details.push({
-      icon: <FaSyringe />,
-      label: 'Vaccination',
-      value: animal.vaccinated ? 'Fully Vaccinated' : 'Not Vaccinated'
     })
   }
   if (animal.color) details.push({ icon: <FaPalette />, label: 'Color', value: animal.color })
@@ -137,10 +141,15 @@ const buildDescription = (animal) => {
   const parts = []
   parts.push(`Premium quality ${animal.breed || ''} goat`)
   if (animal.farmLocation) parts.push(`raised at ${animal.farmLocation}`)
-  if (animal.age) parts.push(`This animal is ${animal.age} old`)
-  if (animal.weight) parts.push(`weighing approximately ${animal.weight}`)
+  if (animal.age) {
+    const ageUnit = animal.ageUnit === 'years' ? (animal.age > 1 ? 'years' : 'year') : (animal.age > 1 ? 'months' : 'month')
+    parts.push(`This animal is ${animal.age} ${ageUnit} old`)
+  }
+  if (animal.weight) {
+    const weightValue = animal.weight.toString().toLowerCase().includes('kg') ? animal.weight : `${animal.weight} KG`
+    parts.push(`weighing approximately ${weightValue}`)
+  }
   if (animal.healthStatus) parts.push(`with ${animal.healthStatus} health condition`)
-  if (animal.vaccinated) parts.push('All vaccinations are up to date')
   return parts.join('. ') + '.'
 }
 
@@ -558,13 +567,13 @@ const ProductDetail = () => {
                 {productData.weight && (
                   <div className="pdp-quick-info-item">
                     <FaWeightHanging />
-                    <span>{productData.weight}</span>
+                    <span>{productData.weight.toString().toLowerCase().includes('kg') ? productData.weight : `${productData.weight} KG`}</span>
                   </div>
                 )}
                 {productData.age && (
                   <div className="pdp-quick-info-item">
                     <FaClock />
-                    <span>{productData.age}</span>
+                    <span>{productData.age} {productData.ageUnit === 'years' ? (productData.age > 1 ? 'years' : 'year') : (productData.age > 1 ? 'months' : 'month')}</span>
                   </div>
                 )}
                 <div className="pdp-quick-info-item">
@@ -664,9 +673,10 @@ const ProductDetail = () => {
 
                   {activeTab === 'description' && (
                     <div className="pdp-description-section">
-                      <p className={`pdp-description ${showFullDesc ? 'pdp-description--expanded' : ''}`}>
-                        {description}
-                      </p>
+                      <div 
+                        className={`pdp-description ${showFullDesc ? 'pdp-description--expanded' : ''}`}
+                        dangerouslySetInnerHTML={{ __html: description }}
+                      />
                       {description.length > 200 && (
                         <button className="pdp-read-more-btn" onClick={() => setShowFullDesc(!showFullDesc)}>
                           {showFullDesc ? 'Show Less' : 'Read More'} <FaChevronDown className={showFullDesc ? 'rotate-180' : ''} />

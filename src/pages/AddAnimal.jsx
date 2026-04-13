@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import ReactQuill from 'react-quill'
+import 'react-quill/dist/quill.snow.css'
+import DOMPurify from 'dompurify'
 import {
   FaArrowLeft,
   FaPlusCircle,
@@ -19,7 +22,6 @@ import {
   FaEyeSlash,
   FaTruck,
   FaHandshake,
-  FaSyringe,
   FaSave
 } from 'react-icons/fa'
 import api from '../services/api'
@@ -65,7 +67,6 @@ const defaultFormState = {
   color: '',
   teeth: '',
   healthStatus: 'good',
-  vaccinated: false,
   farmLocation: '',
   city: '',
   shortDescription: '',
@@ -77,20 +78,13 @@ const defaultFormState = {
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Helper: Parse age string back to number
-// Database stores "18 Months" or "2 Years"
-// We need to split it back for the form
+// Database stores numeric age and unit separately now
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-const parseAge = (ageString) => {
-  if (!ageString) return { age: '', ageUnit: 'months' }
-
-  const parts = ageString.trim().split(' ')
-  const number = parts[0] || ''
-  const unit = parts[1]?.toLowerCase() || ''
-
-  if (unit.includes('year')) {
-    return { age: number, ageUnit: 'years' }
+const parseAge = (animal) => {
+  return { 
+    age: animal.age || '', 
+    ageUnit: animal.ageUnit || 'months' 
   }
-  return { age: number, ageUnit: 'months' }
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -171,7 +165,7 @@ const AddAnimal = () => {
         const animal = result.data
 
         // Parse age and weight back to form-friendly values
-        const { age, ageUnit } = parseAge(animal.age)
+        const { age, ageUnit } = parseAge(animal)
         const weight = parseWeight(animal.weight)
 
         // Populate form state with database values
@@ -192,7 +186,6 @@ const AddAnimal = () => {
           color: animal.color || '',
           teeth: animal.teeth || '',
           healthStatus: animal.healthStatus || 'good',
-          vaccinated: animal.vaccinated === true,
           farmLocation: animal.farmLocation || '',
           city: animal.city || '',
           shortDescription: animal.shortDescription || '',
@@ -450,16 +443,12 @@ const AddAnimal = () => {
       // Append new image files
       newImages.forEach(file => formData.append('images', file))
 
-      // Append new video files
-      newVideos.forEach(file => formData.append('videos', file))
+      // Append new video files (sending as 'video' field)
+      newVideos.forEach(file => formData.append('video', file))
 
       // Append URL-based media
-      if (urlImages.length > 0) {
-        formData.append('urlImages', JSON.stringify(urlImages))
-      }
-      if (urlVideos.length > 0) {
-        formData.append('urlVideos', JSON.stringify(urlVideos))
-      }
+      formData.append('urlImages', JSON.stringify(urlImages))
+      formData.append('urlVideos', JSON.stringify(urlVideos))
 
       // In edit mode, also send which existing files to keep and remove
       if (isEditMode) {
@@ -935,8 +924,8 @@ const AddAnimal = () => {
                     </div>
                   </div>
 
-                  {/* Row: Health + Vaccinated */}
-                  <div className="aa-grid aa-grid--2">
+                  {/* Row: Health */}
+                  <div className="aa-grid">
                     <div className="aa-field">
                       <label className="aa-label">Health Status</label>
                       <select
@@ -949,24 +938,6 @@ const AddAnimal = () => {
                           <option key={opt.value} value={opt.value}>{opt.label}</option>
                         ))}
                       </select>
-                    </div>
-                    <div className="aa-field">
-                      <label className="aa-label">Vaccinated</label>
-                      <label className="aa-checkbox-wrap">
-                        <input
-                          type="checkbox"
-                          name="vaccinated"
-                          checked={animalData.vaccinated}
-                          onChange={handleChange}
-                        />
-                        <span className="aa-checkbox-custom">
-                          {animalData.vaccinated && <FaCheckCircle />}
-                        </span>
-                        <span className="aa-checkbox-label">
-                          <FaSyringe className="aa-checkbox-icon" />
-                          Yes, this animal is vaccinated
-                        </span>
-                      </label>
                     </div>
                   </div>
 
@@ -1361,13 +1332,20 @@ const AddAnimal = () => {
 
                   <div className="aa-field">
                     <label className="aa-label">Full Description</label>
-                    <textarea
-                      name="fullDescription"
-                      className="aa-input aa-textarea"
-                      placeholder="Detailed description..."
+                    <ReactQuill
+                      theme="snow"
                       value={animalData.fullDescription}
-                      onChange={handleChange}
-                      rows={6}
+                      onChange={(content) => setAnimalData(prev => ({ ...prev, fullDescription: content }))}
+                      placeholder="Detailed description with formatting..."
+                      className="aa-quill-editor"
+                      modules={{
+                        toolbar: [
+                          [{ 'header': [1, 2, 3, false] }],
+                          ['bold', 'italic', 'underline', 'strike'],
+                          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                          ['clean']
+                        ],
+                      }}
                     />
                   </div>
 

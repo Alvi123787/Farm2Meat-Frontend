@@ -699,6 +699,61 @@
   border-radius: 10px;
 }
 
+/* ── React Quill Editor ── */
+.aa-quill-editor {
+  background: #fafafa;
+  border-radius: var(--input-radius);
+  overflow: hidden;
+  border: 1.5px solid var(--border-light);
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.aa-quill-editor:focus-within {
+  border-color: var(--border-focus);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.08);
+}
+
+.aa-quill-editor .ql-toolbar {
+  border: none !important;
+  border-bottom: 1.5px solid var(--border-light) !important;
+  background: #f8f8f8;
+  padding: 8px 12px !important;
+}
+
+.aa-quill-editor .ql-container {
+  border: none !important;
+  font-family: inherit !important;
+  font-size: 0.93rem !important;
+  min-height: 200px;
+}
+
+.aa-quill-editor .ql-editor {
+  min-height: 200px;
+  padding: 12px 16px !important;
+  line-height: 1.6;
+}
+
+.aa-quill-editor .ql-editor.ql-blank::before {
+  color: #b0b0b0;
+  font-style: normal;
+  left: 16px !important;
+}
+
+.aa-quill-editor .ql-snow .ql-stroke {
+  stroke: var(--text-secondary);
+}
+
+.ql-snow.ql-toolbar button:hover .ql-stroke,
+.ql-snow.ql-toolbar button.ql-active .ql-stroke {
+  stroke: var(--primary) !important;
+}
+
+.ql-snow.ql-toolbar button:hover .ql-fill,
+.ql-snow.ql-toolbar button.ql-active .ql-fill {
+  fill: var(--primary) !important;
+}
+
 .aa-preview-video {
   width: 100%;
   height: 150px;

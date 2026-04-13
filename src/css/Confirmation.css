@@ -479,6 +479,75 @@
   border-top: 1px solid rgba(212, 175, 55, 0.25);
 }
 
+/* Payment Breakdown */
+.payment-breakdown {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  background: rgba(128, 0, 0, 0.03);
+  border-radius: 12px;
+  border: 1px dashed rgba(128, 0, 0, 0.15);
+}
+
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+}
+
+.breakdown-row.advance {
+  border-bottom: 1px solid rgba(128, 0, 0, 0.08);
+  padding-top: 0;
+}
+
+.breakdown-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.breakdown-label .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.advance .dot {
+  background: var(--primary);
+  box-shadow: 0 0 0 4px rgba(128, 0, 0, 0.1);
+}
+
+.remaining .dot {
+  background: #6f625b;
+  box-shadow: 0 0 0 4px rgba(111, 98, 91, 0.1);
+}
+
+.breakdown-value {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.remaining .breakdown-value {
+  color: var(--ink);
+}
+
+.payment-note {
+  margin: 1rem 0 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.payment-note strong {
+  color: var(--primary);
+}
+
 /* Info Sections */
 .info-section {
   margin-bottom: 1.5rem;
