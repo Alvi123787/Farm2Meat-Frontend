@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import {
   FaShareAlt,
@@ -45,8 +45,7 @@ import {
   FaRegHeart,
   FaHeart,
   FaCheck,
-  FaTruckFast,
-  FaRotateLeft,
+  FaUndoAlt,
   FaHeadset
 } from 'react-icons/fa'
 import '../css/ProductDetail.css'
@@ -561,7 +560,7 @@ const ProductDetail = () => {
               {/* Delivery Options */}
               <div className="delivery-options">
                 <div className="delivery-option">
-                  <FaTruckFast />
+                  <FaTruck />
                   <span>Free Delivery in RYK</span>
                 </div>
                 <div className="delivery-option">
@@ -626,7 +625,7 @@ const ProductDetail = () => {
               {/* Product Features */}
               <div className="product-features">
                 <div className="feature">
-                  <FaRotateLeft />
+                  <FaUndoAlt />
                   <span>7 Day Return Policy</span>
                 </div>
                 <div className="feature">
