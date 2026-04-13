@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useAuth } from '../contexts/authContextCore'
 import ReactQuill from 'react-quill-new'
 import 'react-quill-new/dist/quill.snow.css'
 import DOMPurify from 'dompurify'
@@ -124,6 +125,7 @@ const parseWeight = (weightValue) => {
 const AddAnimal = () => {
   const navigate = useNavigate()
   const { id } = useParams()
+  const { token, role, loading: authLoading } = useAuth()
 
   // Detect mode: if URL has :id param → edit mode
   const isEditMode = Boolean(id)
@@ -168,52 +170,26 @@ const AddAnimal = () => {
   // Fetch animal data when in edit mode
   // ════════════════════════════════════════════
 
- useEffect(() => {
-  // Check if user is logged in and is admin
-  const token = localStorage.getItem('token')
-  const userStr = localStorage.getItem('user')
-  
-  if (!token || !userStr) {
-    navigate('/login', { 
-      state: { 
-        from: isEditMode ? `/edit-animal/${id}` : '/add-animal', 
-        message: 'Please login to continue.' 
-      } 
-    })
-    return
-  }
+  useEffect(() => {
+    // Wait for auth to load
+    if (authLoading) return
 
-  try {
-    const user = JSON.parse(userStr)
-    
-    // Check for role in different possible locations
-    const userRole = user.role || user.data?.role || user.user?.role
-    
-    // Case-insensitive comparison
-    if (!userRole || userRole.toLowerCase() !== 'admin') {
-      navigate('/login', { 
-        state: { 
-          from: isEditMode ? `/edit-animal/${id}` : '/add-animal', 
-          message: 'Admin access required.' 
-        } 
+    // Check if user is logged in and is admin
+    if (!token || role !== 'admin') {
+      navigate('/login', {
+        state: {
+          from: isEditMode ? `/admin/edit-animal/${id}` : '/admin/add-animal',
+          message: !token ? 'Please login to continue.' : 'Admin access required.'
+        }
       })
       return
     }
-    
+
     // If we get here, user is authenticated and is admin
     if (isEditMode && id) {
       fetchAnimalData()
     }
-  } catch (error) {
-    console.error('Error parsing user data:', error)
-    navigate('/login', { 
-      state: { 
-        from: isEditMode ? `/edit-animal/${id}` : '/add-animal', 
-        message: 'Session error. Please login again.' 
-      } 
-    })
-  }
-}, [id, navigate, isEditMode])
+  }, [id, navigate, isEditMode, token, role, authLoading])
 
   const fetchAnimalData = async () => {
     setFetchLoading(true)
