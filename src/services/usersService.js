@@ -8,7 +8,19 @@ export const usersService = {
     sp.set('page', String(page))
     sp.set('limit', String(limit))
     const response = await api.get(`/api/users?${sp.toString()}`, { signal })
-    return response.data
+    const payload = response.data
+    const users = Array.isArray(payload?.users)
+      ? payload.users
+      : Array.isArray(payload?.data)
+        ? payload.data
+        : []
+
+    return {
+      users,
+      total: Number(payload?.total) || 0,
+      page: Number(payload?.page) || page,
+      pages: Number(payload?.pages) || 1
+    }
   },
 
   remove: async (id, { signal } = {}) => {
@@ -18,6 +30,11 @@ export const usersService = {
 
   setRole: async (id, role, { signal } = {}) => {
     const response = await api.patch(`/api/users/${encodeURIComponent(id)}/role`, { role }, { signal })
-    return response.data
+    const payload = response.data
+    return {
+      user: payload?.user ?? payload?.data ?? null,
+      success: Boolean(payload?.success),
+      message: payload?.message
+    }
   }
 }

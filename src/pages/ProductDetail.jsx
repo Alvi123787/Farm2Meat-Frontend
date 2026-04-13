@@ -172,7 +172,6 @@ const ProductDetail = () => {
   const [addedToCart, setAddedToCart] = useState(false)
   const [activeTab, setActiveTab] = useState('details')
   const [isWishlisted, setIsWishlisted] = useState(false)
-  const [quantity, setQuantity] = useState(1)
   const [showShareTooltip, setShowShareTooltip] = useState(false)
 
   useEffect(() => {
@@ -286,9 +285,7 @@ const ProductDetail = () => {
 
   const handleAddToCart = () => {
     if (!productData) return
-    for (let i = 0; i < quantity; i++) {
-      addItem(productData)
-    }
+    addItem(productData)
     setAddedToCart(true)
     setTimeout(() => setAddedToCart(false), 3000)
   }
@@ -311,15 +308,11 @@ const ProductDetail = () => {
         return
       }
 
-      for (let i = 0; i < quantity; i++) {
-        addItem(productData)
-      }
+      addItem(productData)
       navigate('/cart', { state: { fromBuyNow: true } })
     } catch (err) {
       console.error('Pre-checkout check failed:', err)
-      for (let i = 0; i < quantity; i++) {
-        addItem(productData)
-      }
+      addItem(productData)
       navigate('/cart', { state: { fromBuyNow: true } })
     } finally {
       setLoading(false)
@@ -343,10 +336,6 @@ const ProductDetail = () => {
     } catch (err) {
       console.log('Share failed:', err)
     }
-  }
-
-  const handleQuantityChange = (delta) => {
-    setQuantity(prev => Math.max(1, Math.min(10, prev + delta)))
   }
 
   return (
@@ -566,20 +555,6 @@ const ProductDetail = () => {
                 <div className="delivery-option">
                   <FaMoneyBillWave />
                   <span>Cash on Delivery</span>
-                </div>
-              </div>
-
-              {/* Quantity Selector */}
-              <div className="quantity-selector">
-                <span className="label">Quantity:</span>
-                <div className="quantity-controls">
-                  <button onClick={() => handleQuantityChange(-1)} disabled={quantity <= 1}>
-                    <FaChevronLeft />
-                  </button>
-                  <span className="quantity">{quantity}</span>
-                  <button onClick={() => handleQuantityChange(1)} disabled={quantity >= 10}>
-                    <FaChevronRight />
-                  </button>
                 </div>
               </div>
 
