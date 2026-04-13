@@ -73,7 +73,28 @@ const defaultFormState = {
   fullDescription: '',
   specialNotes: '',
   deliveryAvailable: false,
-  negotiable: false
+  negotiable: false,
+  // Meat Integration
+  isForMeat: false,
+  slaughterWeight: '',
+  meatYieldEstimate: ''
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Helper: Clean Price (Remove commas/letters)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const cleanPrice = (val) => {
+  if (val === null || val === undefined) return 0
+  const cleaned = String(val).replace(/[^0-9.]/g, '')
+  return cleaned ? parseFloat(cleaned) : 0
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Helper: Format Price for UI
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const formatPrice = (val) => {
+  if (!val) return ''
+  return new Intl.NumberFormat('en-PK').format(val)
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -148,11 +169,20 @@ const AddAnimal = () => {
   // ════════════════════════════════════════════
 
   useEffect(() => {
+    // Check if user is logged in and is admin
+    const token = localStorage.getItem('token')
+    const user = JSON.parse(localStorage.getItem('user') || '{}')
+    
+    if (!token || user.role !== 'admin') {
+      navigate('/login', { state: { from: '/add-animal', message: 'Admin access required.' } })
+      return
+    }
+
     if (isEditMode && id) {
       fetchAnimalData()
     }
     // eslint-disable-next-line
-  }, [id])
+  }, [id, navigate, isEditMode])
 
   const fetchAnimalData = async () => {
     setFetchLoading(true)
@@ -193,7 +223,11 @@ const AddAnimal = () => {
           fullDescription: animal.fullDescription || '',
           specialNotes: animal.specialNotes || '',
           deliveryAvailable: animal.deliveryAvailable === true,
-          negotiable: animal.negotiable === true
+          negotiable: animal.negotiable === true,
+          // Meat Integration
+          isForMeat: animal.isForMeat === true,
+          slaughterWeight: animal.slaughterWeight || '',
+          meatYieldEstimate: animal.meatYieldEstimate || ''
         })
 
         // Set existing media from database
@@ -287,7 +321,13 @@ const AddAnimal = () => {
 
   const addImages = (fileList) => {
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
-    const maxSize = 20 * 1024 * 1024 // 20MB for images
+    const maxSize = 5 * 1024 * 1024 // 5MB (standardized)
+    const maxImagesAllowed = 8
+
+    if (newImages.length + existingImages.length + urlImages.length >= maxImagesAllowed) {
+      setErrorMsg(`Max ${maxImagesAllowed} images allowed.`)
+      return
+    }
 
     const validFiles = Array.from(fileList).filter(file => {
       if (!validTypes.includes(file.type)) return false
@@ -296,13 +336,16 @@ const AddAnimal = () => {
     })
 
     if (validFiles.length === 0 && fileList.length > 0) {
-      setErrorMsg('Invalid files. Only JPEG, PNG, WebP under 20MB allowed.')
+      setErrorMsg('Invalid files. Only JPEG, PNG, WebP under 5MB allowed.')
       return
     }
 
     setErrorMsg('')
-    setNewImages(prev => [...prev, ...validFiles])
-    const previews = validFiles.map(f => URL.createObjectURL(f))
+    const spaceLeft = maxImagesAllowed - (newImages.length + existingImages.length + urlImages.length)
+    const filesToAdd = validFiles.slice(0, spaceLeft)
+    
+    setNewImages(prev => [...prev, ...filesToAdd])
+    const previews = filesToAdd.map(f => URL.createObjectURL(f))
     setNewImagePreviews(prev => [...prev, ...previews])
   }
 
@@ -326,7 +369,13 @@ const AddAnimal = () => {
 
   const addVideos = (fileList) => {
     const validTypes = ['video/mp4', 'video/webm', 'video/quicktime']
-    const maxSize = 100 * 1024 * 1024 // 100MB for videos
+    const maxSize = 50 * 1024 * 1024 // 50MB for videos
+    const maxVideosAllowed = 1
+
+    if (newVideos.length + existingVideos.length + urlVideos.length >= maxVideosAllowed) {
+      setErrorMsg(`Max ${maxVideosAllowed} video allowed.`)
+      return
+    }
 
     const validFiles = Array.from(fileList).filter(file => {
       if (!validTypes.includes(file.type)) return false
@@ -335,13 +384,16 @@ const AddAnimal = () => {
     })
 
     if (validFiles.length === 0 && fileList.length > 0) {
-      setErrorMsg('Invalid files. Only MP4, WebM under 100MB allowed.')
+      setErrorMsg('Invalid files. Only MP4, WebM under 50MB allowed.')
       return
     }
 
     setErrorMsg('')
-    setNewVideos(prev => [...prev, ...validFiles])
-    const previews = validFiles.map(f => URL.createObjectURL(f))
+    const spaceLeft = maxVideosAllowed - (newVideos.length + existingVideos.length + urlVideos.length)
+    const filesToAdd = validFiles.slice(0, spaceLeft)
+
+    setNewVideos(prev => [...prev, ...filesToAdd])
+    const previews = filesToAdd.map(f => URL.createObjectURL(f))
     setNewVideoPreviews(prev => [...prev, ...previews])
   }
 
@@ -440,7 +492,13 @@ const AddAnimal = () => {
 
       // Append all text/boolean fields
       Object.entries(animalData).forEach(([key, value]) => {
-        formData.append(key, value)
+        if (key === 'fullDescription') {
+          formData.append(key, DOMPurify.sanitize(value))
+        } else if (key === 'price' || key === 'purchasePrice' || key === 'discountPrice') {
+          formData.append(key, cleanPrice(value))
+        } else {
+          formData.append(key, value)
+        }
       })
 
       // Append new image files
@@ -881,6 +939,30 @@ const AddAnimal = () => {
                       </div>
                     </div>
                   </div>
+
+                  {/* Advance Payment Preview */}
+                  {cleanPrice(animalData.price) > 0 && (
+                    <div className="aa-payment-preview">
+                      <div className="aa-payment-preview-header">
+                        <FaMoneyBillWave />
+                        <span>Payment Breakdown (USP Preview)</span>
+                      </div>
+                      <div className="aa-payment-preview-body">
+                        <div className="aa-payment-row">
+                          <span>Total Price</span>
+                          <span>Rs. {formatPrice(cleanPrice(animalData.price))}</span>
+                        </div>
+                        <div className="aa-payment-row aa-payment-row--highlight">
+                          <span>20% Advance Required</span>
+                          <span>Rs. {formatPrice(Math.round(cleanPrice(animalData.price) * 0.2))}</span>
+                        </div>
+                        <div className="aa-payment-row">
+                          <span>80% Remaining Balance</span>
+                          <span>Rs. {formatPrice(cleanPrice(animalData.price) - Math.round(cleanPrice(animalData.price) * 0.2))}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -973,6 +1055,58 @@ const AddAnimal = () => {
                       />
                     </div>
                   </div>
+
+                  {/* Meat Integration */}
+                  <div className="aa-meat-integration">
+                    <div className="aa-field">
+                      <label className="aa-label">Meat & Qurbani Status</label>
+                      <div
+                        className="aa-toggle-wrap"
+                        onClick={() => handleToggle('isForMeat')}
+                      >
+                        <div className={`aa-toggle-track ${animalData.isForMeat ? 'aa-toggle-track--on' : ''}`}>
+                          <div className="aa-toggle-thumb"></div>
+                        </div>
+                        <div className="aa-toggle-info">
+                          {animalData.isForMeat ? (
+                            <span>Available for Qurbani / Meat processing</span>
+                          ) : (
+                            <span>Selling as Live Animal only</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {animalData.isForMeat && (
+                      <div className="aa-grid aa-grid--2 aa-animate-fade-in">
+                        <div className="aa-field">
+                          <label className="aa-label">Slaughter Weight (Estimated)</label>
+                          <div className="aa-input-adorned">
+                            <input
+                              type="number"
+                              name="slaughterWeight"
+                              className="aa-input"
+                              placeholder="e.g. 20"
+                              value={animalData.slaughterWeight}
+                              onChange={handleChange}
+                            />
+                            <span className="aa-input-suffix">KG</span>
+                          </div>
+                        </div>
+                        <div className="aa-field">
+                          <label className="aa-label">Meat Yield Estimate</label>
+                          <input
+                            type="text"
+                            name="meatYieldEstimate"
+                            className="aa-input"
+                            placeholder="e.g. 55-60%"
+                            value={animalData.meatYieldEstimate}
+                            onChange={handleChange}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -998,10 +1132,13 @@ const AddAnimal = () => {
                       Photos <span className="aa-required">*</span>
                       {totalImageCount > 0 && (
                         <span className="aa-media-count">
-                          ({totalImageCount} photo{totalImageCount > 1 ? 's' : ''})
+                          ({totalImageCount} / 8 photos)
                         </span>
                       )}
                     </label>
+                    <div className="aa-media-limit-note">
+                      Max 8 images allowed. Each file should be under 5MB.
+                    </div>
 
                     {/* Existing Images from Database */}
                     {existingImages.length > 0 && (
@@ -1106,11 +1243,13 @@ const AddAnimal = () => {
                       Videos
                       {totalVideoCount > 0 && (
                         <span className="aa-media-count">
-                          ({totalVideoCount} video
-                          {totalVideoCount > 1 ? 's' : ''})
+                          ({totalVideoCount} / 1 video)
                         </span>
                       )}
                     </label>
+                    <div className="aa-media-limit-note">
+                      Max 1 video allowed. File should be under 50MB.
+                    </div>
 
                     {/* Existing Videos */}
                     {existingVideos.length > 0 && (
