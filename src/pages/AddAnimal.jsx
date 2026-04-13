@@ -81,19 +81,20 @@ const defaultFormState = {
 // Database stores numeric age and unit separately now
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const parseAge = (animal) => {
+  if (!animal) return { age: '', ageUnit: 'months' }
   return { 
-    age: animal.age || '', 
+    age: animal.age !== undefined && animal.age !== null ? animal.age : '', 
     ageUnit: animal.ageUnit || 'months' 
   }
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Helper: Parse weight string back to number
-// Database stores "38 KG"
+// Database stores "38 KG" or numeric values
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-const parseWeight = (weightString) => {
-  if (!weightString) return ''
-  return weightString.replace(/[^0-9.]/g, '').trim()
+const parseWeight = (weightValue) => {
+  if (weightValue === null || weightValue === undefined || weightValue === '') return ''
+  return String(weightValue).replace(/[^0-9.]/g, '').trim()
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -230,42 +231,44 @@ const AddAnimal = () => {
   // ════════════════════════════════════════════
 
   const addImageUrl = () => {
-    if (!imageUrlInput.trim()) return
+    const val = String(imageUrlInput || '')
+    if (!val.trim()) return
     
     // Simple validation for URL
     try {
-      new URL(imageUrlInput)
+      new URL(val)
     } catch (e) {
       setErrorMsg('Please enter a valid image URL.')
       return
     }
 
-    if (urlImages.includes(imageUrlInput)) {
+    if (urlImages.includes(val)) {
       setErrorMsg('This image URL is already added.')
       return
     }
 
-    setUrlImages(prev => [...prev, imageUrlInput])
+    setUrlImages(prev => [...prev, val])
     setImageUrlInput('')
     setErrorMsg('')
   }
 
   const addVideoUrl = () => {
-    if (!videoUrlInput.trim()) return
+    const val = String(videoUrlInput || '')
+    if (!val.trim()) return
 
     try {
-      new URL(videoUrlInput)
+      new URL(val)
     } catch (e) {
       setErrorMsg('Please enter a valid video URL.')
       return
     }
 
-    if (urlVideos.includes(videoUrlInput)) {
+    if (urlVideos.includes(val)) {
       setErrorMsg('This video URL is already added.')
       return
     }
 
-    setUrlVideos(prev => [...prev, videoUrlInput])
+    setUrlVideos(prev => [...prev, val])
     setVideoUrlInput('')
     setErrorMsg('')
   }
@@ -374,14 +377,14 @@ const AddAnimal = () => {
   // ════════════════════════════════════════════
 
   const validate = () => {
-    if (!animalData.name.trim()) return 'Animal name is required'
+    if (!String(animalData.name || '').trim()) return 'Animal name is required'
     if (!animalData.category) return 'Please select a category'
-    if (!animalData.breed.trim()) return 'Breed is required'
+    if (!String(animalData.breed || '').trim()) return 'Breed is required'
     if (!animalData.age) return 'Age is required'
     if (!animalData.weight) return 'Weight (Zinda) is required'
-    if (!animalData.price.trim()) return 'Price is required'
-    if (!animalData.farmLocation.trim()) return 'Farm location is required'
-    if (!animalData.city.trim()) return 'City is required'
+    if (!String(animalData.price || '').trim()) return 'Price is required'
+    if (!String(animalData.farmLocation || '').trim()) return 'Farm location is required'
+    if (!String(animalData.city || '').trim()) return 'City is required'
 
     // In add mode, at least one image required
     // In edit mode, either existing, URL, or new images must exist
