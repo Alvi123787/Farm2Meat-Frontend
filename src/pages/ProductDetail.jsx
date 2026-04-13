@@ -39,7 +39,15 @@ import {
   FaStar,
   FaMedal,
   FaUserShield,
-  FaPhoneAlt
+  FaPhoneAlt,
+  FaHome,
+  FaStore,
+  FaRegHeart,
+  FaHeart,
+  FaCheck,
+  FaTruckFast,
+  FaRotateLeft,
+  FaHeadset
 } from 'react-icons/fa'
 import '../css/ProductDetail.css'
 import CustomerReviewSection from '../components/CustomerReviewSection'
@@ -94,23 +102,21 @@ const buildDetails = (animal) => {
   const details = []
   if (animal.breed) details.push({ icon: <FaDna />, label: 'Breed', value: animal.breed })
   
-  // Handle Age with Unit
   if (animal.age) {
     const ageUnit = animal.ageUnit === 'years' ? (animal.age > 1 ? 'years' : 'year') : (animal.age > 1 ? 'months' : 'month')
     details.push({ icon: <FaClock />, label: 'Age', value: `${animal.age} ${ageUnit}` })
   }
   
   if (animal.weight) {
-    // Add KG if not present
     const weightValue = animal.weight.toString().toLowerCase().includes('kg') ? animal.weight : `${animal.weight} KG`
-    details.push({ icon: <FaWeightHanging />, label: 'Weight (Zinda)', value: weightValue })
+    details.push({ icon: <FaWeightHanging />, label: 'Weight (Live)', value: weightValue })
   }
 
   if (animal.gender) {
     details.push({
       icon: animal.gender === 'male' ? <FaMars /> : <FaVenus />,
       label: 'Gender',
-      value: animal.gender === 'male' ? 'Male (Nar)' : 'Female (Mada)'
+      value: animal.gender === 'male' ? 'Male' : 'Female'
     })
   }
   if (animal.healthStatus) {
@@ -161,12 +167,14 @@ const ProductDetail = () => {
   const [productData, setProductData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [isVisible, setIsVisible] = useState(false)
   const [activeImage, setActiveImage] = useState(0)
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
   const [showFullDesc, setShowFullDesc] = useState(false)
   const [addedToCart, setAddedToCart] = useState(false)
   const [activeTab, setActiveTab] = useState('details')
+  const [isWishlisted, setIsWishlisted] = useState(false)
+  const [quantity, setQuantity] = useState(1)
+  const [showShareTooltip, setShowShareTooltip] = useState(false)
 
   useEffect(() => {
     const fetchProduct = async (isManualCheck = false) => {
@@ -204,12 +212,8 @@ const ProductDetail = () => {
 
     if (id) {
       fetchProduct()
-
-      // Real-time check when user returns to tab
       const handleFocus = () => fetchProduct(true)
       window.addEventListener('focus', handleFocus)
-      
-      // Periodic check every 30s
       const interval = setInterval(() => fetchProduct(true), 30000)
 
       return () => {
@@ -220,21 +224,14 @@ const ProductDetail = () => {
   }, [id, navigate])
 
   useEffect(() => {
-    if (productData) {
-      const timer = setTimeout(() => setIsVisible(true), 100)
-      return () => clearTimeout(timer)
-    }
-  }, [productData])
-
-  useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [id])
 
   if (loading) {
     return (
-      <div className="pdp-loading">
-        <div className="pdp-loading-spinner">
-          <FaSpinner />
+      <div className="product-loading">
+        <div className="loading-spinner-wrapper">
+          <div className="loading-spinner"></div>
         </div>
         <p>Loading animal details...</p>
       </div>
@@ -243,18 +240,18 @@ const ProductDetail = () => {
 
   if (error || !productData) {
     return (
-      <div className="pdp-error">
-        <div className="pdp-error-card">
-          <div className="pdp-error-icon">
+      <div className="product-error">
+        <div className="error-container">
+          <div className="error-icon">
             <FaExclamationTriangle />
           </div>
           <h2>{error || 'Animal Not Found'}</h2>
           <p>The animal you're looking for might have been removed or doesn't exist.</p>
-          <div className="pdp-error-actions">
-            <button className="pdp-btn pdp-btn--primary" onClick={() => navigate('/shop')}>
+          <div className="error-actions">
+            <button className="btn-primary" onClick={() => navigate('/shop')}>
               <FaArrowLeft /> Back to Shop
             </button>
-            <button className="pdp-btn pdp-btn--outline" onClick={() => window.location.reload()}>
+            <button className="btn-outline" onClick={() => window.location.reload()}>
               Try Again
             </button>
           </div>
@@ -284,13 +281,15 @@ const ProductDetail = () => {
 
   const handleWhatsApp = () => {
     const msg = productData.whatsappMsg ||
-      `Assalam o Alaikum!\n\nI'm interested in *${productData.name}*\n\nBreed: ${productData.breed}\nWeight: ${productData.weight}\nPrice: Rs ${formatPrice(productData.price)}\n\nPlease share more details.`
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank')
+      `Assalam o Alaikum!%0A%0AI'm interested in *${productData.name}*%0A%0ABreed: ${productData.breed}%0AWeight: ${productData.weight}%0APrice: Rs ${formatPrice(productData.price)}%0A%0APlease share more details.`
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank')
   }
 
   const handleAddToCart = () => {
     if (!productData) return
-    addItem(productData)
+    for (let i = 0; i < quantity; i++) {
+      addItem(productData)
+    }
     setAddedToCart(true)
     setTimeout(() => setAddedToCart(false), 3000)
   }
@@ -298,7 +297,6 @@ const ProductDetail = () => {
   const handleBuyNow = async () => {
     if (!productData) return
 
-    // Final availability check before checkout
     try {
       setLoading(true)
       const response = await api.get(`/api/animals/${id}`)
@@ -314,11 +312,15 @@ const ProductDetail = () => {
         return
       }
 
-      addItem(productData)
+      for (let i = 0; i < quantity; i++) {
+        addItem(productData)
+      }
       navigate('/cart', { state: { fromBuyNow: true } })
     } catch (err) {
       console.error('Pre-checkout check failed:', err)
-      addItem(productData)
+      for (let i = 0; i < quantity; i++) {
+        addItem(productData)
+      }
       navigate('/cart', { state: { fromBuyNow: true } })
     } finally {
       setLoading(false)
@@ -336,123 +338,87 @@ const ProductDetail = () => {
         await navigator.share(shareData)
       } else {
         await navigator.clipboard.writeText(window.location.href)
-        alert('Link copied to clipboard!')
+        setShowShareTooltip(true)
+        setTimeout(() => setShowShareTooltip(false), 2000)
       }
     } catch (err) {
       console.log('Share failed:', err)
     }
   }
 
+  const handleQuantityChange = (delta) => {
+    setQuantity(prev => Math.max(1, Math.min(10, prev + delta)))
+  }
+
   return (
-    <div className={`pdp-page ${isVisible ? 'pdp-page--visible' : ''}`}>
-      {/* ══════════════════════════════════════════
-          HEADER
-      ══════════════════════════════════════════ */}
-      <section className="pdp-header-section">
-        <div className="pdp-header-bg">
-          <div className="pdp-header-circle pdp-header-circle--1"></div>
-          <div className="pdp-header-circle pdp-header-circle--2"></div>
-          <div className="pdp-header-pattern"></div>
-        </div>
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-12">
-              <div className="pdp-header-content">
-                <div className="unified-header-top">
-                  <button className="pdp-back-btn" onClick={() => navigate(-1)}>
-                    <FaArrowLeft />
-                    <span>Back</span>
-                  </button>
-                </div>
-                <div className="pdp-header-main">
-                  <div className="pdp-header-title-row">
-                    <FaInfoCircle className="pdp-header-icon" />
-                    <h1 className="pdp-header-title">{productData.name}</h1>
-                  </div>
-                  <div className="pdp-header-badge">
-                    <FaTag />
-                    <span>Premium Livestock Details</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Lightbox */}
-      {isLightboxOpen && (
-        <div className="pdp-lightbox" onClick={() => setIsLightboxOpen(false)}>
-          <button className="pdp-lightbox-close" onClick={() => setIsLightboxOpen(false)}>
-            <FaTimes />
-          </button>
-          <button className="pdp-lightbox-nav pdp-lightbox-nav--prev" onClick={(e) => { e.stopPropagation(); handlePrevImage() }}>
-            <FaChevronLeft />
-          </button>
-          <img src={images[activeImage]} alt={productData.name} className="pdp-lightbox-img" onClick={(e) => e.stopPropagation()} />
-          <button className="pdp-lightbox-nav pdp-lightbox-nav--next" onClick={(e) => { e.stopPropagation(); handleNextImage() }}>
-            <FaChevronRight />
-          </button>
-          <div className="pdp-lightbox-counter">{activeImage + 1} / {images.length}</div>
-        </div>
-      )}
-
+    <div className="product-detail-page">
       {/* Breadcrumb */}
-      <div className="pdp-breadcrumb-container">
-        <div className="pdp-container">
-          <nav className="pdp-breadcrumb-nav">
-            <Link to="/" className="pdp-breadcrumb-link">Home</Link>
-            <span className="pdp-breadcrumb-sep">/</span>
-            <Link to="/shop" className="pdp-breadcrumb-link">Shop</Link>
-            <span className="pdp-breadcrumb-sep">/</span>
-            <span className="pdp-breadcrumb-current">{productData.name}</span>
+      <div className="breadcrumb-wrapper">
+        <div className="container">
+          <nav className="breadcrumb">
+            <Link to="/"><FaHome /> Home</Link>
+            <FaChevronRight className="separator" />
+            <Link to="/shop"><FaStore /> Shop</Link>
+            <FaChevronRight className="separator" />
+            <span className="current">{productData.name}</span>
           </nav>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="pdp-container">
-        <div className="pdp-grid">
-          {/* Left Column - Gallery */}
-          <div className="pdp-gallery-col">
-            <div className="pdp-gallery-card">
-              {/* Main Image */}
-              <div className="pdp-main-image-container">
+      <div className="container">
+        <div className="product-main">
+          {/* Gallery Section */}
+          <div className="gallery-section">
+            <div className="gallery-card">
+              {/* Main Image Container */}
+              <div className="main-image-wrapper">
                 <img
                   src={images[activeImage]}
                   alt={productData.name}
-                  className="pdp-main-image"
+                  className="main-image"
                   onClick={() => setIsLightboxOpen(true)}
                 />
 
-                {/* Badges */}
-                <div className="pdp-image-badges">
-                  {discount > 0 && (
-                    <span className="pdp-badge pdp-badge--discount">-{discount}% OFF</span>
+                {/* Status Badges */}
+                <div className="image-badges">
+                  {hasDiscount && (
+                    <span className="badge discount">-{discount}% OFF</span>
                   )}
-                  <span className={`pdp-badge ${isSold ? 'pdp-badge--sold' : isReserved ? 'pdp-badge--reserved' : 'pdp-badge--available'}`}>
-                    <span className="pdp-badge-dot" />
-                    {isSold ? 'Sold Out' : isReserved ? 'Reserved' : 'In Stock'}
+                  <span className={`badge status ${stockStatus}`}>
+                    <span className="status-dot" />
+                    {isSold ? 'Sold Out' : isReserved ? 'Reserved' : 'Available'}
                   </span>
                 </div>
 
                 {/* Image Actions */}
-                <div className="pdp-image-actions">
-                  <button className="pdp-image-action" onClick={() => setIsLightboxOpen(true)} title="Expand">
+                <div className="image-actions">
+                  <button 
+                    className={`action-btn wishlist ${isWishlisted ? 'active' : ''}`}
+                    onClick={() => setIsWishlisted(!isWishlisted)}
+                    title="Add to Wishlist"
+                  >
+                    {isWishlisted ? <FaHeart /> : <FaRegHeart />}
+                  </button>
+                  <button className="action-btn" onClick={() => setIsLightboxOpen(true)} title="View Fullscreen">
                     <FaExpand />
                   </button>
-                  <button className="pdp-image-action" onClick={handleShare} title="Share">
-                    <FaShareAlt />
-                  </button>
+                  <div className="share-wrapper">
+                    <button className="action-btn" onClick={handleShare} title="Share">
+                      <FaShareAlt />
+                    </button>
+                    {showShareTooltip && (
+                      <span className="share-tooltip">Link Copied!</span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Navigation Arrows */}
                 {images.length > 1 && (
                   <>
-                    <button className="pdp-gallery-arrow pdp-gallery-arrow--prev" onClick={handlePrevImage}>
+                    <button className="nav-arrow prev" onClick={handlePrevImage}>
                       <FaChevronLeft />
                     </button>
-                    <button className="pdp-gallery-arrow pdp-gallery-arrow--next" onClick={handleNextImage}>
+                    <button className="nav-arrow next" onClick={handleNextImage}>
                       <FaChevronRight />
                     </button>
                   </>
@@ -460,144 +426,168 @@ const ProductDetail = () => {
 
                 {/* Image Counter */}
                 {images.length > 1 && (
-                  <div className="pdp-image-counter">{activeImage + 1} / {images.length}</div>
+                  <div className="image-counter">
+                    {activeImage + 1} / {images.length}
+                  </div>
                 )}
 
-                {/* Sold Overlay */}
+                {/* Unavailable Overlay */}
                 {(isSold || isReserved) && (
-                  <div className="pdp-sold-overlay">
-                    <span className="pdp-sold-stamp">{isSold ? 'SOLD' : 'RESERVED'}</span>
+                  <div className="unavailable-overlay">
+                    <span className="unavailable-stamp">{isSold ? 'SOLD' : 'RESERVED'}</span>
                   </div>
                 )}
               </div>
 
-              {/* Thumbnails */}
+              {/* Thumbnail Strip */}
               {images.length > 1 && (
-                <div className="pdp-thumbnails-container">
-                  <div className="pdp-thumbnails-scroll">
-                    {images.map((img, index) => (
-                      <button
-                        key={index}
-                        className={`pdp-thumbnail ${activeImage === index ? 'pdp-thumbnail--active' : ''}`}
-                        onClick={() => setActiveImage(index)}
-                      >
-                        <img src={img} alt={`Thumbnail ${index + 1}`} />
-                      </button>
-                    ))}
-                  </div>
+                <div className="thumbnail-strip">
+                  {images.map((img, index) => (
+                    <button
+                      key={index}
+                      className={`thumbnail ${activeImage === index ? 'active' : ''}`}
+                      onClick={() => setActiveImage(index)}
+                    >
+                      <img src={img} alt={`View ${index + 1}`} />
+                    </button>
+                  ))}
                 </div>
               )}
 
-              {/* Video Section */}
+              {/* Video Gallery */}
               {videos.length > 0 && (
-                <div className="pdp-video-section">
-                  <h4 className="pdp-section-title">
+                <div className="video-section">
+                  <h4 className="section-title">
                     <FaVideo /> Product Videos
                   </h4>
-                  <div className="pdp-video-grid">
+                  <div className="video-grid">
                     {videos.map((vid, index) => (
-                      <video key={index} src={vid} className="pdp-video" controls preload="metadata" />
+                      <video key={index} src={vid} className="product-video" controls preload="metadata" />
                     ))}
                   </div>
                 </div>
               )}
-
-              {/* Live Video Request */}
-              <button className="pdp-live-video-btn" onClick={handleWhatsApp}>
-                <FaVideo />
-                <span>Request Live Video Call</span>
-                <FaArrowRight />
-              </button>
             </div>
           </div>
 
-          {/* Right Column - Product Info */}
-          <div className="pdp-info-col">
-            <div className="pdp-info-card">
+          {/* Product Info Section */}
+          <div className="info-section">
+            <div className="info-card">
               {/* Seller Info */}
-              <div className="pdp-seller-section">
-                <div className="pdp-seller-badge">
-                  <FaMedal className="pdp-seller-badge-icon" />
+              <div className="seller-info">
+                <div className="seller-badge">
+                  <FaMedal />
                   <span>Verified Seller</span>
                 </div>
-                <div className="pdp-seller-name">
+                <div className="seller-name">
                   <FaUserShield />
                   <span>Farm2Meat Official</span>
                 </div>
               </div>
 
               {/* Product Title */}
-              <h1 className="pdp-product-title">{productData.name}</h1>
+              <h1 className="product-title">{productData.name}</h1>
 
-              {/* Breed & Category */}
-              <div className="pdp-meta-tags">
+              {/* Meta Information */}
+              <div className="meta-tags">
                 {productData.breed && (
-                  <span className="pdp-meta-tag">
+                  <span className="meta-tag">
                     <FaDna /> {productData.breed}
                   </span>
                 )}
                 {productData.category && (
-                  <span className="pdp-meta-tag">
+                  <span className="meta-tag">
                     <FaCertificate /> {productData.category}
                   </span>
                 )}
               </div>
 
               {/* Price Section */}
-              <div className="pdp-price-section">
-                <div className="pdp-price-main">
-                  <span className="pdp-price-label">Price</span>
-                  <div className="pdp-price-value">
-                    <span className="pdp-current-price">{formatPrice(productData.price)}</span>
+              <div className="price-section">
+                <div className="price-main">
+                  <span className="price-label">Price</span>
+                  <div className="price-values">
+                    <span className="current-price">{formatPrice(productData.price)}</span>
                     {hasDiscount && (
-                      <span className="pdp-old-price">{formatPrice(oldPrice)}</span>
+                      <span className="old-price">{formatPrice(oldPrice)}</span>
                     )}
                   </div>
                 </div>
-                {savings > 0 && (
-                  <div className="pdp-savings-badge">
+                {hasDiscount && (
+                  <div className="savings-badge">
                     <FaTag />
-                    <span>You save {formatPrice(savings)} ({discount}% OFF)</span>
+                    <span>Save {formatPrice(savings)} ({discount}% OFF)</span>
                   </div>
                 )}
               </div>
 
-              {/* Quick Info */}
-              <div className="pdp-quick-info">
+              {/* Quick Info Cards */}
+              <div className="quick-info-grid">
                 {productData.weight && (
-                  <div className="pdp-quick-info-item">
+                  <div className="quick-info-card">
                     <FaWeightHanging />
-                    <span>{productData.weight.toString().toLowerCase().includes('kg') ? productData.weight : `${productData.weight} KG`}</span>
+                    <div>
+                      <span className="label">Weight</span>
+                      <span className="value">
+                        {productData.weight.toString().toLowerCase().includes('kg') 
+                          ? productData.weight 
+                          : `${productData.weight} KG`}
+                      </span>
+                    </div>
                   </div>
                 )}
                 {productData.age && (
-                  <div className="pdp-quick-info-item">
+                  <div className="quick-info-card">
                     <FaClock />
-                    <span>{productData.age} {productData.ageUnit === 'years' ? (productData.age > 1 ? 'years' : 'year') : (productData.age > 1 ? 'months' : 'month')}</span>
+                    <div>
+                      <span className="label">Age</span>
+                      <span className="value">
+                        {productData.age} {productData.ageUnit === 'years' 
+                          ? (productData.age > 1 ? 'years' : 'year') 
+                          : (productData.age > 1 ? 'months' : 'month')}
+                      </span>
+                    </div>
                   </div>
                 )}
-                <div className="pdp-quick-info-item">
+                <div className="quick-info-card">
                   <FaMapMarkerAlt />
-                  <span>{buildLocation(productData)}</span>
+                  <div>
+                    <span className="label">Location</span>
+                    <span className="value">{buildLocation(productData)}</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Delivery & Payment */}
-              <div className="pdp-delivery-info">
-                <div className="pdp-delivery-item">
-                  <FaTruck />
+              {/* Delivery Options */}
+              <div className="delivery-options">
+                <div className="delivery-option">
+                  <FaTruckFast />
                   <span>Free Delivery in RYK</span>
                 </div>
-                <div className="pdp-delivery-item">
+                <div className="delivery-option">
                   <FaMoneyBillWave />
                   <span>Cash on Delivery</span>
                 </div>
               </div>
 
-              {/* CTA Buttons */}
-              <div className="pdp-actions">
+              {/* Quantity Selector */}
+              <div className="quantity-selector">
+                <span className="label">Quantity:</span>
+                <div className="quantity-controls">
+                  <button onClick={() => handleQuantityChange(-1)} disabled={quantity <= 1}>
+                    <FaChevronLeft />
+                  </button>
+                  <span className="quantity">{quantity}</span>
+                  <button onClick={() => handleQuantityChange(1)} disabled={quantity >= 10}>
+                    <FaChevronRight />
+                  </button>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="action-buttons">
                 <button
-                  className={`pdp-btn-cart ${addedToCart ? 'pdp-btn-cart--added' : ''}`}
+                  className={`btn-add-to-cart ${addedToCart ? 'added' : ''}`}
                   onClick={handleAddToCart}
                   disabled={!isAvailable}
                 >
@@ -608,7 +598,7 @@ const ProductDetail = () => {
                   )}
                 </button>
                 <button
-                  className="pdp-btn-buy"
+                  className="btn-buy-now"
                   onClick={handleBuyNow}
                   disabled={!isAvailable}
                 >
@@ -616,136 +606,190 @@ const ProductDetail = () => {
                 </button>
               </div>
 
-              {/* WhatsApp Contact */}
+              {/* WhatsApp Button */}
               <button
-                className="pdp-btn-whatsapp"
+                className="btn-whatsapp"
                 onClick={handleWhatsApp}
                 disabled={isSold}
               >
                 <FaWhatsapp />
-                <span>{isSold ? 'Currently Unavailable' : 'Contact on WhatsApp'}</span>
+                <span>{isSold ? 'Currently Unavailable' : 'Chat on WhatsApp'}</span>
               </button>
 
               {productData.negotiable && (
-                <div className="pdp-negotiable-notice">
+                <div className="negotiable-notice">
                   <FaHandshake />
-                  <span>Price is negotiable — contact seller to discuss</span>
+                  <span>Price negotiable — contact seller to discuss</span>
                 </div>
               )}
 
-              {/* Tabs Section */}
-              <div className="pdp-tabs">
-                <div className="pdp-tabs-header">
-                  <button
-                    className={`pdp-tab ${activeTab === 'details' ? 'pdp-tab--active' : ''}`}
-                    onClick={() => setActiveTab('details')}
-                  >
-                    <FaClipboardList /> Details
-                  </button>
-                  <button
-                    className={`pdp-tab ${activeTab === 'description' ? 'pdp-tab--active' : ''}`}
-                    onClick={() => setActiveTab('description')}
-                  >
-                    <FaInfoCircle /> Description
-                  </button>
-                  <button
-                    className={`pdp-tab ${activeTab === 'trust' ? 'pdp-tab--active' : ''}`}
-                    onClick={() => setActiveTab('trust')}
-                  >
-                    <FaShieldAlt /> Trust
-                  </button>
+              {/* Product Features */}
+              <div className="product-features">
+                <div className="feature">
+                  <FaRotateLeft />
+                  <span>7 Day Return Policy</span>
                 </div>
-
-                <div className="pdp-tabs-content">
-                  {activeTab === 'details' && (
-                    <div className="pdp-details-grid">
-                      {details.map((detail, index) => (
-                        <div key={index} className="pdp-detail-card">
-                          <div className="pdp-detail-icon">{detail.icon}</div>
-                          <div className="pdp-detail-info">
-                            <span className="pdp-detail-label">{detail.label}</span>
-                            <span className="pdp-detail-value">{detail.value}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {activeTab === 'description' && (
-                    <div className="pdp-description-section">
-                      <div 
-                        className={`pdp-description ${showFullDesc ? 'pdp-description--expanded' : ''}`}
-                        dangerouslySetInnerHTML={{ __html: description }}
-                      />
-                      {description.length > 200 && (
-                        <button className="pdp-read-more-btn" onClick={() => setShowFullDesc(!showFullDesc)}>
-                          {showFullDesc ? 'Show Less' : 'Read More'} <FaChevronDown className={showFullDesc ? 'rotate-180' : ''} />
-                        </button>
-                      )}
-                      {productData.specialNotes && (
-                        <div className="pdp-special-notes">
-                          <FaInfoCircle />
-                          <p>{productData.specialNotes}</p>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {activeTab === 'trust' && (
-                    <div className="pdp-trust-grid">
-                      {trustElements.map((item, index) => (
-                        <div key={index} className="pdp-trust-card">
-                          <div className="pdp-trust-icon">{item.icon}</div>
-                          <div className="pdp-trust-info">
-                            <strong>{item.title}</strong>
-                            <span>{item.desc}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                <div className="feature">
+                  <FaHeadset />
+                  <span>24/7 Support</span>
                 </div>
-              </div>
-
-              {/* Security Note */}
-              <div className="pdp-security-note">
-                <FaShieldAlt />
-                <span>Secure transaction · SSL encrypted · Verified seller</span>
+                <div className="feature">
+                  <FaShieldAlt />
+                  <span>Secure Payment</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Tabs Section */}
+        <div className="product-tabs">
+          <div className="tabs-header">
+            <button
+              className={`tab ${activeTab === 'details' ? 'active' : ''}`}
+              onClick={() => setActiveTab('details')}
+            >
+              <FaClipboardList /> Specifications
+            </button>
+            <button
+              className={`tab ${activeTab === 'description' ? 'active' : ''}`}
+              onClick={() => setActiveTab('description')}
+            >
+              <FaInfoCircle /> Description
+            </button>
+            <button
+              className={`tab ${activeTab === 'trust' ? 'active' : ''}`}
+              onClick={() => setActiveTab('trust')}
+            >
+              <FaShieldAlt /> Why Trust Us
+            </button>
+          </div>
+
+          <div className="tabs-content">
+            {activeTab === 'details' && (
+              <div className="specifications-grid">
+                {details.map((detail, index) => (
+                  <div key={index} className="spec-card">
+                    <div className="spec-icon">{detail.icon}</div>
+                    <div className="spec-content">
+                      <span className="spec-label">{detail.label}</span>
+                      <span className="spec-value">{detail.value}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {activeTab === 'description' && (
+              <div className="description-content">
+                <div 
+                  className={`description-text ${showFullDesc ? 'expanded' : ''}`}
+                  dangerouslySetInnerHTML={{ __html: description }}
+                />
+                {description.length > 200 && (
+                  <button className="read-more-btn" onClick={() => setShowFullDesc(!showFullDesc)}>
+                    {showFullDesc ? (
+                      <>Show Less <FaChevronUp /></>
+                    ) : (
+                      <>Read More <FaChevronDown /></>
+                    )}
+                  </button>
+                )}
+                {productData.specialNotes && (
+                  <div className="special-notes">
+                    <FaInfoCircle />
+                    <p>{productData.specialNotes}</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'trust' && (
+              <div className="trust-grid">
+                {trustElements.map((item, index) => (
+                  <div key={index} className="trust-card">
+                    <div className="trust-icon">{item.icon}</div>
+                    <div className="trust-content">
+                      <h4>{item.title}</h4>
+                      <p>{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Live Video Request Banner */}
+        <div className="live-video-banner">
+          <div className="banner-content">
+            <div className="banner-icon">
+              <FaVideo />
+            </div>
+            <div className="banner-text">
+              <h3>Want to see this animal live?</h3>
+              <p>Request a video call with our team to inspect the animal in real-time</p>
+            </div>
+            <button className="banner-btn" onClick={handleWhatsApp}>
+              Request Live Video <FaArrowRight />
+            </button>
+          </div>
+        </div>
+
+        {/* Reviews Section */}
+        <CustomerReviewSection />
       </div>
 
-      {/* Reviews Section */}
-      <CustomerReviewSection />
-
-      {/* Mobile Sticky Bar */}
-      <div className="pdp-mobile-bar">
-        <div className="pdp-mobile-price">
-          <span className="pdp-mobile-price-label">Price</span>
-          <span className="pdp-mobile-price-value">{formatPrice(productData.price)}</span>
+      {/* Mobile Bottom Bar */}
+      <div className="mobile-bottom-bar">
+        <div className="price-info">
+          <span className="label">Price</span>
+          <span className="value">{formatPrice(productData.price)}</span>
         </div>
-        <div className="pdp-mobile-actions">
+        <div className="actions">
           <button
-            className="pdp-mobile-cart"
+            className="mobile-cart-btn"
             onClick={handleAddToCart}
             disabled={!isAvailable}
           >
             <FaShoppingCart />
           </button>
           <button
-            className="pdp-mobile-buy"
+            className="mobile-buy-btn"
             onClick={handleBuyNow}
             disabled={!isAvailable}
           >
-            {isSold ? 'Sold Out' : 'Buy Now'}
+            {isSold ? 'Sold Out' : isReserved ? 'Reserved' : 'Buy Now'}
           </button>
-          <button className="pdp-mobile-whatsapp" onClick={handleWhatsApp}>
+          <button className="mobile-wa-btn" onClick={handleWhatsApp}>
             <FaWhatsapp />
           </button>
         </div>
       </div>
+
+      {/* Lightbox */}
+      {isLightboxOpen && (
+        <div className="lightbox" onClick={() => setIsLightboxOpen(false)}>
+          <button className="lightbox-close" onClick={() => setIsLightboxOpen(false)}>
+            <FaTimes />
+          </button>
+          <button className="lightbox-nav prev" onClick={(e) => { e.stopPropagation(); handlePrevImage() }}>
+            <FaChevronLeft />
+          </button>
+          <img 
+            src={images[activeImage]} 
+            alt={productData.name} 
+            className="lightbox-image" 
+            onClick={(e) => e.stopPropagation()} 
+          />
+          <button className="lightbox-nav next" onClick={(e) => { e.stopPropagation(); handleNextImage() }}>
+            <FaChevronRight />
+          </button>
+          <div className="lightbox-counter">
+            {activeImage + 1} / {images.length}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
