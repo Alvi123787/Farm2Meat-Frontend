@@ -1,5 +1,7 @@
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
+import SplashScreen from './components/SplashScreen'
 import Home from './pages/Home'
 import About from './pages/About'
 import Shop from './pages/Shop'
@@ -44,10 +46,21 @@ const withPageTitle = (element, title) => (
 
 function AppShell() {
   const location = useLocation()
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    // Total duration: 2 to 2.5 seconds
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 1900); // Trigger fade-out slightly after text animation finishes
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <AuthProvider>
       <CartProvider>
-        {location.pathname === '/' && <WelcomeModal />}
+        <SplashScreen isVisible={showSplash} />
+        {location.pathname === '/' && !showSplash && <WelcomeModal />}
         <Navbar />
         <Routes>
           <Route path="/" element={withPageTitle(<Home />, 'Home')} />

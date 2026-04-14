@@ -12,6 +12,15 @@ const __dirname = path.dirname(__filename);
 // https://vite.dev/config/
 export default defineConfig({
   base: "/",
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://farm2-meat-backend.vercel.app',
+        changeOrigin: true,
+        secure: true,
+      }
+    }
+  },
   optimizeDeps: {
     include: ["react-is"],
   },

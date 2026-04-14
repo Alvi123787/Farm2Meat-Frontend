@@ -1,0 +1,60 @@
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+  overflow: hidden;
+  pointer-events: auto; /* Block interactions until splash disappears */
+}
+
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.splash-logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.splash-logo {
+  width: 140px; /* Slightly large and high-quality */
+  height: auto;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.05)); /* Soft, subtle shadow */
+  object-fit: contain;
+}
+
+.splash-text {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600; /* Semi-bold */
+  font-size: 2.25rem;
+  color: #1a1a1a; /* Dark gray/black */
+  margin: 0;
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .splash-logo {
+    width: 120px;
+  }
+  .splash-text {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .splash-logo {
+    width: 100px;
+  }
+  .splash-text {
+    font-size: 1.5rem;
+  }
+}
