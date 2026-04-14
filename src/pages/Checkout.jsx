@@ -1208,35 +1208,6 @@ const Checkout = () => {
                       <span>Rs {formatPrice(grandTotal)}</span>
                     </div>
 
-                    {/* Animal Care Advance Breakdown */}
-                    {animalCareSelected && (
-                      <div className="co-advance-box-wrapper">
-                        <div className="co-advance-box">
-                          <div className="co-advance-row">
-                            <div className="co-advance-label">
-                              <span className="co-advance-dot co-advance-dot--red"></span>
-                              20% Advance Required
-                            </div>
-                            <span className="co-advance-value co-advance-value--red">
-                              Rs. {formatPrice(Math.round(grandTotal * 0.20))}
-                            </span>
-                          </div>
-                          <div className="co-advance-row">
-                            <div className="co-advance-label">
-                              <span className="co-advance-dot co-advance-dot--gray"></span>
-                              80% Remaining Balance
-                            </div>
-                            <span className="co-advance-value">
-                              Rs. {formatPrice(grandTotal - Math.round(grandTotal * 0.20))}
-                            </span>
-                          </div>
-                          <p className="co-advance-footer">
-                            * Remaining balance of <strong>Rs. {formatPrice(grandTotal - Math.round(grandTotal * 0.20))}</strong> will be collected at the time of delivery.
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
                     {/* COD Badge */}
                     <div className="co-summary-payment-badge">
                       <FaMoneyBillWave />

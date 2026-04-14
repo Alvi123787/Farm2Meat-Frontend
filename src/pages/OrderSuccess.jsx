@@ -115,48 +115,54 @@ const OrderSuccess = () => {
         </div>
 
         {/* Animal Care Service Section */}
-        {animalCareSelected && (
-          <div className="co-success-care-card">
-            <div className="co-success-care-header">
-              <FaPaw className="co-success-care-header-icon" />
-              <h3>Animal Care Service</h3>
-            </div>
-            
-            <div className="co-success-care-body">
-              <p className="co-success-care-status-msg co-success-care-status-msg--selected">
-                You have selected Animal Care Service for this order.
-              </p>
-              
-              <div className="co-success-care-payment-box">
-                <div className="co-success-care-alert">
-                  <FaInfoCircle className="co-success-care-alert-icon" />
-                  <span>You need to pay a 20% advance based on your order amount to confirm this service.</span>
-                </div>
-                
-                <div className="co-success-care-breakdown">
-                  <div className="co-success-care-row">
-                    <span>20% Advance Amount</span>
-                    <strong className="co-highlight-price">Rs {formatPrice(advanceAmount)}</strong>
-                  </div>
-                  <div className="co-success-care-row">
-                    <span>Remaining Amount (80%)</span>
-                    <strong className="co-highlight-price">Rs {formatPrice(remainingAmount)}</strong>
-                  </div>
-                </div>
-                
-                <div className="co-success-care-explanation">
-                  <p>The remaining amount will be collected when we receive your animal.</p>
-                  <p>Per day charges (Rs. 100/day) are not included in this amount and will be handled separately when you visit.</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="co-success-care-footer">
-              <FaCalendarAlt className="co-success-care-footer-icon" />
-              <span>You can visit your animal anytime after handing it over.</span>
-            </div>
+        <div className="co-success-care-card">
+          <div className="co-success-care-header">
+            <FaPaw className="co-success-care-header-icon" />
+            <h3>Animal Care Service</h3>
           </div>
-        )}
+          
+          <div className="co-success-care-body">
+            {!animalCareSelected ? (
+              <p className="co-success-care-status-msg">
+                You did not choose Animal Care Service for this order.
+              </p>
+            ) : (
+              <>
+                <p className="co-success-care-status-msg co-success-care-status-msg--selected">
+                  You have selected Animal Care Service for this order.
+                </p>
+                
+                <div className="co-success-care-payment-box">
+                  <div className="co-success-care-alert">
+                    <FaInfoCircle className="co-success-care-alert-icon" />
+                    <span>You need to pay a 20% advance based on your order amount to confirm this service.</span>
+                  </div>
+                  
+                  <div className="co-success-care-breakdown">
+                    <div className="co-success-care-row">
+                      <span>20% Advance Amount</span>
+                      <strong className="co-highlight-price">Rs {formatPrice(advanceAmount)}</strong>
+                    </div>
+                    <div className="co-success-care-row">
+                      <span>Remaining Amount (80%)</span>
+                      <strong className="co-highlight-price">Rs {formatPrice(remainingAmount)}</strong>
+                    </div>
+                  </div>
+                  
+                  <div className="co-success-care-explanation">
+                    <p>The remaining amount will be collected when we receive your animal.</p>
+                    <p>Per day charges (Rs. 100/day) are not included in this amount and will be handled separately when you visit.</p>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+          
+          <div className="co-success-care-footer">
+            <FaCalendarAlt className="co-success-care-footer-icon" />
+            <span>You can visit your animal anytime after handing it over.</span>
+          </div>
+        </div>
 
         <div className="co-success-actions">
           <button

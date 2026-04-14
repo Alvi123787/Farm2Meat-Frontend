@@ -119,11 +119,9 @@ const Confirmation = () => {
     butcher: s.butcher || null,
     animalCare: s.animalCareSelected || false,
     animalCarePrice: s.animalCarePrice || (s.animalCareSelected ? (s.items?.length || 1) * 100 : 0),
+    advanceAmount: s.advanceAmount || Math.round((s.grandTotal || 0) * 0.20),
+    remainingAmount: s.remainingAmount || ((s.grandTotal || 0) - Math.round((s.grandTotal || 0) * 0.20))
   };
-
-  const totalWithService = orderData.total + (orderData.animalCare ? orderData.animalCarePrice : 0);
-  const advanceAmount = s.advanceAmount || Math.round(totalWithService * 0.20);
-  const remainingAmount = s.remainingAmount || (totalWithService - advanceAmount);
 
   const handleCopyOrderId = () => {
     navigator.clipboard.writeText(orderData.orderId);
@@ -280,30 +278,28 @@ const Confirmation = () => {
               </div>
               <div className="total-row grand-total">
                 <span>Grand Total</span>
-                <span>{formatPrice(totalWithService)}</span>
+                <span>{formatPrice(orderData.total + (orderData.animalCare ? orderData.animalCarePrice : 0))}</span>
               </div>
               
-              {orderData.animalCare && (
-                <div className="payment-breakdown">
-                  <div className="breakdown-row advance">
-                    <div className="breakdown-label">
-                      <span className="dot"></span>
-                      20% Advance Required
-                    </div>
-                    <span className="breakdown-value">{formatPrice(advanceAmount)}</span>
+              <div className="payment-breakdown">
+                <div className="breakdown-row advance">
+                  <div className="breakdown-label">
+                    <span className="dot"></span>
+                    20% Advance Required
                   </div>
-                  <div className="breakdown-row remaining">
-                    <div className="breakdown-label">
-                      <span className="dot"></span>
-                      80% Remaining Balance
-                    </div>
-                    <span className="breakdown-value">{formatPrice(remainingAmount)}</span>
-                  </div>
-                  <p className="payment-note">
-                    * Remaining balance of <strong>{formatPrice(remainingAmount)}</strong> will be collected at the time of delivery.
-                  </p>
+                  <span className="breakdown-value">{formatPrice(orderData.advanceAmount)}</span>
                 </div>
-              )}
+                <div className="breakdown-row remaining">
+                  <div className="breakdown-label">
+                    <span className="dot"></span>
+                    80% Remaining Balance
+                  </div>
+                  <span className="breakdown-value">{formatPrice(orderData.remainingAmount)}</span>
+                </div>
+                <p className="payment-note">
+                  * Remaining balance of <strong>{formatPrice(orderData.remainingAmount)}</strong> will be collected at the time of delivery.
+                </p>
+              </div>
             </div>
           </div>
 
