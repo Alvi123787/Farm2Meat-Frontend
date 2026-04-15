@@ -27,26 +27,26 @@ const ButcherSection = () => {
 
   if (loading) {
     return (
-      <section className="butcher-section">
-        <div className="container-fluid px-lg-5">
-          <div className="section-header">
-            <span className="section-badge">Halal Certified</span>
-            <h2 className="section-title">
-              Master <span className="section-title-highlight">Butchers</span>
+      <section className="btr-section">
+        <div className="btr-container">
+          <div className="btr-section-header">
+            <span className="btr-section-badge">Halal Certified</span>
+            <h2 className="btr-section-title">
+              Master <span className="btr-section-title-highlight">Butchers</span>
             </h2>
-            <p className="section-subtitle">Discovering skilled professionals in your area...</p>
-            <div className="section-divider">
-              <span className="section-divider-line"></span>
+            <p className="btr-section-subtitle">Discovering skilled professionals in your area...</p>
+            <div className="btr-section-divider">
+              <span className="btr-section-divider-line"></span>
             </div>
           </div>
-          <div className="butcher-grid">
+          <div className="btr-grid">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="butcher-card skeleton">
-                <div className="skeleton-badge"></div>
-                <div className="skeleton-avatar"></div>
-                <div className="skeleton-line"></div>
-                <div className="skeleton-line short"></div>
-                <div className="skeleton-button"></div>
+              <div key={i} className="btr-card btr-card--skeleton">
+                <div className="btr-skeleton-badge"></div>
+                <div className="btr-skeleton-avatar"></div>
+                <div className="btr-skeleton-line"></div>
+                <div className="btr-skeleton-line btr-skeleton-line--short"></div>
+                <div className="btr-skeleton-button"></div>
               </div>
             ))}
           </div>
@@ -60,76 +60,76 @@ const ButcherSection = () => {
   }
 
   return (
-    <section className="butcher-section">
-      <div className="container-fluid px-lg-5">
-        <div className="section-header">
-          <span className="section-badge">Halal Certified</span>
-          <h2 className="section-title">
-            Master <span className="section-title-highlight">Butchers</span>
+    <section className="btr-section">
+      <div className="btr-container">
+        <div className="btr-section-header">
+          <span className="btr-section-badge">Halal Certified</span>
+          <h2 className="btr-section-title">
+            Master <span className="btr-section-title-highlight">Butchers</span>
           </h2>
-          <p className="section-subtitle">
+          <p className="btr-section-subtitle">
             Expert craftsmen dedicated to professional halal meat processing in Rahim Yar Khan.
           </p>
-          <div className="section-divider">
-            <span className="section-divider-line"></span>
+          <div className="btr-section-divider">
+            <span className="btr-section-divider-line"></span>
           </div>
         </div>
 
-        <div className="butcher-grid">
+        <div className="btr-grid">
           {butchers.map((butcher) => (
-            <div key={butcher._id} className="butcher-card">
+            <div key={butcher._id} className="btr-card">
               {/* Decorative corner accent */}
-              <div className="card-corner-accent"></div>
+              <div className="btr-card-corner-accent"></div>
               
               {/* Experience Badge */}
               {butcher.experience && (
-                <div className="experience-badge">
-                  <FaStar className="star-icon" />
+                <div className="btr-experience-badge">
+                  <FaStar className="btr-star-icon" />
                   <span>{butcher.experience}+ Years</span>
                 </div>
               )}
 
-              <div className="butcher-avatar-wrapper">
+              <div className="btr-avatar-wrapper">
                 {(butcher.image || butcher.avatar) ? (
                   <img 
                     src={resolveImageUrl(butcher.image || butcher.avatar)} 
                     alt={butcher.name} 
-                    className="butcher-avatar" 
+                    className="btr-avatar" 
                   />
                 ) : (
-                  <div className="butcher-avatar-placeholder">
+                  <div className="btr-avatar-placeholder">
                     {butcher.name.charAt(0).toUpperCase()}
                   </div>
                 )}
                 
                 {butcher.isVerified && (
-                  <div className="verified-badge" title="Verified Professional Butcher">
+                  <div className="btr-verified-badge" title="Verified Professional Butcher">
                     <FaCheckCircle />
                   </div>
                 )}
               </div>
 
-              <div className="butcher-info">
-                <div className="name-wrapper">
-                  <h3 className="butcher-name">{butcher.name}</h3>
+              <div className="btr-card-info">
+                <div className="btr-name-wrapper">
+                  <h3 className="btr-butcher-name">{butcher.name}</h3>
                   {butcher.isVerified && (
-                    <FaUserCheck className="verified-icon" title="Verified Butcher" />
+                    <FaUserCheck className="btr-verified-icon" title="Verified Butcher" />
                   )}
                 </div>
                 
-                <div className="butcher-specialty">
+                <div className="btr-specialty">
                   <span>Professional Halal Butcher</span>
                 </div>
 
-                <div className="butcher-location">
-                  <FaMapMarkerAlt className="location-icon" />
+                <div className="btr-location">
+                  <FaMapMarkerAlt className="btr-location-icon" />
                   <span>{butcher.location || 'Rahim Yar Khan'}</span>
                 </div>
 
-                <a href={`tel:${butcher.phone}`} className="contact-btn">
-                  <FaPhoneAlt className="phone-icon" />
-                  <span className="contact-text">{butcher.phone}</span>
-                  <span className="contact-label">Call Now</span>
+                <a href={`tel:${butcher.phone}`} className="btr-contact-btn">
+                  <FaPhoneAlt className="btr-phone-icon" />
+                  <span className="btr-contact-text">{butcher.phone}</span>
+                  <span className="btr-contact-label">Call Now</span>
                 </a>
               </div>
             </div>
@@ -137,8 +137,8 @@ const ButcherSection = () => {
         </div>
 
         {/* Minimal Footer Notice */}
-        <div className="butcher-footer">
-          <p className="footer-text">
+        <div className="btr-footer">
+          <p className="btr-footer-text">
             All butchers are personally verified. Pricing arranged directly.
           </p>
         </div>
