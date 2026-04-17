@@ -266,7 +266,7 @@ const Checkout = () => {
   const isFormValid = useMemo(() => 
     formData.fullName &&
     validatePhone(formData.phone) &&
-    validateEmail(formData.email) &&
+    (!formData.email || validateEmail(formData.email)) &&
     formData.city &&
     formData.address,
     [formData]
@@ -290,8 +290,7 @@ const Checkout = () => {
         if (value.trim() && !validatePhone(value)) error = 'Enter a valid alternative phone number'
         break
       case 'email':
-        if (!value.trim()) error = 'Email is required'
-        else if (!validateEmail(value)) error = 'Enter a valid email address (e.g., example@gmail.com)'
+        if (value.trim() && !validateEmail(value)) error = 'Enter a valid email address (e.g., example@gmail.com)'
         break
       case 'city':
         if (!value.trim()) error = 'City is required'
@@ -1013,7 +1012,7 @@ const Checkout = () => {
                         <div className="co-form-group">
                           <label className="co-label" htmlFor="co-email">
                             <FaEnvelope className="co-label-icon" />
-                            Email <span className="co-required">*</span>
+                            Email <span className="co-optional">(optional)</span>
                           </label>
                           <input
                             type="email"
@@ -1023,7 +1022,6 @@ const Checkout = () => {
                             placeholder="you@example.com"
                             value={formData.email}
                             onChange={handleChange}
-                            required
                           />
                         </div>
                       </div>
