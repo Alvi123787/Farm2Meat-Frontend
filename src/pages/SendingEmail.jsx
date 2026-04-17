@@ -1,6 +1,23 @@
 // SendingEmail.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../services/api';
+import { 
+  FaEnvelope, 
+  FaUser, 
+  FaHeading, 
+  FaUsers, 
+  FaChevronDown, 
+  FaSearch, 
+  FaCheckSquare, 
+  FaSquare, 
+  FaTimes, 
+  FaPen, 
+  FaEye, 
+  FaPaperPlane, 
+  FaSpinner, 
+  FaCheckCircle, 
+  FaExclamationCircle 
+} from 'react-icons/fa';
 import '../css/SendingEmail.css';
 
 // ========== SEARCHABLE MULTI-SELECT COMPONENT ==========
@@ -69,7 +86,7 @@ const UserMultiSelect = ({ users, selectedEmails, onChange, disabled }) => {
                       toggleUser(u.email);
                     }}
                   >
-                    <i className="fas fa-times"></i>
+                    <FaTimes />
                   </button>
                 </span>
               ))}
@@ -81,13 +98,13 @@ const UserMultiSelect = ({ users, selectedEmails, onChange, disabled }) => {
             </div>
           )}
         </div>
-        <i className={`fas fa-chevron-down f2m-multiselect__arrow ${isOpen ? 'f2m-rotate' : ''}`}></i>
+        <FaChevronDown className={`f2m-multiselect__arrow ${isOpen ? 'f2m-rotate' : ''}`} />
       </div>
 
       {isOpen && !disabled && (
         <div className="f2m-multiselect__dropdown">
           <div className="f2m-multiselect__search">
-            <i className="fas fa-search"></i>
+            <FaSearch />
             <input
               type="text"
               placeholder="Search users..."
@@ -117,7 +134,7 @@ const UserMultiSelect = ({ users, selectedEmails, onChange, disabled }) => {
                   onClick={() => toggleUser(user.email)}
                 >
                   <div className="f2m-multiselect__checkbox">
-                    <i className={`fas ${selectedEmails.includes(user.email) ? 'fa-check-square' : 'fa-square'}`}></i>
+                    {selectedEmails.includes(user.email) ? <FaCheckSquare /> : <FaSquare />}
                   </div>
                   <div className="f2m-multiselect__user-info">
                     <span className="f2m-multiselect__user-name">{user.displayName || user.email.split('@')[0]}</span>
@@ -143,7 +160,7 @@ const PreviewModal = ({ isOpen, onClose, emailData }) => {
         <div className="f2m-modal__header">
           <h3>Email Preview</h3>
           <button className="f2m-modal__close" onClick={onClose}>
-            <i className="fas fa-times"></i>
+            <FaTimes />
           </button>
         </div>
         <div className="f2m-modal__content">
@@ -330,10 +347,10 @@ const SendingEmail = () => {
       {/* Success Message */}
       {showSuccess && (
         <div className="f2m-alert f2m-alert-success">
-          <i className="fas fa-check-circle"></i>
+          <FaCheckCircle />
           <span>Emails are being sent successfully!</span>
           <button className="f2m-alert-close" onClick={() => setShowSuccess(false)}>
-            <i className="fas fa-times"></i>
+            <FaTimes />
           </button>
         </div>
       )}
@@ -341,10 +358,10 @@ const SendingEmail = () => {
       {/* Error Message */}
       {showError && (
         <div className="f2m-alert f2m-alert-error">
-          <i className="fas fa-exclamation-circle"></i>
+          <FaExclamationCircle />
           <span>{errorMessage}</span>
           <button className="f2m-alert-close" onClick={() => setShowError(false)}>
-            <i className="fas fa-times"></i>
+            <FaTimes />
           </button>
         </div>
       )}
@@ -353,7 +370,7 @@ const SendingEmail = () => {
       <div className="f2m-card">
         <div className="f2m-card__header">
           <div className="f2m-card__header-icon">
-            <i className="fas fa-envelope"></i>
+            <FaEnvelope />
           </div>
           <h2 className="f2m-card__title">Compose Email</h2>
           <p className="f2m-card__subtitle">Send messages to your users</p>
@@ -363,7 +380,7 @@ const SendingEmail = () => {
           {/* Sender Name Field */}
           <div className="f2m-form-group">
             <label className="f2m-form-label" htmlFor="senderName">
-              <i className="fas fa-user"></i>
+              <FaUser />
               Sender Name
             </label>
             <input
@@ -380,7 +397,7 @@ const SendingEmail = () => {
           {/* Subject Field */}
           <div className="f2m-form-group">
             <label className="f2m-form-label f2m-required" htmlFor="subject">
-              <i className="fas fa-heading"></i>
+              <FaHeading />
               Email Subject
             </label>
             <input
@@ -400,7 +417,7 @@ const SendingEmail = () => {
           {/* Recipient Selection */}
           <div className="f2m-form-group">
             <label className="f2m-form-label">
-              <i className="fas fa-users"></i>
+              <FaUsers />
               Recipients
             </label>
             
@@ -422,7 +439,7 @@ const SendingEmail = () => {
               <div className="f2m-multiselect-wrapper">
                 {isFetchingUsers ? (
                   <div className="f2m-loading-users">
-                    <i className="fas fa-spinner fa-spin"></i> Loading users...
+                    <FaSpinner className="fa-spin" /> Loading users...
                   </div>
                 ) : (
                   <UserMultiSelect
@@ -439,7 +456,7 @@ const SendingEmail = () => {
           {/* Message Body */}
           <div className="f2m-form-group">
             <label className="f2m-form-label f2m-required" htmlFor="body">
-              <i className="fas fa-pen"></i>
+              <FaPen />
               Message
             </label>
             <textarea
@@ -464,7 +481,7 @@ const SendingEmail = () => {
             onClick={handlePreview}
             disabled={!isFormValid}
           >
-            <i className="fas fa-eye"></i>
+            <FaEye />
             Preview
           </button>
           <button
@@ -474,12 +491,12 @@ const SendingEmail = () => {
           >
             {isLoading ? (
               <>
-                <i className="fas fa-spinner fa-spin"></i>
+                <FaSpinner className="fa-spin" />
                 Sending...
               </>
             ) : (
               <>
-                <i className="fas fa-paper-plane"></i>
+                <FaPaperPlane />
                 Send Email
               </>
             )}
@@ -503,3 +520,4 @@ const SendingEmail = () => {
 };
 
 export default SendingEmail;
+
