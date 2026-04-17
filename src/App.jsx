@@ -32,6 +32,7 @@ import DashboardLayout from './components/DashboardLayout'
 import AdminReviews from './pages/AdminReviews'
 import AdminUsers from './pages/AdminUsers'
 import AdminButchers from './pages/AdminButchers'
+import SendingEmail from './pages/SendingEmail'
 import WelcomeModal from './components/WelcomeModal';
 import UnavailableItem from './pages/UnavailableItem'
 import { AuthProvider } from './contexts/AuthContext.jsx';
@@ -97,6 +98,7 @@ function AppShell() {
             <Route path="reviews" element={withPageTitle(<AdminReviews />, 'Reviews')} />
             <Route path="users" element={withPageTitle(<AdminUsers />, 'Users')} />
             <Route path="butchers" element={withPageTitle(<AdminButchers />, 'Butchers')} />
+            <Route path="send-email" element={withPageTitle(<SendingEmail />, 'Send Email')} />
           </Route>
 
           <Route path="/add-animal" element={<Navigate to="/admin/add-animal" replace />} />
@@ -108,7 +110,6 @@ function AppShell() {
           <Route path="/forgot-password" element={withPageTitle(<ForgotPassword />, 'Forgot Password')} />
           <Route path="/reset-password/:token" element={withPageTitle(<ResetPassword />, 'Reset Password')} />
           <Route path="/verify-email/:token" element={withPageTitle(<EmailVerification />, 'Verify Email')} />
-          <Route path="/verify-email" element={withPageTitle(<EmailVerification />, 'Verify Email')} />
         </Routes>
         <Footer />
       </CartProvider>

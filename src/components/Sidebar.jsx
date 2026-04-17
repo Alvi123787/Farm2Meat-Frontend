@@ -16,6 +16,7 @@ import {
   faCommentDots,
   faUserFriends,
   faUserShield,
+  faPaperPlane,
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/Sidebar.css";
 
@@ -92,6 +93,11 @@ const Sidebar = ({ isOpen, toggleSidebar, totalAnimals }) => {
       label: "Butchers",
       path: "/admin/butchers",
       icon: faUserShield,
+    },
+    {
+      label: "Send Email",
+      path: "/admin/send-email",
+      icon: faPaperPlane,
     },
   ];
 
