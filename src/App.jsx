@@ -80,7 +80,6 @@ function AppShell() {
           <Route path="/unavailable-item" element={withPageTitle(<UnavailableItem />, 'Unavailable Item')} />
           <Route path="/admin-dashboard" element={<Navigate to="/admin" replace />} />
           <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
-
           <Route
             path="/admin"
             element={
