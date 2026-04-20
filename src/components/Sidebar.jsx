@@ -81,6 +81,11 @@ const Sidebar = ({ isOpen, toggleSidebar, totalAnimals }) => {
       icon: faChartLine,
     },
     {
+      label: "Analytics",
+      path: "/admin/analytics",
+      icon: faChartBar,
+    },
+    {
       label: "Reviews",
       path: "/admin/reviews",
       icon: faCommentDots,
@@ -99,11 +104,6 @@ const Sidebar = ({ isOpen, toggleSidebar, totalAnimals }) => {
       label: "Send Email",
       path: "/admin/send-email",
       icon: faPaperPlane,
-    },
-    {
-      label: "Analytics",
-      path: "/admin/analytics",
-      icon: faChartBar,
     },
   ];
 
