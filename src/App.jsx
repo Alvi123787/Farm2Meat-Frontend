@@ -37,7 +37,8 @@ import WelcomeModal from './components/WelcomeModal';
 import UnavailableItem from './pages/UnavailableItem'
 import { AuthProvider } from './contexts/AuthContext.jsx';
 import { CartProvider } from './contexts/CartContext';
-import PageTitle from './components/PageTitle'
+import PageTitle from './components/PageTitle';
+import UserAnalytics from './pages/UserAnalytics';
 
 const withPageTitle = (element, title) => (
   <PageTitle title={title}>
@@ -81,6 +82,7 @@ function AppShell() {
           <Route path="/unavailable-item" element={withPageTitle(<UnavailableItem />, 'Unavailable Item')} />
           <Route path="/admin-dashboard" element={<Navigate to="/admin" replace />} />
           <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
+
           <Route
             path="/admin"
             element={
@@ -99,6 +101,7 @@ function AppShell() {
             <Route path="users" element={withPageTitle(<AdminUsers />, 'Users')} />
             <Route path="butchers" element={withPageTitle(<AdminButchers />, 'Butchers')} />
             <Route path="send-email" element={withPageTitle(<SendingEmail />, 'Send Email')} />
+            <Route path="analytics" element={withPageTitle(<UserAnalytics />, 'User Analytics')} />
           </Route>
 
           <Route path="/add-animal" element={<Navigate to="/admin/add-animal" replace />} />
