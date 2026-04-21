@@ -141,7 +141,14 @@ const UserAnalytics = () => {
       <div className="analytics-header">
         <div className="header-left">
           <h1>User Analytics</h1>
-          <p className="header-subtitle">Real-time engagement metrics from Google Analytics 4</p>
+          <p className="header-subtitle">
+            Real-time engagement metrics from Google Analytics 4
+            {overview.isMock && (
+              <span className="mock-badge" title="Credentials missing in backend. Showing sample data.">
+                (Sample Data)
+              </span>
+            )}
+          </p>
         </div>
         <div className="header-right">
           <div className="date-range-selector">

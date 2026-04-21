@@ -68,6 +68,19 @@ body {
 .header-subtitle {
   color: var(--text-secondary);
   font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mock-badge {
+  background: #FEF3C7;
+  color: #92400E;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid #FDE68A;
 }
 
 .header-right {
