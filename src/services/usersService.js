@@ -36,5 +36,20 @@ export const usersService = {
       success: Boolean(payload?.success),
       message: payload?.message
     }
+  },
+
+  listGuests: async ({ search = '', page = 1, limit = 20, signal } = {}) => {
+    const sp = new URLSearchParams()
+    if (search) sp.set('search', search)
+    sp.set('page', String(page))
+    sp.set('limit', String(limit))
+    const response = await api.get(`/api/users/guest-users?${sp.toString()}`, { signal })
+    const payload = response.data
+    return {
+      guests: Array.isArray(payload?.data) ? payload.data : [],
+      total: Number(payload?.pagination?.total) || 0,
+      page: Number(payload?.pagination?.page) || page,
+      pages: Number(payload?.pagination?.pages) || 1
+    }
   }
 }

@@ -16,6 +16,7 @@ import {
   faChartBar,
   faCommentDots,
   faUserFriends,
+  faAddressBook,
   faUserShield,
   faPaperPlane,
 } from "@fortawesome/free-solid-svg-icons";
@@ -94,6 +95,11 @@ const Sidebar = ({ isOpen, toggleSidebar, totalAnimals }) => {
       label: "Users",
       path: "/admin/users",
       icon: faUserFriends,
+    },
+    {
+      label: "Guest Users",
+      path: "/admin/guest-users",
+      icon: faAddressBook,
     },
     {
       label: "Butchers",

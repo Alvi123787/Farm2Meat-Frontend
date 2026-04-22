@@ -31,6 +31,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import DashboardLayout from './components/DashboardLayout'
 import AdminReviews from './pages/AdminReviews'
 import AdminUsers from './pages/AdminUsers'
+import AdminGuestUsers from './pages/AdminGuestUsers'
 import AdminButchers from './pages/AdminButchers'
 import SendingEmail from './pages/SendingEmail'
 import WelcomeModal from './components/WelcomeModal';
@@ -99,6 +100,7 @@ function AppShell() {
             <Route path="inquiries" element={withPageTitle(<RecentInquiriesTable />, 'Inquiries')} />
             <Route path="reviews" element={withPageTitle(<AdminReviews />, 'Reviews')} />
             <Route path="users" element={withPageTitle(<AdminUsers />, 'Users')} />
+            <Route path="guest-users" element={withPageTitle(<AdminGuestUsers />, 'Guest Users')} />
             <Route path="butchers" element={withPageTitle(<AdminButchers />, 'Butchers')} />
             <Route path="send-email" element={withPageTitle(<SendingEmail />, 'Send Email')} />
             <Route path="analytics" element={withPageTitle(<UserAnalytics />, 'User Analytics')} />
