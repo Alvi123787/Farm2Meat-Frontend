@@ -16,7 +16,7 @@ import {
   faEnvelope,
   faShoppingBag
 } from '@fortawesome/free-solid-svg-icons'
-import '../css/AdminUsers.css' // Reusing AdminUsers styles
+import '../css/AdminGuestUsers.css' // Reusing AdminUsers styles
 import { usersService } from '../services/usersService'
 
 const formatDate = (value) => {
