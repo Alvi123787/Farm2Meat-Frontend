@@ -56,7 +56,7 @@ const WelcomeModal = () => {
             <div className="logo-visibility-wrapper" style={{ background: 'rgba(128, 0, 0, 0.05)', border: '1px solid rgba(128, 0, 0, 0.1)', padding: '10px' }}>
               <img 
                 src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-                alt="Farm2Meat Logo" 
+                alt="OnlyMeat Logo" 
                 style={{ width: '60px', height: '60px', objectFit: 'contain' }}
               />
             </div>

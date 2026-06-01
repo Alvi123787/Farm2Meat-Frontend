@@ -86,7 +86,7 @@ export default function AboutPreview({
           <div className="col-12">
             <span className="ap-badge">ABOUT US</span>
             <h2 className="ap-title">
-              Why Choose <span className="ap-title-highlight">Farm2Meat</span>?
+              Why Choose <span className="ap-title-highlight">OnlyMeat</span>?
             </h2>
             <div className="ap-title-divider">
               <span className="ap-divider-dot"></span>
@@ -108,7 +108,7 @@ export default function AboutPreview({
                 </div>
                 <h3 className="ap-desc-heading">Hamari Pehchaan</h3>
                 <p className="ap-desc-text">
-                  Farm2Meat par aapko sehatmand aur farm-raised bakray miltay
+                  OnlyMeat par aapko sehatmand aur farm-raised bakray miltay
                   hain — honest weight, transparent pricing, aur WhatsApp
                   support ke saath. Har janwar carefully selected hota hai
                   taake aapko premium quality aur trust dono milein.

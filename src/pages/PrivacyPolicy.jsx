@@ -222,7 +222,7 @@ const PrivacyPolicy = () => {
                   <a href="/">
                     <img 
                       src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-                      alt="Farm2Meat Logo" 
+                      alt="OnlyMeat Logo" 
                       style={{ width: '50px', height: '50px', objectFit: 'contain' }}
                     />
                   </a>
@@ -235,7 +235,7 @@ const PrivacyPolicy = () => {
                   <div>
                     <h1 className="pp-header-title">Privacy Policy</h1>
                     <p className="pp-header-sub">
-                      Your privacy matters to us. Learn how Farm2Meat protects your personal information.
+                      Your privacy matters to us. Learn how OnlyMeat protects your personal information.
                     </p>
                   </div>
                 </div>
@@ -314,7 +314,7 @@ const PrivacyPolicy = () => {
                     <FaShieldAlt className="pp-sidebar-commitment-icon" />
                     <div>
                       <strong>Our Commitment</strong>
-                      <p>Farm2Meat is committed to protecting your data with the highest standards of security and transparency.</p>
+                      <p>OnlyMeat is committed to protecting your data with the highest standards of security and transparency.</p>
                     </div>
                   </div>
                 </aside>
@@ -327,7 +327,7 @@ const PrivacyPolicy = () => {
                     <div className="pp-intro-icon">🔒</div>
                     <div className="pp-intro-text">
                       <p>
-                        <strong>Farm2Meat</strong> is committed to protecting your privacy.
+                        <strong>OnlyMeat</strong> is committed to protecting your privacy.
                         This policy explains how we collect, use, and safeguard your personal
                         information when you use our website and services.
                       </p>
@@ -409,7 +409,7 @@ const PrivacyPolicy = () => {
                             <FaCheckCircle className="pp-callout-icon" />
                             <span>
                               To exercise any of your rights, contact us via WhatsApp at
-                              {PHONE_DISPLAY} or email farm2meat@gmail.com. We will respond
+                              {PHONE_DISPLAY} or email onlymeat@gmail.com. We will respond
                               within 7 business days.
                             </span>
                           </div>
@@ -439,7 +439,7 @@ const PrivacyPolicy = () => {
                         <FaPhoneAlt />
                         <span>Call Us</span>
                       </a>
-                      <a href="mailto:farm2meat@gmail.com" className="pp-contact-link pp-contact-link--email">
+                      <a href="mailto:onlymeat@gmail.com" className="pp-contact-link pp-contact-link--email">
                         <FaEnvelope />
                         <span>Email</span>
                       </a>
@@ -449,7 +449,7 @@ const PrivacyPolicy = () => {
                   {/* Footer Note */}
                   <div className="pp-footer-note">
                     <p>
-                      © 2024 Farm2Meat — All Rights Reserved. This Privacy Policy is governed
+                      © 2024 OnlyMeat — All Rights Reserved. This Privacy Policy is governed
                       by the laws of Pakistan. By continuing to use this website, you acknowledge
                       and accept this privacy policy and all its terms.
                     </p>

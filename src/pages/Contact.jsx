@@ -45,8 +45,8 @@ const contactInfo = [
     id: 3,
     icon: <FaEnvelope />,
     label: 'Email',
-    value: 'farm2meat@gmail.com',
-    href: 'mailto:farm2meat@gmail.com',
+    value: 'onlymeat@gmail.com',
+    href: 'mailto:onlymeat@gmail.com',
     color: 'accent',
   },
   {
@@ -222,7 +222,7 @@ const Contact = () => {
                   {/* Google Map */}
                   <div className="cp-map-container">
                     <iframe
-                      title="Farm2Meat Location"
+                      title="OnlyMeat Location"
                       src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d55676.27637825424!2d70.2895822!3d28.4209205!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39375d22992a57d5%3A0xf0e1eb8f8e1ec6c7!2sRahim%20Yar%20Khan%2C%20Punjab%2C%20Pakistan!5e0!3m2!1sen!2s!4v1700000000000!5m2!1sen!2s"
                       width="100%"
                       height="100%"
@@ -239,7 +239,7 @@ const Contact = () => {
                       <FaMapMarkerAlt />
                     </div>
                     <div className="cp-address-content">
-                      <strong className="cp-address-title">Farm2Meat Office</strong>
+                      <strong className="cp-address-title">OnlyMeat Office</strong>
                       <p className="cp-address-text">
                         Near Gulshan Iqbal 110/p, <br />
                         Rahim Yar Khan, Punjab, Pakistan

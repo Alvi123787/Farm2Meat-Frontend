@@ -251,10 +251,10 @@ const Signup = () => {
               <div className="su-brand">
                 <img 
                   src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-                  alt="Farm2Meat" 
+                  alt="OnlyMeat" 
                   className="su-brand-logo"
                 />
-                <span className="su-brand-text">Farm2<span>Meat</span></span>
+                <span className="su-brand-text">Only<span>Meat</span></span>
               </div>
 
               <h2 className="su-title">Create your account</h2>

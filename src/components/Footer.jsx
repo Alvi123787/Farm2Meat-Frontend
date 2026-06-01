@@ -52,12 +52,12 @@ const Footer = () => {
                 <div className="footer-logo-wrap logo-visibility-wrapper" style={{ marginBottom: '1.5rem' }}>
                   <img 
                     src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-                    alt="Farm2Meat Logo" 
+                    alt="OnlyMeat Logo" 
                     style={{ width: '60px', height: '60px', objectFit: 'contain' }}
                   />
                 </div>
                 <h3 className="footer-brand">
-                  Farm2 <span className="footer-brand-accent">Meat</span>
+                  Only <span className="footer-brand-accent">Meat</span>
                 </h3>
                 <p className="footer-brand-desc">
                   Rahim Yar Khan ki sab se bharosemand online mandi — sehatmand janwar, live video verification, aur free home delivery.
@@ -130,8 +130,8 @@ const Footer = () => {
                     </span>
                     <div>
                       <span className="footer-contact-label">Email</span>
-                      <a href="mailto:farm2meat@gmail.com" className="footer-contact-value">
-                        farm2meat@gmail.com
+                      <a href="mailto:onlymeat@gmail.com" className="footer-contact-value">
+                        onlymeat@gmail.com
                       </a>
                     </div>
                   </li>
@@ -195,7 +195,7 @@ const Footer = () => {
             <div className="col-md-12">
               <div className="footer-bottom-content">
                 <p className="footer-copyright">
-                  &copy; 2024 Farm2Meat &mdash; All Rights Reserved.
+                  &copy; 2024 OnlyMeat &mdash; All Rights Reserved.
                 </p>
                 <div className="footer-bottom-links">
                   <a href="/privacy-policy">Privacy Policy</a>

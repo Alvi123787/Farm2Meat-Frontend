@@ -144,7 +144,7 @@ const Sidebar = ({ isOpen, toggleSidebar, totalAnimals }) => {
           <div className="sidebar-logo-wrapper logo-visibility-wrapper" style={{ padding: '6px' }}>
             <img 
               src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-              alt="Farm2Meat Logo" 
+              alt="OnlyMeat Logo" 
               className="sidebar-logo-img"
               style={{ width: '30px', height: '30px', objectFit: 'contain' }}
             />

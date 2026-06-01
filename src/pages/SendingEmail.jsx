@@ -199,7 +199,7 @@ const SendingEmail = () => {
   // Form state
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
-  const [senderName, setSenderName] = useState('Farm2Meat');
+  const [senderName, setSenderName] = useState('OnlyMeat');
   
   // Recipient state
   const [sendToAll, setSendToAll] = useState(false);
@@ -389,7 +389,7 @@ const SendingEmail = () => {
               className="f2m-form-control"
               value={senderName}
               onChange={(e) => setSenderName(e.target.value)}
-              placeholder="Farm2Meat"
+              placeholder="OnlyMeat"
               disabled
             />
           </div>

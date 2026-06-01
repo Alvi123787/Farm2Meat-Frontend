@@ -1,6 +1,6 @@
-const CART_STORAGE_KEY = 'farm2meat-cart'
+const CART_STORAGE_KEY = 'onlymeat-cart'
 const DEFAULT_TTL_MS = 30 * 60 * 1000
-const EXPIRED_FLAG_KEY = 'farm2meat-cart-expired'
+const EXPIRED_FLAG_KEY = 'onlymeat-cart-expired'
 
 const safeParse = (raw) => {
   try {

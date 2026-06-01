@@ -85,11 +85,11 @@ const ForgotPassword = () => {
             <div className="logo-visibility-wrapper" style={{ padding: '8px' }}>
               <img 
                 src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-                alt="Farm2Meat Logo" 
+                alt="OnlyMeat Logo" 
                 style={{ width: '40px', height: '40px', objectFit: 'contain' }}
               />
             </div>
-            <span style={{ marginLeft: '14px', color: 'white' }}>Farm2Meat</span>
+            <span style={{ marginLeft: '14px', color: 'white' }}>OnlyMeat</span>
           </div>
           <div className="fp-quote">
             <h2>Secure Your Account</h2>

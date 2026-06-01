@@ -175,7 +175,7 @@ const Terms = () => {
                   <a href="/">
                     <img 
                       src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-                      alt="Farm2Meat Logo" 
+                      alt="OnlyMeat Logo" 
                       style={{ width: '50px', height: '50px', objectFit: 'contain' }}
                     />
                   </a>
@@ -188,7 +188,7 @@ const Terms = () => {
                   <div>
                     <h1 className="tp-header-title">Terms & Conditions</h1>
                     <p className="tp-header-sub">
-                      Please read these terms carefully before using Farm2Meat's services.
+                      Please read these terms carefully before using OnlyMeat's services.
                     </p>
                   </div>
                 </div>
@@ -253,13 +253,13 @@ const Terms = () => {
                     <div className="tp-intro-icon">📜</div>
                     <div className="tp-intro-text">
                       <p>
-                        Welcome to <strong>Farm2Meat</strong>. By using our website and services,
+                        Welcome to <strong>OnlyMeat</strong>. By using our website and services,
                         you agree to the following terms and conditions. Please read them carefully
                         before proceeding with any transaction on our platform.
                       </p>
                       <p>
                         These terms apply to all users — buyers, sellers, and visitors —
-                        accessing <strong>farm2meat.com</strong> from Rahim Yar Khan and beyond.
+                        accessing <strong>onlymeat.com</strong> from Rahim Yar Khan and beyond.
                       </p>
                     </div>
                   </div>
@@ -310,7 +310,7 @@ const Terms = () => {
                         <FaPhoneAlt />
                         <span>Call Us</span>
                       </a>
-                      <a href="mailto:farm2meat@gmail.com" className="tp-contact-link tp-contact-link--email">
+                      <a href="mailto:onlymeat@gmail.com" className="tp-contact-link tp-contact-link--email">
                         <FaEnvelope />
                         <span>Email</span>
                       </a>
@@ -320,7 +320,7 @@ const Terms = () => {
                   {/* Footer Note */}
                   <div className="tp-footer-note">
                     <p>
-                      © 2024 Farm2Meat — All Rights Reserved. These terms and conditions are
+                      © 2024 OnlyMeat — All Rights Reserved. These terms and conditions are
                       governed by the laws of Pakistan. By continuing to use this website, you
                       acknowledge and accept these terms.
                     </p>

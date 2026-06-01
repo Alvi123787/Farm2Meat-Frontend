@@ -28,7 +28,7 @@ const HomeHeader = () => {
     const messages = {
       manual: "On iPhone, tap Share → Add to Home Screen",
       dismissed: "You can install anytime from the menu",
-      accepted: "Installing Farm2Meat...",
+      accepted: "Installing OnlyMeat...",
       installed: "Already installed on this device"
     };
     setInstallFeedback(messages[outcome] || "Install not available in this browser");
@@ -59,7 +59,7 @@ const HomeHeader = () => {
         <div className="hero__logo" onClick={() => navigate('/')}>
           <img 
             src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-            alt="Farm2Meat" 
+            alt="OnlyMeat" 
           />
         </div>
 

@@ -78,7 +78,7 @@ const values = [
   {
     icon: <FaShieldAlt />,
     title: 'Quality Promise',
-    desc: 'Every animal at Farm2Meat is carefully selected. We never compromise on quality. Every goat and sheep is checked under the supervision of experts to ensure you get only the best.',
+    desc: 'Every animal at OnlyMeat is carefully selected. We never compromise on quality. Every goat and sheep is checked under the supervision of experts to ensure you get only the best.',
     color: '34, 85, 34'
   },
   {
@@ -161,7 +161,7 @@ export default function About() {
                 <div className="abt-logo-wrap logo-visibility-wrapper" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
                   <img 
                     src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-                    alt="Farm2Meat Logo" 
+                    alt="OnlyMeat Logo" 
                     style={{ width: '50px', height: '50px', objectFit: 'contain' }}
                   />
                 </div>
@@ -171,7 +171,7 @@ export default function About() {
                     <FaUsers className="abt-header-icon" />
                   </div>
                   <div>
-                    <h1 className="abt-header-title">About Farm2Meat</h1>
+                    <h1 className="abt-header-title">About OnlyMeat</h1>
                     <p className="abt-header-sub">
                       Trust, quality, and fair prices — our promise, your confidence.
                     </p>
@@ -221,12 +221,12 @@ export default function About() {
                     quality is unknown, and it's hard to trust.
                   </p>
                   <p className="abt-story-text">
-                    To solve this problem, the concept of Farm2Meat was born. We thought that if we
+                    To solve this problem, the concept of OnlyMeat was born. We thought that if we
                     bring technology and honesty together — then we can create a platform where people
                     not only get good quality but also have complete trust. And that's exactly what we did.
                   </p>
                   <p className="abt-story-text">
-                    Today, Farm2Meat is a well-known name in Rahim Yar Khan. Thanks to our customers,
+                    Today, OnlyMeat is a well-known name in Rahim Yar Khan. Thanks to our customers,
                     we are growing every day. Behind every animal we sell is the hard work, dedication
                     of our entire team, and prayers for you. This is not just a business — it's our
                     passion, our responsibility, and our promise that we will always deal with you honestly.
@@ -288,7 +288,7 @@ export default function About() {
                 </div>
                 <h3 className="abt-mv-title">Our Vision</h3>
                 <p className="abt-mv-text">
-                  Our vision is that Farm2Meat should not be limited only to Rahim Yar Khan — but
+                  Our vision is that OnlyMeat should not be limited only to Rahim Yar Khan — but
                   should become such a market across Pakistan where people trust online animal buying
                   as much as they do seeing it with their own eyes. We want our name to be the first
                   one taken in livestock online trading in the next few years. A platform where quality,
@@ -319,7 +319,7 @@ export default function About() {
                 What We <span className="abt-section-highlight">Offer</span>
               </h2>
               <p className="abt-section-subtitle">
-                At Farm2Meat, you get the best experience — from start to finish
+                At OnlyMeat, you get the best experience — from start to finish
               </p>
               <div className="abt-section-divider">
                 <span className="abt-sec-div-dot"></span>
@@ -360,7 +360,7 @@ export default function About() {
                 Our <span className="abt-section-highlight">Core Values</span>
               </h2>
               <p className="abt-section-subtitle">
-                These are the principles on which the foundation of Farm2Meat was laid
+                These are the principles on which the foundation of OnlyMeat was laid
               </p>
               <div className="abt-section-divider">
                 <span className="abt-sec-div-dot"></span>
@@ -423,7 +423,7 @@ export default function About() {
                   <div className="abt-founder-img-wrap">
                     <img
                       src="../uploads/founder.jpg"
-                      alt="Founder of Farm2Meat"
+                      alt="Founder of OnlyMeat"
                       className="abt-founder-img"
                     />
                     <div className="abt-founder-img-border"></div>
@@ -432,13 +432,13 @@ export default function About() {
 
                   <div className="abt-founder-name-card">
                     <h3 className="abt-founder-name">Muhammad Ahmad</h3>
-                    <span className="abt-founder-role">Founder &amp; CEO — Farm2Meat</span>
+                    <span className="abt-founder-role">Founder &amp; CEO — OnlyMeat</span>
                     <div className="abt-founder-contact">
                       <a href={PHONE_LINK} className="abt-founder-contact-item">
                         <FaPhoneAlt /> <span>{PHONE_DISPLAY}</span>
                       </a>
-                      <a href="mailto:farm2meat@gmail.com" className="abt-founder-contact-item">
-                        <FaEnvelope /> <span>farm2meat@gmail.com</span>
+                      <a href="mailto:onlymeat@gmail.com" className="abt-founder-contact-item">
+                        <FaEnvelope /> <span>onlymeat@gmail.com</span>
                       </a>
                     </div>
                     <div className="abt-founder-location">
@@ -465,19 +465,19 @@ export default function About() {
                     can get quality animals from home with full transparency.
                   </p>
                   <p className="abt-founder-text">
-                    This thought gave birth to Farm2Meat. In the beginning, there were many difficulties —
+                    This thought gave birth to OnlyMeat. In the beginning, there were many difficulties —
                     it was not easy to win people's trust. But we made honesty, quality, and customer
                     care our principle and gradually people appreciated our hard work. Today, we can say
-                    with pride that Farm2Meat has brought happiness to many homes.
+                    with pride that OnlyMeat has brought happiness to many homes.
                   </p>
                   <p className="abt-founder-text">
                     I believe that if the intention is pure and the hard work is sincere, then Allah
                     Almighty definitely grants success. I consider every customer as my guest and
-                    their happiness is my biggest success. Farm2Meat was my dream — and with your
+                    their happiness is my biggest success. OnlyMeat was my dream — and with your
                     trust, this dream is becoming a reality.
                   </p>
                   <p className="abt-founder-text abt-founder-sign">
-                    — Muhammad Ahmad, Founder Farm2Meat
+                    — Muhammad Ahmad, Founder OnlyMeat
                   </p>
                 </div>
               </div>
@@ -500,7 +500,7 @@ export default function About() {
                 <h2 className="abt-cta-title">Come, Join Us!</h2>
                 <p className="abt-cta-text">
                   If you are also looking for a reliable place where you can get healthy and best
-                  animals — then Farm2Meat is your own platform. Contact us today and choose your
+                  animals — then OnlyMeat is your own platform. Contact us today and choose your
                   favorite animal. We are always ready for your service.
                 </p>
                 <div className="abt-cta-actions">

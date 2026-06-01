@@ -257,7 +257,7 @@ const Cart = () => {
   }, []);
 
   const buildWhatsAppMessage = () => {
-    let msg = `Assalam o Alaikum!%0A%0A🛒 *New Order from Farm2Meat Website*%0A%0A`
+    let msg = `Assalam o Alaikum!%0A%0A🛒 *New Order from OnlyMeat Website*%0A%0A`
 
     cartItems.forEach((item, i) => {
       const qty = getEffectiveQuantity(item)

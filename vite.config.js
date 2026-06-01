@@ -30,10 +30,10 @@ export default defineConfig({
       ],
       manifest: {
         id: "/",
-        name: "Farm2Meat",
-        short_name: "Farm2Meat",
+        name: "OnlyMeat",
+        short_name: "OnlyMeat",
         description:
-          "Farm2Meat helps customers browse healthy bakray, place orders, and stay connected with trusted service.",
+          "OnlyMeat helps customers browse healthy bakray, place orders, and stay connected with trusted service.",
         theme_color: "#800000",
         background_color: "#fff8f0",
         display: "standalone",

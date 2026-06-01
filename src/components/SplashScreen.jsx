@@ -24,7 +24,7 @@ const SplashScreen = ({ isVisible }) => {
             >
               <img
                 src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png"
-                alt="Farm2Meat Logo"
+                alt="OnlyMeat Logo"
                 className="splash-logo"
               />
             </motion.div>
@@ -38,7 +38,7 @@ const SplashScreen = ({ isVisible }) => {
                 ease: [0.22, 1, 0.36, 1],
               }}
             >
-              <h1 className="splash-text">Farm2Meat</h1>
+              <h1 className="splash-text">OnlyMeat</h1>
             </motion.div>
           </div>
         </motion.div>

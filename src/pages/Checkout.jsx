@@ -368,7 +368,7 @@ const Checkout = () => {
 
   const buildWhatsAppOrder = (orderId) => {
     const currentItems = orderItemsRef.current
-    let msg = `Assalam o Alaikum!%0A%0A✅ *ORDER CONFIRMATION — Farm2Meat*%0A%0A`
+    let msg = `Assalam o Alaikum!%0A%0A✅ *ORDER CONFIRMATION — OnlyMeat*%0A%0A`
     if (orderId) {
       msg += `*Order ID: ${orderId}*%0A`
     }

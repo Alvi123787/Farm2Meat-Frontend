@@ -153,7 +153,7 @@ const Login = () => {
 
             <h1 className="lg-hero-title">
               Welcome back to
-              <span className="lg-hero-title-accent"> Farm2Meat</span>
+              <span className="lg-hero-title-accent"> OnlyMeat</span>
             </h1>
 
             <p className="lg-hero-desc">
@@ -197,10 +197,10 @@ const Login = () => {
               <div className="lg-brand">
                 <img 
                   src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-                  alt="Farm2Meat" 
+                  alt="OnlyMeat" 
                   className="lg-brand-logo"
                 />
-                <span className="lg-brand-text">Farm2<span>Meat</span></span>
+                <span className="lg-brand-text">Only<span>Meat</span></span>
               </div>
 
               <h2 className="lg-title">Sign in to your account</h2>
