@@ -1,6 +1,8 @@
 import React from 'react'
 import HomeHeader from '../components/HomeHeader'
 import TrustBar from '../components/TrustBar'
+import MeatByCategory from '../components/MeatByCategory'
+import BestsellerCuts from '../components/BestSellerCuts'
 import HomeCategory from '../components/HomeCategory'
 import ButcherSection from '../components/ButcherSection'
 import AboutPreview from '../components/AboutPreview'
@@ -10,12 +12,11 @@ import ReviewsSection from '../components/ReviewsSection'
 const Home = () => {
   return (
     <div>
-      <div className="free-delivery-banner" style={{ background: '#800000', color: '#fff', textAlign: 'center', padding: '10px', fontWeight: 'bold', fontSize: '0.9rem' }}>
-        🚚 Free Home Delivery Available on All Orders!
-      </div>
       <HomeHeader />
       <div className="min-h-screen">
         <TrustBar />
+        <MeatByCategory />
+        <BestsellerCuts />
         <HomeCategory />
         <ButcherSection />
         <AboutPreview />

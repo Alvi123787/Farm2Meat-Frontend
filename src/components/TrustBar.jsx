@@ -1,41 +1,42 @@
+// TrustBar.jsx
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faTruck,
-  faWeightHanging,
-  faHeartPulse,
-  faMoneyBillWave,
+  faMotorcycle,
+  faCheckCircle,
+  faBoxOpen,      // New icon for packaging
+  faAward,
 } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useRef, useState } from "react";
 import "../css/TrustBar.css";
 
 const trustItems = [
   {
-    icon: faTruck,
-    title: "Free Delivery",
-    subtitle: "On all orders",
-    color: "45, 135, 90",
-    accentHex: "#2D875A",
+    icon: faMotorcycle,
+    title: "Delivery for 50 Rs",
+    subtitle: "Rahim Yar Khan only",
+    color: "212, 175, 55",
+    accentHex: "#D4AF37",
   },
   {
-    icon: faWeightHanging,
-    title: "100% Original",
-    subtitle: "Verified & authentic",
-    color: "128, 0, 0",
-    accentHex: "#800000",
+    icon: faCheckCircle,
+    title: "100% Halal Certified",
+    subtitle: "Authentic zabiha process",
+    color: "46, 139, 87",
+    accentHex: "#2E8B57",
   },
   {
-    icon: faHeartPulse,
-    title: "Health Certified",
-    subtitle: "Quality assured livestock",
+    icon: faBoxOpen,               // Packaging icon
+    title: "Clean Packaging",       // Updated title
+    subtitle: "Tray, wrap & quality bag",  // Short description
+    color: "85, 107, 47",          // Olive green to signal freshness & packaging
+    accentHex: "#556B2F",
+  },
+  {
+    icon: faAward,
+    title: "Premium Quality Cuts",
+    subtitle: "Hand‑trimmed & hygienic",
     color: "192, 57, 43",
     accentHex: "#C0392B",
-  },
-  {
-    icon: faMoneyBillWave,
-    title: "Cash on Delivery",
-    subtitle: "Pay at your doorstep",
-    color: "163, 130, 35",
-    accentHex: "#A38223",
   },
 ];
 

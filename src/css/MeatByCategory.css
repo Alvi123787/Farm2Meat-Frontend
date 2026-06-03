@@ -1,0 +1,316 @@
+/* MeatByCategory.css – Premium Clean Redesign */
+
+/* ===== SECTION ===== */
+.mbc {
+  width: 100%;
+  padding: clamp(64px, 10vw, 100px) 24px;
+  background: #0a0404;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle radial glow for depth */
+.mbc::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    rgba(139, 0, 0, 0.09) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+@media (min-width: 768px) {
+  .mbc {
+    padding: 100px 48px;
+  }
+}
+@media (min-width: 1200px) {
+  .mbc {
+    padding: 110px 64px;
+  }
+}
+
+/* ===== HEADER ===== */
+.mbc__header {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.mbc__header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.mbc__header-line {
+  display: block;
+  width: 48px;
+  height: 1px;
+  background: #d4af37;
+  opacity: 0.8;
+}
+
+.mbc__header-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: #d4af37;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.mbc__title {
+  font-family: 'Times New Roman', Georgia, serif;
+  font-size: clamp(36px, 6vw, 56px);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+  color: #fff;
+  margin: 0 0 14px 0;
+  line-height: 1.05;
+}
+
+.mbc__subtitle {
+  font-size: clamp(14px, 2vw, 17px);
+  color: rgba(255, 255, 255, 0.42);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.6;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+}
+
+/* ===== GRID ===== */
+.mbc__grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .mbc__grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+}
+
+/* ===== CARD ===== */
+.mbc__card {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #160a0a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 2px solid rgba(212, 175, 55, 0.3);
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              border-color 0.35s ease,
+              box-shadow 0.4s ease;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: cardReveal 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: calc(var(--i) * 0.12s + 0.1s);
+}
+
+@keyframes cardReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mbc__card:hover {
+  transform: translateY(-8px);
+  border-top-color: #d4af37;
+  border-color: rgba(212, 175, 55, 0.25);
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.7),
+              0 0 0 1px rgba(212, 175, 55, 0.15);
+}
+
+/* ===== CARD IMAGE ===== */
+.mbc__card-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2.6;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .mbc__card-img-wrap {
+    aspect-ratio: 3 / 3.2;
+  }
+}
+
+.mbc__card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              filter 0.45s ease;
+  filter: brightness(0.85) contrast(1.05);
+}
+
+.mbc__card:hover .mbc__card-img {
+  transform: scale(1.06);
+  filter: brightness(0.95) contrast(1.1);
+}
+
+/* Gradient overlay for text readability */
+.mbc__card-img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 30%,
+    rgba(10, 4, 4, 0.85) 100%
+  );
+  pointer-events: none;
+}
+
+/* ===== TAG ===== */
+.mbc__card-tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #8b0000;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 3px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+@media (min-width: 768px) {
+  .mbc__card-tag {
+    font-size: 11px;
+    top: 14px;
+    left: 14px;
+  }
+}
+
+/* ===== CARD BODY ===== */
+.mbc__card-body {
+  padding: 18px 16px 20px;
+}
+
+@media (min-width: 768px) {
+  .mbc__card-body {
+    padding: 20px 18px 24px;
+  }
+}
+
+.mbc__card-meta {
+  margin-bottom: 8px;
+}
+
+.mbc__card-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #d4af37;
+  opacity: 0.9;
+}
+
+@media (min-width: 768px) {
+  .mbc__card-label {
+    font-size: 12px;
+  }
+}
+
+.mbc__card-name {
+  font-family: 'Times New Roman', Georgia, serif;
+  font-size: clamp(22px, 3.5vw, 28px);
+  font-weight: 800;
+  letter-spacing: 0px;
+  color: #fff;
+  margin: 0 0 8px 0;
+  line-height: 1.05;
+}
+
+.mbc__card-desc {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
+  line-height: 1.5;
+  margin: 0 0 18px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .mbc__card-desc {
+    font-size: 14px;
+  }
+}
+
+/* ===== CTA ===== */
+.mbc__card-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 14px;
+}
+
+.mbc__card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  transition: color 0.3s ease, gap 0.3s ease;
+}
+
+.mbc__card-cta svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease, color 0.3s ease;
+  flex-shrink: 0;
+}
+
+.mbc__card:hover .mbc__card-cta {
+  color: #d4af37;
+  gap: 12px;
+}
+
+.mbc__card:hover .mbc__card-cta svg {
+  transform: translateX(4px);
+  color: #d4af37;
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+  .mbc__card {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .mbc__card-img {
+    transition: none;
+  }
+  .mbc__card:hover {
+    transform: none;
+  }
+}
