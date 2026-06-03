@@ -2,7 +2,7 @@ import React from 'react'
 import HomeHeader from '../components/HomeHeader'
 import TrustBar from '../components/TrustBar'
 import MeatByCategory from '../components/MeatByCategory'
-import BestsellerCuts from '../components/BestsellerCuts'
+import BestsellerCuts from '../components/Bestsellers'
 import HomeCategory from '../components/HomeCategory'
 import ButcherSection from '../components/ButcherSection'
 import AboutPreview from '../components/AboutPreview'
@@ -16,7 +16,7 @@ const Home = () => {
       <div className="min-h-screen">
         <TrustBar />
         <MeatByCategory />
-        <BestsellerCuts />
+        <Bestsellers />
         <HomeCategory />
         <ButcherSection />
         <AboutPreview />

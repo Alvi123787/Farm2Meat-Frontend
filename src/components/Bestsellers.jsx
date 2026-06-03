@@ -1,7 +1,7 @@
-// BestsellerCuts.jsx – Premium Bestseller Cuts Section
+// Bestsellers.jsx – Premium Bestsellers Section
 
 import { useNavigate } from "react-router-dom";
-import "../css/BestsellerCuts.css";
+import "../css/Bestsellers.css";
 
 const BESTSELLERS = [
   {
