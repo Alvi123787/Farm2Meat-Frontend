@@ -60,7 +60,7 @@ const BESTSELLERS = [
   },
 ];
 
-const BestsellerCuts = () => {
+const Bestsellers = () => {
   const navigate = useNavigate();
 
   return (
@@ -127,4 +127,4 @@ const BestsellerCuts = () => {
   );
 };
 
-export default BestsellerCuts;
+export default Bestsellers;
