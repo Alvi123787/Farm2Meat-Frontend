@@ -3,6 +3,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useAdminItems } from '../hooks/useMeatItems'
+import api from '../services/api'
 import '../css/Adminmeatform.css'
 
 const CATEGORIES = [
@@ -64,11 +65,34 @@ export default function Adminmeatform() {
     toastTimer.current = setTimeout(() => setToast(null), 3500)
   }
 
-  const handleFileChange = (file) => {
+  const handleFileChange = async (file) => {
     if (!file || !file.type.startsWith('image/')) return
-    const url = URL.createObjectURL(file)
-    setImagePreview(url)
-    set('imageUrl', url)
+    
+    // Show local preview immediately
+    const localUrl = URL.createObjectURL(file)
+    setImagePreview(localUrl)
+    setSubmitting(true)
+    
+    try {
+      const formData = new FormData()
+      formData.append('image', file)
+      
+      const response = await api.post('/api/upload/single', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+      
+      if (response.data.success) {
+        set('imageUrl', response.data.url)
+        showToast('success', 'Image uploaded successfully!')
+      }
+    } catch (err) {
+      console.error('Upload error:', err)
+      showToast('error', 'Failed to upload image. Please try again.')
+      setImagePreview(null)
+      set('imageUrl', '')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const removeImage = () => {
