@@ -1,71 +1,36 @@
-// Bestsellers.jsx – Premium Bestsellers Section
+// Bestsellers.jsx — Dynamic · fetches from /api/meat-items/bestsellers
+// Dark section — same styling as before, now API-powered
 
-import { useNavigate } from "react-router-dom";
-import "../css/Bestsellers.css";
+import { useNavigate } from 'react-router-dom'
+import { useBestsellers } from '../hooks/useMeatItems'
+import '../css/Bestsellers.css'
 
-const BESTSELLERS = [
-  {
-    id: "mutton-chops",
-    name: "Mutton Chops",
-    label: "Farm Fresh",
-    description: "Bone-in chops, perfectly marbled for rich, tender grilling",
-    image: "https://res.cloudinary.com/dqclqmuhi/image/upload/v1780450604/162191_kyebr6.jpg",
-    tag: "#1 Seller",
-    category: "mutton",
-  },
-  {
-    id: "beef-boneless-boti",
-    name: "Beef Boneless Boti",
-    label: "Premium Grade",
-    description: "Cubed boneless cuts, ideal for karahi and BBQ skewers",
-    image: "https://res.cloudinary.com/dqclqmuhi/image/upload/v1780460459/47151_efaml8.jpg",
-    tag: "Top Pick",
-    category: "beef",
-  },
-  {
-    id: "mutton-leg",
-    name: "Mutton Leg",
-    label: "Farm Fresh",
-    description: "Whole leg, slow-roasted to fall-off-the-bone perfection",
-    image: "https://res.cloudinary.com/dqclqmuhi/image/upload/v1780460979/12253_d0mhea.jpg",
-    tag: "Festive Cut",
-    category: "mutton",
-  },
-  {
-    id: "beef-mince",
-    name: "Beef Mince",
-    label: "Premium Grade",
-    description: "Freshly minced beef, perfect for qeema, kofta & bolognese",
-    image: "https://res.cloudinary.com/dqclqmuhi/image/upload/v1780461121/2148611028_jqbiwj.jpg",
-    tag: "Daily Fresh",
-    category: "beef",
-  },
-  {
-    id: "chicken-chest",
-    name: "Chicken Chest",
-    label: "Free Range",
-    description: "Lean, hormone-free breast fillets for healthy everyday meals",
-    image: "https://res.cloudinary.com/dqclqmuhi/image/upload/v1780451647/13456_qkjktf.jpg",
-    tag: "Popular",
-    category: "chicken",
-  },
-  {
-    id: "chicken-legs",
-    name: "Chicken Legs",
-    label: "Free Range",
-    description: "Juicy drumsticks and thighs, great for grilling or curries",
-    image: "https://res.cloudinary.com/dqclqmuhi/image/upload/v1780461302/48681_rimiz2.jpg",
-    tag: "Best Value",
-    category: "chicken",
-  },
-];
+/* ── Skeleton card ─────────────────────────────── */
+const SkeletonCard = ({ index }) => (
+  <div className="bsc__card bsc__card--skeleton" style={{ '--i': index }}>
+    <div className="bsc__card-img-wrap bsc-skeleton-img" />
+    <div className="bsc__card-body">
+      <div className="bsc-skeleton-line bsc-skeleton-line--short" />
+      <div className="bsc-skeleton-line" />
+      <div className="bsc-skeleton-line bsc-skeleton-line--med" />
+    </div>
+  </div>
+)
 
+/* ── Bestsellers section ───────────────────────── */
 const Bestsellers = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+  const { items, loading, error } = useBestsellers(6)
+
+  // Always render 6 skeletons while loading
+  const showSkeletons = loading
+  const showError     = !loading && !!error
+  const showItems     = !loading && !error && items.length > 0
+  const showEmpty     = !loading && !error && items.length === 0
 
   return (
     <section className="bsc">
-      {/* Section Header */}
+      {/* Header */}
       <div className="bsc__header">
         <div className="bsc__header-badge">
           <span className="bsc__header-line" />
@@ -78,44 +43,60 @@ const Bestsellers = () => {
         </p>
       </div>
 
-      {/* Cards Grid — always 3 columns */}
+      {/* Grid */}
       <div className="bsc__grid">
-        {BESTSELLERS.map((item, index) => (
+        {showSkeletons && Array.from({ length: 6 }).map((_, i) => (
+          <SkeletonCard key={i} index={i} />
+        ))}
+
+        {showError && (
+          <p className="bsc__error">⚠️ Could not load bestsellers.</p>
+        )}
+
+        {showEmpty && (
+          <p className="bsc__empty">No bestsellers configured yet.</p>
+        )}
+
+        {showItems && items.map((item, index) => (
           <div
-            key={item.id}
+            key={item._id}
             className="bsc__card"
-            style={{ "--i": index }}
-            onClick={() => navigate(`/shop?category=${item.category}&cut=${item.id}`)}
+            style={{ '--i': index }}
+            onClick={() => navigate(`/menu?category=${item.category}`)}
           >
             {/* Image */}
             <div className="bsc__card-img-wrap">
               <img
-                src={item.image}
+                src={item.imageUrl}
                 alt={item.name}
                 className="bsc__card-img"
                 loading="lazy"
               />
               <div className="bsc__card-img-overlay" />
-              <span className="bsc__card-tag">{item.tag}</span>
+              {item.badge && (
+                <span className="bsc__card-tag">{item.badge}</span>
+              )}
             </div>
 
             {/* Content */}
             <div className="bsc__card-body">
               <div className="bsc__card-meta">
-                <span className="bsc__card-label">{item.label}</span>
+                <span className="bsc__card-label">
+                  {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
+                </span>
               </div>
               <h3 className="bsc__card-name">{item.name}</h3>
               <p className="bsc__card-desc">{item.description}</p>
+
               <div className="bsc__card-footer">
+                <span className="bsc__card-price">
+                  Rs. {item.price.toLocaleString('en-PK')}
+                  <span className="bsc__card-price-unit">/{item.unit}</span>
+                </span>
                 <span className="bsc__card-cta">
                   Order Now
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path
-                      d="M5 12h14m0 0-6-6m6 6-6 6"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
+                    <path d="M5 12h14m0 0-6-6m6 6-6 6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </span>
               </div>
@@ -123,8 +104,20 @@ const Bestsellers = () => {
           </div>
         ))}
       </div>
-    </section>
-  );
-};
 
-export default Bestsellers;
+      {/* View all CTA */}
+      {showItems && (
+        <div className="bsc__view-all">
+          <button className="bsc__view-all-btn" onClick={() => navigate('/menu')}>
+            View Full Menu
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M5 12h14m0 0-6-6m6 6-6 6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        </div>
+      )}
+    </section>
+  )
+}
+
+export default Bestsellers

@@ -2,6 +2,7 @@ import React, { useCallback, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import ShopHeader from '../components/ShopHeader'
 import ShopHeroSection from '../components/ShopHeroSection'
+import MenuPage from '../components/MenuPage'
 import CardsGrid from '../components/CardsGrid'
 import '../css/Shop.css'
 
@@ -12,6 +13,9 @@ const Shop = () => {
   const rawSearch = searchParams.get('q') || ''
   const rawPrice = searchParams.get('price') || 'all'
   const rawWeight = searchParams.get('weight') || 'all'
+
+  // Determine if we should show the Menu view or the Shop view
+  const showMenu = !rawCategory && !rawSearch && rawPrice === 'all' && rawWeight === 'all'
 
   const activeCategory = useMemo(() => {
     const c = rawCategory.trim()
@@ -25,7 +29,7 @@ const Shop = () => {
   const setCategory = useCallback((category) => {
     const next = String(category || '').trim()
     const sp = new URLSearchParams(searchParams)
-    if (!next || next === 'all') {
+    if (!next) {
       sp.delete('category')
     } else {
       sp.set('category', next)
@@ -38,6 +42,7 @@ const Shop = () => {
     const q = String(next?.search || '').trim()
     const price = String(next?.price || 'all').trim() || 'all'
     const weight = String(next?.weight || 'all').trim() || 'all'
+    const category = String(next?.category || '').trim()
 
     if (q) sp.set('q', q)
     else sp.delete('q')
@@ -48,12 +53,14 @@ const Shop = () => {
     if (weight !== 'all') sp.set('weight', weight)
     else sp.delete('weight')
 
+    if (category) sp.set('category', category)
+
     setSearchParams(sp, { replace: false })
   }, [searchParams, setSearchParams])
 
   const clearFilters = useCallback(() => {
     const sp = new URLSearchParams(searchParams)
-    sp.delete('category')
+    sp.set('category', 'all')
     sp.delete('q')
     sp.delete('price')
     sp.delete('weight')
@@ -67,33 +74,41 @@ const Shop = () => {
         <ShopHeader activeCategory={activeCategory} />
       </div>
 
-      {/* Filters — must sit ABOVE the grid */}
-      <div className="shp-filters-wrapper">
-        <ShopHeroSection
-          activeCategory={activeCategory}
-          onCategoryChange={setCategory}
-          showHero={false}
-          searchValue={activeSearch}
-          priceValue={activePrice}
-          weightValue={activeWeight}
-          onFilter={setFilters}
-        />
-      </div>
+      {showMenu ? (
+        <div className="shp-menu-wrapper">
+          <MenuPage />
+        </div>
+      ) : (
+        <>
+          {/* Filters — must sit ABOVE the grid */}
+          <div className="shp-filters-wrapper">
+            <ShopHeroSection
+              activeCategory={activeCategory}
+              onCategoryChange={setCategory}
+              showHero={false}
+              searchValue={activeSearch}
+              priceValue={activePrice}
+              weightValue={activeWeight}
+              onFilter={setFilters}
+            />
+          </div>
 
-      {/* Cards Grid — lowest layer */}
-      <div className="shp-grid-wrapper">
-        <CardsGrid
-          filters={{
-            category: activeCategory,
-            search: activeSearch,
-            price: activePrice,
-            weight: activeWeight
-          }}
-          onClearFilters={clearFilters}
-          showAllHref="/shop"
-          showButcher={true}
-        />
-      </div>
+          {/* Cards Grid — lowest layer */}
+          <div className="shp-grid-wrapper">
+            <CardsGrid
+              filters={{
+                category: activeCategory,
+                search: activeSearch,
+                price: activePrice,
+                weight: activeWeight
+              }}
+              onClearFilters={clearFilters}
+              showAllHref="/shop"
+              showButcher={true}
+            />
+          </div>
+        </>
+      )}
     </div>
   )
 }

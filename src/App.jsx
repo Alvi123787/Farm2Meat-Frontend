@@ -40,6 +40,11 @@ import { AuthProvider } from './contexts/AuthContext.jsx';
 import { CartProvider } from './contexts/CartContext';
 import PageTitle from './components/PageTitle';
 import UserAnalytics from './pages/UserAnalytics';
+import Adminmeatform from './components/Adminmeatform'
+import MenuPage from './components/MenuPage'
+import FormSelection from './components/FormSelection'
+
+
 
 const withPageTitle = (element, title) => (
   <PageTitle title={title}>
@@ -93,7 +98,9 @@ function AppShell() {
             }
           >
             <Route index element={withPageTitle(<AdminDashboard />, 'Dashboard')} />
-            <Route path="add-animal" element={withPageTitle(<AddAnimal />, 'Add Animal')} />
+            <Route path="add-animal" element={withPageTitle(<FormSelection />, 'Select Form')} />
+            <Route path="add-animal/livestock" element={withPageTitle(<AddAnimal />, 'Add Animal')} />
+            <Route path="add-animal/meat" element={withPageTitle(<Adminmeatform />, 'Add Meat Item')} />
             <Route path="edit-animal/:id" element={withPageTitle(<AddAnimal />, 'Edit Animal')} />
             <Route path="orders" element={withPageTitle(<Orders />, 'Orders')} />
             <Route path="animals" element={withPageTitle(<InventoryPreview />, 'Inventory')} />
@@ -107,6 +114,8 @@ function AppShell() {
           </Route>
 
           <Route path="/add-animal" element={<Navigate to="/admin/add-animal" replace />} />
+          <Route path="/admin-meatform" element={<Navigate to="/admin/add-animal/meat" replace />} />
+          <Route path="/menu-page" element={withPageTitle(<MenuPage />, 'Menu Page')} />
           <Route path="/revenue-chart" element={withPageTitle(<RevenueChart />, 'Revenue')} />
           <Route path="/recent-inquiries" element={<Navigate to="/admin/inquiries" replace />} />
           <Route path="/inventory-preview" element={<Navigate to="/admin/animals" replace />} />

@@ -16,6 +16,14 @@
   z-index: 100;
 }
 
+/* ── Menu Wrapper ── */
+.shp-menu-wrapper {
+  position: relative;
+  z-index: 30;
+  flex: 1;
+  background: #0a0404;
+}
+
 /* ── Filters Wrapper (dropdowns must appear ABOVE grid) ── */
 .shp-filters-wrapper {
   position: relative;

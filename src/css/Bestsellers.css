@@ -1,4 +1,4 @@
-/* BestsellerCuts.css – Premium Clean, matches MeatByCategory */
+/* Bestsellers.css – Premium Clean, matches MeatByCategory */
 
 /* ===== SECTION ===== */
 .bsc {
@@ -350,4 +350,114 @@
   .bsc__card:hover {
     transform: none;
   }
+}
+
+* Skeleton for dark section */
+.bsc__card--skeleton { pointer-events: none; }
+ 
+.bsc-skeleton-img {
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.09) 50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite;
+}
+ 
+.bsc-skeleton-line {
+  height: 11px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.06) 25%,
+    rgba(255,255,255,0.12) 50%,
+    rgba(255,255,255,0.06) 75%
+  );
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite;
+  width: 100%;
+}
+ 
+.bsc-skeleton-line--short { width: 40%; }
+.bsc-skeleton-line--med   { width: 60%; }
+ 
+/* Price in card footer */
+.bsc__card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 10px;
+  gap: 8px;
+}
+ 
+.bsc__card-price {
+  font-family: 'Times New Roman', Georgia, serif;
+  font-size: clamp(14px, 2vw, 18px);
+  font-weight: 800;
+  color: #d4af37;
+  letter-spacing: -0.3px;
+  line-height: 1;
+}
+ 
+.bsc__card-price-unit {
+  font-size: 10px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.3);
+  margin-left: 2px;
+}
+ 
+/* Error / empty states */
+.bsc__error,
+.bsc__empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+  color: rgba(255, 255, 255, 0.3);
+  font-style: italic;
+  font-size: 14px;
+}
+ 
+/* View all button */
+.bsc__view-all {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  margin-top: 56px;
+}
+ 
+.bsc__view-all-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 36px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 0;
+  transition: all 0.35s ease;
+  font-family: 'Times New Roman', Georgia, serif;
+}
+ 
+.bsc__view-all-btn:hover {
+  background: #d4af37;
+  border-color: #d4af37;
+  color: #0a0404;
+}
+ 
+.bsc__view-all-btn svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.35s ease;
+}
+ 
+.bsc__view-all-btn:hover svg {
+  transform: translateX(5px);
 }

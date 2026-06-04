@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHorse,
   faPlusCircle,
+  faUtensils,
   faEnvelopeOpenText,
   faBoxesStacked,
   faTachometerAlt,
@@ -62,7 +63,7 @@ const Sidebar = ({ isOpen, toggleSidebar, totalAnimals }) => {
       icon: faTachometerAlt,
     },
     {
-      label: "Add Animal",
+      label: "Add Product",
       path: "/admin/add-animal",
       icon: faPlusCircle,
     },
