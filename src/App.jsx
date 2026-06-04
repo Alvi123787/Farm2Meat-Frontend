@@ -100,7 +100,7 @@ function AppShell() {
             <Route index element={withPageTitle(<AdminDashboard />, 'Dashboard')} />
             <Route path="add-product" element={withPageTitle(<FormSelection />, 'Select Form')} />
             <Route path="add-product/livestock" element={withPageTitle(<AddAnimal />, 'Add Product')} />
-            <Route path="add-product/meat" element={withPageTitle(<AdminMeatForm />, 'Add Meat Item')} />
+            <Route path="add-product/meat" element={withPageTitle(<Adminmeatform />, 'Add Meat Item')} />
             <Route path="edit-product/:id" element={withPageTitle(<AddAnimal />, 'Edit Product')} />
             <Route path="orders" element={withPageTitle(<Orders />, 'Orders')} />
             <Route path="animals" element={withPageTitle(<InventoryPreview />, 'Inventory')} />

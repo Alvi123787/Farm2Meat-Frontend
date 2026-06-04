@@ -3,7 +3,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useAdminItems } from '../hooks/useMeatItems'
-import '../css/AdminMeatForm.css'
+import '../css/Adminmeatform.css'
 
 const CATEGORIES = [
   { value: '',        label: 'Select a category…' },
@@ -38,7 +38,7 @@ const INITIAL = {
 
 const DESC_MAX = 120
 
-export default function AdminMeatForm() {
+export default function Adminmeatform() {
   const { createItem } = useAdminItems()
 
   const [form,         setForm]         = useState(INITIAL)
