@@ -98,10 +98,14 @@ function AppShell() {
             }
           >
             <Route index element={withPageTitle(<AdminDashboard />, 'Dashboard')} />
-            <Route path="add-product" element={withPageTitle(<FormSelection />, 'Select Form')} />
-            <Route path="add-product/livestock" element={withPageTitle(<AddAnimal />, 'Add Product')} />
-            <Route path="add-product/meat" element={withPageTitle(<Adminmeatform />, 'Add Meat Item')} />
-            <Route path="edit-product/:id" element={withPageTitle(<AddAnimal />, 'Edit Product')} />
+            <Route path="add-animal" element={withPageTitle(<FormSelection />, 'Select Form')} />
+            <Route path="add-animal/livestock" element={withPageTitle(<AddAnimal />, 'Add Product')} />
+            <Route path="add-animal/meat" element={withPageTitle(<Adminmeatform />, 'Add Meat Item')} />
+            <Route path="add-product" element={<Navigate to="add-animal" replace />} />
+            <Route path="add-product/livestock" element={<Navigate to="add-animal/livestock" replace />} />
+            <Route path="add-product/meat" element={<Navigate to="add-animal/meat" replace />} />
+            <Route path="edit-animal/:id" element={withPageTitle(<AddAnimal />, 'Edit Product')} />
+            <Route path="edit-product/:id" element={<Navigate to="edit-animal/:id" replace />} />
             <Route path="orders" element={withPageTitle(<Orders />, 'Orders')} />
             <Route path="animals" element={withPageTitle(<InventoryPreview />, 'Inventory')} />
             <Route path="inquiries" element={withPageTitle(<RecentInquiriesTable />, 'Inquiries')} />

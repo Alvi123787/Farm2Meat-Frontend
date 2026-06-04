@@ -563,7 +563,7 @@ const InventoryPreview = () => {
                   <strong>{hiddenCount}</strong> hidden
                 </span>
               </div>
-              <button className="ip-footer-add" onClick={() => navigate('/add-animal')}>
+              <button className="ip-footer-add" onClick={() => navigate('/admin/add-animal')}>
                 <FaPlusCircle />
                 <span>Add New</span>
                 <FaChevronRight className="ip-footer-arrow" />
