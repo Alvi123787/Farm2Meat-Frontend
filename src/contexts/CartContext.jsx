@@ -56,9 +56,11 @@ export const CartProvider = ({ children }) => {
   }, [cartMeta?.expiresAt, clearCart]);
 
   const addItem = (product) => {
+    const isMeat = product.itemType === 'meat' || product.purchaseMode === 'multi';
+    
     const newItem = {
       _id: product._id,
-      name: product.name || 'Unknown Animal',
+      name: product.name || 'Unknown Item',
       breed: product.breed || '',
       weight: product.weight || '',
       age: product.age || '',
@@ -69,8 +71,8 @@ export const CartProvider = ({ children }) => {
       category: product.category || '',
       farmLocation: product.farmLocation || '',
       city: product.city || '',
-      itemType: product.itemType || 'livestock',
-      purchaseMode: product.purchaseMode || 'single',
+      itemType: product.itemType || (isMeat ? 'meat' : 'livestock'),
+      purchaseMode: product.purchaseMode || (isMeat ? 'multi' : 'single'),
       quantity: 1
     };
 
@@ -78,8 +80,18 @@ export const CartProvider = ({ children }) => {
     let newCart = [...cart];
 
     if (existingIndex >= 0) {
-      // If already in cart, we just ensure it's there (single purchase livestock usually don't have quantity > 1)
-      newCart[existingIndex] = { ...newCart[existingIndex], ...newItem };
+      // If already in cart
+      if (isMeat) {
+        // Increment quantity for meat items
+        const existingItem = newCart[existingIndex];
+        newCart[existingIndex] = { 
+          ...existingItem, 
+          quantity: Math.min(20, (existingItem.quantity || 1) + 1) 
+        };
+      } else {
+        // Just ensure it's there for single purchase livestock
+        newCart[existingIndex] = { ...newCart[existingIndex], ...newItem };
+      }
     } else {
       newCart.push(newItem);
     }
@@ -96,7 +108,9 @@ export const CartProvider = ({ children }) => {
   const updateQuantity = (itemId, delta) => {
     const newCart = cart.map(item => {
       if (item._id === itemId) {
-        const newQty = Math.max(1, Math.min(5, (item.quantity || 1) + delta));
+        const isMeat = item.itemType === 'meat' || item.purchaseMode === 'multi';
+        const maxQty = isMeat ? 20 : 1;
+        const newQty = Math.max(1, Math.min(maxQty, (item.quantity || 1) + delta));
         return { ...item, quantity: newQty };
       }
       return item;

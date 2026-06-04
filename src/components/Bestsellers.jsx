@@ -3,6 +3,7 @@
 
 import { useNavigate } from 'react-router-dom'
 import { useBestsellers } from '../hooks/useMeatItems'
+import { useCart } from '../contexts/cartContextCore'
 import '../css/Bestsellers.css'
 
 /* ── Skeleton card ─────────────────────────────── */
@@ -20,7 +21,17 @@ const SkeletonCard = ({ index }) => (
 /* ── Bestsellers section ───────────────────────── */
 const Bestsellers = () => {
   const navigate = useNavigate()
+  const { addItem } = useCart()
   const { items, loading, error } = useBestsellers(6)
+
+  const handleOrderNow = (e, item) => {
+    e.stopPropagation()
+    addItem({
+      ...item,
+      itemType: 'meat'
+    })
+    navigate('/cart', { state: { fromBuyNow: true } })
+  }
 
   // Always render 6 skeletons while loading
   const showSkeletons = loading
@@ -62,7 +73,7 @@ const Bestsellers = () => {
             key={item._id}
             className="bsc__card"
             style={{ '--i': index }}
-            onClick={() => navigate(`/menu?category=${item.category}`)}
+            onClick={(e) => handleOrderNow(e, item)}
           >
             {/* Image */}
             <div className="bsc__card-img-wrap">

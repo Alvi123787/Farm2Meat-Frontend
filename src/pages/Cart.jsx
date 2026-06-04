@@ -504,7 +504,7 @@ const Cart = () => {
                                   <button
                                     className="cart-qty-btn"
                                     onClick={() => handleUpdateQuantity(item._id, 1)}
-                                    disabled={(item.quantity || 1) >= 5}
+                                    disabled={(item.quantity || 1) >= 20}
                                     aria-label="Increase quantity"
                                   >
                                     <FaPlus />

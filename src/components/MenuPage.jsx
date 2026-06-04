@@ -2,7 +2,9 @@
 // White bg · #800000 red · #d4af37 gold
 
 import { useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useMenuItems } from '../hooks/useMeatItems'
+import { useCart } from '../contexts/cartContextCore'
 import '../css/MenuPage.css'
 
 const FILTERS = [
@@ -20,15 +22,6 @@ const CATEGORY_META = {
   fish:    { label: 'Ocean Catch',   number: '04' },
 }
 
-// WhatsApp order handler
-const handleOrder = (item) => {
-  const phone = import.meta.env.VITE_WA_NUMBER || '923001234567'
-  const msg   = encodeURIComponent(
-    `Assalam o Alaikum! I'd like to order:\n\n🥩 *${item.name}*\nPrice: Rs. ${item.price}${item.unit === 'kg' ? '/kg' : `/${item.unit}`}\n\nKindly confirm availability.`
-  )
-  window.open(`https://wa.me/${phone}?text=${msg}`, '_blank')
-}
-
 /* ── Skeleton card ─────────────────────────────── */
 const SkeletonCard = () => (
   <div className="menu-card menu-card--skeleton">
@@ -43,11 +36,11 @@ const SkeletonCard = () => (
 )
 
 /* ── Product Card ──────────────────────────────── */
-const MenuCard = ({ item, index }) => (
+const MenuCard = ({ item, index, onOrder }) => (
   <div
     className="menu-card"
     style={{ '--card-i': index }}
-    onClick={() => handleOrder(item)}
+    onClick={() => onOrder(item)}
   >
     <div className="menu-card__img-wrap">
       <img
@@ -61,7 +54,7 @@ const MenuCard = ({ item, index }) => (
       )}
       <button
         className="menu-card__action"
-        onClick={e => { e.stopPropagation(); handleOrder(item) }}
+        onClick={e => { e.stopPropagation(); onOrder(item) }}
         aria-label={`Order ${item.name}`}
       >
         ♥
@@ -86,7 +79,7 @@ const MenuCard = ({ item, index }) => (
         </div>
         <button
           className="menu-card__order-btn"
-          onClick={e => { e.stopPropagation(); handleOrder(item) }}
+          onClick={e => { e.stopPropagation(); onOrder(item) }}
         >
           Order
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -100,8 +93,18 @@ const MenuCard = ({ item, index }) => (
 
 /* ── Page ──────────────────────────────────────── */
 export default function MenuPage() {
+  const navigate = useNavigate()
+  const { addItem } = useCart()
   const { grouped, loading, error, refetch } = useMenuItems()
   const [activeFilter, setActiveFilter] = useState('all')
+
+  const handleOrder = (item) => {
+    addItem({
+      ...item,
+      itemType: 'meat'
+    })
+    navigate('/cart', { state: { fromBuyNow: true } })
+  }
 
   // Categories to display (filtered)
   const categoriesToRender = useMemo(() => {
@@ -203,7 +206,7 @@ export default function MenuPage() {
 
               <div className="menu-grid">
                 {items.map((item, idx) => (
-                  <MenuCard key={item._id} item={item} index={idx} />
+                  <MenuCard key={item._id} item={item} index={idx} onOrder={handleOrder} />
                 ))}
               </div>
             </section>
