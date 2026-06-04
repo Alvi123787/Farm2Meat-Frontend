@@ -43,7 +43,7 @@ import { WHATSAPP_NUMBER } from '../constants/contact'
 import { formatPrice } from '../utils/priceUtils'
 
 // ── Config ──
-const DELIVERY_CHARGE = 0
+const DELIVERY_CHARGE = 50
 const PURCHASE_STATE_KEY = 'postPurchaseConfirmationState'
 
 const normalize = (v) => String(v || '').trim().toLowerCase()
@@ -818,7 +818,7 @@ const Checkout = () => {
                     <h1 className="co-header-title">Secure Checkout</h1>
                     <div className="co-free-delivery-badge">
                       <FaTruck />
-                      <span>Free Home Delivery Available</span>
+                      <span>Flat Rate Delivery: Rs. 50</span>
                     </div>
                   </div>
                 </div>
@@ -1110,7 +1110,7 @@ const Checkout = () => {
                       <div className="co-delivery-note">
                         <FaInfoCircle className="co-delivery-note-icon" />
                         <span>
-                          Free delivery within RYK district. Our team will coordinate delivery time on call/WhatsApp.
+                          Standard delivery charge of Rs. 50 applies to all orders. Our team will coordinate delivery time on call/WhatsApp.
                         </span>
                       </div>
                     </div>
@@ -1129,7 +1129,7 @@ const Checkout = () => {
                         {confirmations.weightCheck && <FaCheck />}
                       </span>
                       <span className="co-checkbox-text">
-                        I confirm that I have checked the <strong>weight, breed, and all details</strong> of my selected livestock.
+                        I confirm that I have checked the <strong>details and quality</strong> of my selected {orderItems.some(it => normalize(it.itemType) !== 'meat') ? 'livestock' : 'items'}.
                       </span>
                     </label>
                     <label className="co-checkbox-label">
@@ -1196,7 +1196,7 @@ const Checkout = () => {
                       <span className="co-summary-row-label">
                         <FaTruck className="co-summary-row-icon" /> Delivery
                       </span>
-                      <span className="co-summary-value--free">Free</span>
+                      <span className="co-summary-value">Rs {formatPrice(DELIVERY_CHARGE)}</span>
                     </div>
 
                     <div className="co-summary-divider co-summary-divider--total"></div>
