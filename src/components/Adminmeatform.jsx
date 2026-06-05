@@ -34,6 +34,7 @@ const INITIAL = {
   description: '',
   isBestseller: false,
   isAvailable: true,
+  showInHeader: false,
   imageUrl: '',
   item_type_id: 2,   // ← Approach 1: Hardcoded as 2 (Meat Item) for this form
 }
@@ -342,65 +343,93 @@ export default function Adminmeatform() {
             </div>
           </div>
 
-          {/* ── Section 4: Settings ── */}
+          {/* ── Section 4: Promotional Display ── */}
           <div className="amf-section">
             <div className="amf-section-label">
-              <span className="amf-section-label-text">Settings</span>
+              <span className="amf-section-label-text">Promotional Display</span>
               <span className="amf-section-label-line" />
             </div>
 
-            {/* Bestseller toggle */}
-            <div
-              className={`amf-toggle-card ${form.isBestseller ? 'is-active' : ''}`}
-              onClick={() => set('isBestseller', !form.isBestseller)}
-              style={{ marginBottom: 12 }}
-            >
-              <div className="amf-toggle-left">
-                <div className="amf-toggle-icon-wrap">🏆</div>
-                <div className="amf-toggle-info">
-                  <p className="amf-toggle-title">
-                    Add to Bestseller Cuts
-                    <span className={`amf-toggle-status ${form.isBestseller ? 'on' : ''}`}>
-                      {form.isBestseller ? 'YES' : 'NO'}
-                    </span>
-                  </p>
-                  <p className="amf-toggle-desc">
-                    {form.isBestseller
-                      ? 'This item will appear in the Bestseller Cuts section on the homepage.'
-                      : 'Enable to feature this item in the Bestseller Cuts section.'}
-                  </p>
+            <div className="amf-row">
+              {/* Home Header toggle */}
+              <div
+                className={`amf-toggle-card ${form.showInHeader ? 'is-active' : ''}`}
+                onClick={() => set('showInHeader', !form.showInHeader)}
+              >
+                <div className="amf-toggle-left">
+                  <div className="amf-toggle-icon-wrap" style={{ background: 'rgba(212,175,55,0.2)' }}>🏠</div>
+                  <div className="amf-toggle-info">
+                    <p className="amf-toggle-title">
+                      Main Header Slider
+                      <span className={`amf-toggle-status ${form.showInHeader ? 'on' : ''}`}>
+                        {form.showInHeader ? 'ACTIVE' : 'OFF'}
+                      </span>
+                    </p>
+                  </div>
                 </div>
+                <label className="amf-switch" onClick={e => e.stopPropagation()}>
+                  <input
+                    type="checkbox"
+                    checked={form.showInHeader}
+                    onChange={e => set('showInHeader', e.target.checked)}
+                  />
+                  <span className="amf-switch-track" />
+                </label>
               </div>
-              <label className="amf-switch" onClick={e => e.stopPropagation()}>
-                <input
-                  type="checkbox"
-                  checked={form.isBestseller}
-                  onChange={e => set('isBestseller', e.target.checked)}
-                />
-                <span className="amf-switch-track" />
-              </label>
-            </div>
 
-            {/* Availability */}
-            <div className="amf-field">
-              <label className="amf-label">Availability</label>
-              <div className="amf-avail-row">
-                <button
-                  type="button"
-                  className={`amf-avail-btn yes ${form.isAvailable ? 'selected' : ''}`}
-                  onClick={() => set('isAvailable', true)}
-                >
-                  <span className="amf-avail-dot" />
-                  In Stock
-                </button>
-                <button
-                  type="button"
-                  className={`amf-avail-btn no ${!form.isAvailable ? 'selected' : ''}`}
-                  onClick={() => set('isAvailable', false)}
-                >
-                  <span className="amf-avail-dot" />
-                  Out of Stock
-                </button>
+              {/* Bestseller toggle */}
+              <div
+                className={`amf-toggle-card ${form.isBestseller ? 'is-active' : ''}`}
+                onClick={() => set('isBestseller', !form.isBestseller)}
+              >
+                <div className="amf-toggle-left">
+                  <div className="amf-toggle-icon-wrap">�</div>
+                  <div className="amf-toggle-info">
+                    <p className="amf-toggle-title">
+                      Bestseller Badge
+                      <span className={`amf-toggle-status ${form.isBestseller ? 'on' : ''}`}>
+                        {form.isBestseller ? 'ON' : 'OFF'}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+                <label className="amf-switch" onClick={e => e.stopPropagation()}>
+                  <input
+                    type="checkbox"
+                    checked={form.isBestseller}
+                    onChange={e => set('isBestseller', e.target.checked)}
+                  />
+                  <span className="amf-switch-track" />
+                </label>
+              </div>
+            </div>
+            
+            <p className="amf-helper" style={{ marginTop: '12px' }}>
+              Enabling <strong>Main Header Slider</strong> will feature this item in the rotating slider on the top of the homepage.
+            </p>
+
+            <div style={{ marginTop: '24px' }}>
+              {/* Availability */}
+              <div className="amf-field">
+                <label className="amf-label">Availability Status</label>
+                <div className="amf-avail-row">
+                  <button
+                    type="button"
+                    className={`amf-avail-btn yes ${form.isAvailable ? 'selected' : ''}`}
+                    onClick={() => set('isAvailable', true)}
+                  >
+                    <span className="amf-avail-dot" />
+                    In Stock
+                  </button>
+                  <button
+                    type="button"
+                    className={`amf-avail-btn no ${!form.isAvailable ? 'selected' : ''}`}
+                    onClick={() => set('isAvailable', false)}
+                  >
+                    <span className="amf-avail-dot" />
+                    Out of Stock
+                  </button>
+                </div>
               </div>
             </div>
           </div>

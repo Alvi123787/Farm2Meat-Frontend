@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import usePwaInstall from "../hooks/usePwaInstall";
+import api from "../services/api";
 import "../css/HomeHeader.css";
 
 const INSTALL_FEEDBACK_TIMEOUT_MS = 3200;
@@ -36,7 +37,30 @@ const HomeHeader = () => {
   const [installFeedback, setInstallFeedback] = useState("");
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [slides, setSlides] = useState(HERO_IMAGES);
   const { canInstall, isInstalled, needsManualInstall, promptInstall } = usePwaInstall();
+
+  useEffect(() => {
+    const fetchHeaderItems = async () => {
+      try {
+        const response = await api.get('/api/meat-items?showInHeader=true&isAvailable=true');
+        if (response.data.success && response.data.data.length > 0) {
+          const dynamicSlides = response.data.data.map(item => ({
+            src: item.imageUrl,
+            alt: item.name,
+            badge: item.badge || "Featured",
+            titleTop: item.name.split(' ').slice(0, 2).join(' '),
+            titleBottom: item.name.split(' ').slice(2).join(' ') || "Special",
+            id: item._id
+          }));
+          setSlides(dynamicSlides);
+        }
+      } catch (error) {
+        console.error("Error fetching header items:", error);
+      }
+    };
+    fetchHeaderItems();
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => setLoaded(true), 100);
@@ -50,16 +74,16 @@ const HomeHeader = () => {
   }, [installFeedback]);
 
   useEffect(() => {
-    if (HERO_IMAGES.length <= 1) return;
+    if (slides.length <= 1) return;
     if (isPaused) return;
     if (getPrefersReducedMotion()) return;
 
     const intervalId = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % HERO_IMAGES.length);
+      setActiveSlide((prev) => (prev + 1) % slides.length);
     }, SLIDE_INTERVAL_MS);
 
     return () => clearInterval(intervalId);
-  }, [isPaused]);
+  }, [isPaused, slides.length]);
 
   useEffect(() => {
     if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
@@ -106,7 +130,7 @@ const HomeHeader = () => {
       ? "Add to Home Screen"
       : "Install App";
 
-  const currentSlide = HERO_IMAGES[activeSlide];
+  const currentSlide = slides[activeSlide];
 
   return (
     <section
@@ -120,7 +144,7 @@ const HomeHeader = () => {
       {/* Background slider */}
       <div className="hero__background">
         <div className="hero__slider">
-          {HERO_IMAGES.map((image, index) => (
+          {slides.map((image, index) => (
             <img
               key={`${image.src}-${index}`}
               src={image.src}
