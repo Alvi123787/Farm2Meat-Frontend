@@ -222,7 +222,7 @@ const PrivacyPolicy = () => {
                   <a href="/">
                     <img 
                       src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-                      alt="OnlyMeat Logo" 
+                      alt="MeatByAlvi Logo" 
                       style={{ width: '50px', height: '50px', objectFit: 'contain' }}
                     />
                   </a>
@@ -235,7 +235,7 @@ const PrivacyPolicy = () => {
                   <div>
                     <h1 className="pp-header-title">Privacy Policy</h1>
                     <p className="pp-header-sub">
-                      Your privacy matters to us. Learn how OnlyMeat protects your personal information.
+                      Your privacy matters to us. Learn how MeatByAlvi protects your personal information.
                     </p>
                   </div>
                 </div>

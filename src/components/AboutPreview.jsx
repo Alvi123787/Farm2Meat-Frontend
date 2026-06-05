@@ -108,7 +108,7 @@ export default function AboutPreview({
                 </div>
                 <h3 className="ap-desc-heading">Hamari Pehchaan</h3>
                 <p className="ap-desc-text">
-                  OnlyMeat par aapko sehatmand aur farm-raised bakray miltay
+                  MeatByAlvi par aapko sehatmand aur farm-raised bakray miltay
                   hain — honest weight, transparent pricing, aur WhatsApp
                   support ke saath. Har janwar carefully selected hota hai
                   taake aapko premium quality aur trust dono milein.

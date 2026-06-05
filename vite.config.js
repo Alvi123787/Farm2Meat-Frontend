@@ -30,10 +30,10 @@ export default defineConfig({
       ],
       manifest: {
         id: "/",
-        name: "OnlyMeat",
-        short_name: "OnlyMeat",
+        name: "MeatByAlvi",
+        short_name: "MeatByAlvi",
         description:
-          "OnlyMeat helps customers browse healthy bakray, place orders, and stay connected with trusted service.",
+          "MeatByAlvi helps customers browse healthy bakray, place orders, and stay connected with trusted service.",
         theme_color: "#800000",
         background_color: "#fff8f0",
         display: "standalone",

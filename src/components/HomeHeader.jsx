@@ -141,11 +141,11 @@ const HomeHeader = () => {
           <div className="hero__logo">
             <img
               src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png"
-              alt="OnlyMeat"
+              alt="MeatByAlvi"
             />
           </div>
           <div className="hero__brand-text">
-            <span className="hero__brand-name">ONLYMEAT</span>
+            <span className="hero__brand-name">MEATBYALVI</span>
             <span className="hero__brand-tagline">Quality Meat</span>
           </div>
         </div>

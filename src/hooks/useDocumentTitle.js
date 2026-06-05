@@ -1,6 +1,6 @@
 import { useLayoutEffect } from 'react'
 
-export const SITE_NAME = 'Only Meat'
+export const SITE_NAME = 'MeatByAlvi'
 
 export function formatDocumentTitle(pageTitle) {
   const normalizedTitle = typeof pageTitle === 'string' ? pageTitle.trim() : ''

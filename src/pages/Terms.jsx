@@ -175,7 +175,7 @@ const Terms = () => {
                   <a href="/">
                     <img 
                       src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-                      alt="OnlyMeat Logo" 
+                      alt="MeatByAlvi Logo" 
                       style={{ width: '50px', height: '50px', objectFit: 'contain' }}
                     />
                   </a>
@@ -188,7 +188,7 @@ const Terms = () => {
                   <div>
                     <h1 className="tp-header-title">Terms & Conditions</h1>
                     <p className="tp-header-sub">
-                      Please read these terms carefully before using OnlyMeat's services.
+                      Please read these terms carefully before using MeatByAlvi's services.
                     </p>
                   </div>
                 </div>

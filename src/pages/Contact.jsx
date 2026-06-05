@@ -239,7 +239,7 @@ const Contact = () => {
                       <FaMapMarkerAlt />
                     </div>
                     <div className="cp-address-content">
-                      <strong className="cp-address-title">OnlyMeat Office</strong>
+                      <strong className="cp-address-title">MeatByAlvi Office</strong>
                       <p className="cp-address-text">
                         Near Gulshan Iqbal 110/p, <br />
                         Rahim Yar Khan, Punjab, Pakistan

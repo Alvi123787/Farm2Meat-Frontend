@@ -161,7 +161,7 @@ export default function About() {
                 <div className="abt-logo-wrap logo-visibility-wrapper" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
                   <img 
                     src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-                    alt="OnlyMeat Logo" 
+                    alt="MeatByAlvi Logo" 
                     style={{ width: '50px', height: '50px', objectFit: 'contain' }}
                   />
                 </div>
@@ -171,7 +171,7 @@ export default function About() {
                     <FaUsers className="abt-header-icon" />
                   </div>
                   <div>
-                    <h1 className="abt-header-title">About OnlyMeat</h1>
+                    <h1 className="abt-header-title">About MeatByAlvi</h1>
                     <p className="abt-header-sub">
                       Trust, quality, and fair prices — our promise, your confidence.
                     </p>
@@ -221,12 +221,12 @@ export default function About() {
                     quality is unknown, and it's hard to trust.
                   </p>
                   <p className="abt-story-text">
-                    To solve this problem, the concept of OnlyMeat was born. We thought that if we
+                    To solve this problem, the concept of MeatByAlvi was born. We thought that if we
                     bring technology and honesty together — then we can create a platform where people
                     not only get good quality but also have complete trust. And that's exactly what we did.
                   </p>
                   <p className="abt-story-text">
-                    Today, OnlyMeat is a well-known name in Rahim Yar Khan. Thanks to our customers,
+                    Today, MeatByAlvi is a well-known name in Rahim Yar Khan. Thanks to our customers,
                     we are growing every day. Behind every animal we sell is the hard work, dedication
                     of our entire team, and prayers for you. This is not just a business — it's our
                     passion, our responsibility, and our promise that we will always deal with you honestly.
