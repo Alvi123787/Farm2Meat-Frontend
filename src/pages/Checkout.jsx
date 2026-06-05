@@ -178,18 +178,15 @@ const Checkout = () => {
   const [errors, setErrors] = useState({})
 
   useEffect(() => {
-    // Current flow: Open AnimalCareModal instead of ButcherModal
-    if (!loading && orderItems.length > 0 && !hasShownAnimalCareModal) {
+    // Determine if any livestock item is present
+    const hasLivestock = orderItems.some(it => normalize(it.itemType) !== 'meat')
+
+    // Current flow: Open AnimalCareModal only for livestock items
+    if (!loading && orderItems.length > 0 && hasLivestock && !hasShownAnimalCareModal) {
       setIsAnimalCareModalOpen(true)
       setHasShownAnimalCareModal(true)
     }
-    /* Original ButcherModal trigger logic preserved:
-    if (!loading && orderItems.length > 0 && !hasShownButcherModal && !selectedButcher) {
-      setIsButcherModalOpen(true)
-      setHasShownButcherModal(true)
-    }
-    */
-  }, [loading, orderItems.length, hasShownAnimalCareModal])
+  }, [loading, orderItems, hasShownAnimalCareModal])
 
   // ════════════════════════════════════════════
   // Load order items from Cart page or localStorage
@@ -437,11 +434,23 @@ const Checkout = () => {
 
   const handlePlaceOrder = async () => {
     if (isSubmitting) return
+    
+    // Check confirmations first
+    if (!confirmations.weightCheck || !confirmations.termsAgree) {
+      setNotices([{ 
+        type: 'warning', 
+        text: 'Please agree to the quality check and terms and conditions before placing your order.' 
+      }])
+      // Scroll to confirmations
+      const el = document.querySelector('.co-confirm-section')
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      return
+    }
+
     if (!validateForm()) {
       focusFirstInvalid()
       return
     }
-    if (!allConfirmed) return
     
     // Final check before placement
     setIsSubmitting(true)
@@ -486,7 +495,8 @@ const Checkout = () => {
           weight: item.weight || '',
           price: item.price,
           quantity: getEffectiveQuantity(item),
-          image: getThumbnail(item)
+          image: getThumbnail(item),
+          itemType: item.itemType || 'livestock'
         })),
         butcher: selectedButcher ? {
           id: selectedButcher._id,
@@ -530,11 +540,22 @@ const Checkout = () => {
 
   const handleWhatsAppOrder = async () => {
     if (isSubmitting) return
+
+    // Check confirmations first
+    if (!confirmations.weightCheck || !confirmations.termsAgree) {
+      setNotices([{ 
+        type: 'warning', 
+        text: 'Please agree to the quality check and terms and conditions before placing your order.' 
+      }])
+      const el = document.querySelector('.co-confirm-section')
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      return
+    }
+
     if (!validateForm()) {
       focusFirstInvalid()
       return
     }
-    if (!allConfirmed) return
 
     // Final check before placement
     setIsSubmitting(true)
@@ -587,7 +608,8 @@ const Checkout = () => {
           weight: item.weight || '',
           price: item.price,
           quantity: getEffectiveQuantity(item),
-          image: getThumbnail(item)
+          image: getThumbnail(item),
+          itemType: item.itemType || 'livestock'
         })),
         butcher: selectedButcher ? {
           id: selectedButcher._id,
@@ -1215,9 +1237,9 @@ const Checkout = () => {
                     {/* CTA Buttons */}
                     <div className="co-summary-cta">
                       <button
-                        className={`co-btn co-btn--confirm ${!allConfirmed || !isFormValid ? 'co-btn--disabled' : ''}`}
+                        className={`co-btn co-btn--confirm ${isSubmitting ? 'co-btn--disabled' : ''}`}
                         onClick={handlePlaceOrder}
-                        disabled={!allConfirmed || !isFormValid || isSubmitting}
+                        disabled={isSubmitting}
                       >
                         {isSubmitting ? (
                           <>
@@ -1233,9 +1255,9 @@ const Checkout = () => {
                       </button>
 
                       <button
-                        className="co-btn co-btn--whatsapp"
+                        className={`co-btn co-btn--whatsapp ${isSubmitting ? 'co-btn--disabled' : ''}`}
                         onClick={handleWhatsAppOrder}
-                        disabled={!allConfirmed || !isFormValid || isSubmitting}
+                        disabled={isSubmitting}
                       >
                         {isSubmitting ? (
                           <>

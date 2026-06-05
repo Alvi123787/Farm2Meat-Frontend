@@ -35,6 +35,7 @@ const INITIAL = {
   isBestseller: false,
   isAvailable: true,
   imageUrl: '',
+  item_type_id: 2,   // ← Approach 1: Hardcoded as 2 (Meat Item) for this form
 }
 
 const DESC_MAX = 120
@@ -67,20 +68,20 @@ export default function Adminmeatform() {
 
   const handleFileChange = async (file) => {
     if (!file || !file.type.startsWith('image/')) return
-    
+
     // Show local preview immediately
     const localUrl = URL.createObjectURL(file)
     setImagePreview(localUrl)
     setSubmitting(true)
-    
+
     try {
       const formData = new FormData()
       formData.append('image', file)
-      
+
       const response = await api.post('/api/upload/single', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
-      
+
       if (response.data.success) {
         set('imageUrl', response.data.url)
         showToast('success', 'Image uploaded successfully!')
@@ -109,7 +110,7 @@ export default function Adminmeatform() {
   }
 
   const handleReset = () => {
-    setForm(INITIAL)
+    setForm(INITIAL)        // ← Reset bhi INITIAL use karta hai, so item_type_id: 2 reset mein bhi safe hai
     setImagePreview(null)
     setDescLen(0)
     if (fileRef.current) fileRef.current.value = ''
@@ -119,16 +120,17 @@ export default function Adminmeatform() {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!form.name.trim())        return showToast('error', 'Item name is required.')
-    if (!form.category)           return showToast('error', 'Please select a category.')
+    if (!form.name.trim())              return showToast('error', 'Item name is required.')
+    if (!form.category)                 return showToast('error', 'Please select a category.')
     if (!form.price || form.price <= 0) return showToast('error', 'Please enter a valid price.')
-    if (!form.description.trim()) return showToast('error', 'Description is required.')
+    if (!form.description.trim())       return showToast('error', 'Description is required.')
 
     setSubmitting(true)
     try {
       await createItem({
         ...form,
-        price: Number(form.price),
+        price:        Number(form.price),
+        item_type_id: 2,   // ← Explicitly ensure item_type_id = 2 (Meat) on submit
       })
       showToast('success', `"${form.name}" added successfully! 🥩`)
       handleReset()

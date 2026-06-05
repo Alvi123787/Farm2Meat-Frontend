@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import {
   FaSearch,
   FaFilter,
@@ -56,6 +57,7 @@ const ShopHeroSection = ({
   priceValue,
   weightValue
 }) => {
+  const [searchParams] = useSearchParams()
   const [isVisible, setIsVisible] = useState(false)
   const [internalActiveCategory, setInternalActiveCategory] = useState('all')
   const [internalSelectedPrice, setInternalSelectedPrice] = useState('all')
@@ -119,7 +121,14 @@ const ShopHeroSection = ({
     activeCategory !== 'all' ||
     selectedPrice !== 'all' ||
     selectedWeight !== 'all' ||
-    searchQuery !== ''
+    searchQuery !== '' ||
+    (searchParams && (
+      searchParams.get('breed') ||
+      searchParams.get('gender') ||
+      searchParams.get('city') ||
+      searchParams.get('status') ||
+      searchParams.get('weight_raw')
+    ))
 
   const getPriceLabel = () =>
     priceRanges.find((p) => p.id === selectedPrice)?.label || 'Any Price'

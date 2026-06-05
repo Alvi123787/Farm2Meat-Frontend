@@ -68,6 +68,7 @@ export const CartProvider = ({ children }) => {
       images: product.images || [],
       imageUrl: product.imageUrl || '',
       stock: product.status || 'available',
+      tagId: product.animalid || product.meatid || '',
       category: product.category || '',
       farmLocation: product.farmLocation || '',
       city: product.city || '',

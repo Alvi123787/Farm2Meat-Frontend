@@ -1,8 +1,8 @@
 // MenuPage.jsx — Dynamic · fetches from /api/meat-items/by-category
 // White bg · #800000 red · #d4af37 gold
 
-import { useState, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useMemo, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useMenuItems } from '../hooks/useMeatItems'
 import { useCart } from '../contexts/cartContextCore'
 import '../css/MenuPage.css'
@@ -94,9 +94,30 @@ const MenuCard = ({ item, index, onOrder }) => (
 /* ── Page ──────────────────────────────────────── */
 export default function MenuPage() {
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const { addItem } = useCart()
   const { grouped, loading, error, refetch } = useMenuItems()
   const [activeFilter, setActiveFilter] = useState('all')
+
+  // Read and apply filters from URL on first render and searchParams changes
+  useEffect(() => {
+    const cat = searchParams.get('category')
+    if (cat) {
+      const valid = FILTERS.find(f => f.id === cat.toLowerCase())
+      if (valid) setActiveFilter(valid.id)
+    }
+  }, [searchParams])
+
+  const handleFilterChange = (filterId) => {
+    setActiveFilter(filterId)
+    const sp = new URLSearchParams(searchParams)
+    if (filterId === 'all') {
+      sp.delete('category')
+    } else {
+      sp.set('category', filterId)
+    }
+    setSearchParams(sp, { replace: true })
+  }
 
   const handleOrder = (item) => {
     addItem({
@@ -148,7 +169,7 @@ export default function MenuPage() {
             <button
               key={f.id}
               className={`menu-filter-btn ${activeFilter === f.id ? 'active' : ''}`}
-              onClick={() => setActiveFilter(f.id)}
+              onClick={() => handleFilterChange(f.id)}
             >
               {f.label}
               {f.id !== 'all' && (

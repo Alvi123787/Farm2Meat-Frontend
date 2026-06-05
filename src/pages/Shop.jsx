@@ -14,8 +14,16 @@ const Shop = () => {
   const rawPrice = searchParams.get('price') || 'all'
   const rawWeight = searchParams.get('weight') || 'all'
 
+  // Smart Navigation Filters (Livestock)
+  const rawBreed = searchParams.get('breed') || ''
+  const rawGender = searchParams.get('gender') || ''
+  const rawCity = searchParams.get('city') || ''
+  const rawStatus = searchParams.get('status') || ''
+  const rawWeightRaw = searchParams.get('weight_raw') || ''
+
   // Determine if we should show the Menu view or the Shop view
-  const showMenu = !rawCategory && !rawSearch && rawPrice === 'all' && rawWeight === 'all'
+  const showMenu = !rawCategory && !rawSearch && rawPrice === 'all' && rawWeight === 'all' && 
+                   !rawBreed && !rawGender && !rawCity && !rawStatus && !rawWeightRaw
 
   const activeCategory = useMemo(() => {
     const c = rawCategory.trim()
@@ -64,6 +72,11 @@ const Shop = () => {
     sp.delete('q')
     sp.delete('price')
     sp.delete('weight')
+    sp.delete('breed')
+    sp.delete('gender')
+    sp.delete('city')
+    sp.delete('status')
+    sp.delete('weight_raw')
     setSearchParams(sp, { replace: false })
   }, [searchParams, setSearchParams])
 
@@ -100,7 +113,12 @@ const Shop = () => {
                 category: activeCategory,
                 search: activeSearch,
                 price: activePrice,
-                weight: activeWeight
+                weight: activeWeight,
+                breed: rawBreed,
+                gender: rawGender,
+                city: rawCity,
+                status: rawStatus,
+                weightRaw: rawWeightRaw
               }}
               onClearFilters={clearFilters}
               showAllHref="/shop"

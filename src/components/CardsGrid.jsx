@@ -263,12 +263,20 @@ const CardsGrid = ({ filters, onClearFilters, showAllHref = '/shop', showButcher
   const activePrice = String(filters?.price || 'all').trim() || 'all'
   const activeWeight = String(filters?.weight || 'all').trim() || 'all'
 
+  // Additional Smart Navigation filters
+  const activeBreed = normalize(filters?.breed)
+  const activeGender = normalize(filters?.gender)
+  const activeCity = normalize(filters?.city)
+  const activeStatus = normalize(filters?.status)
+  const activeWeightRaw = normalize(filters?.weightRaw)
+
   const filteredAnimals = useMemo(() => {
     const catTarget = activeCategory ? normalize(activeCategory) : ''
     const pr = parseRange(activePrice)
     const wr = parseRange(activeWeight)
     const q = normalize(activeSearch)
     return (animals || []).filter((a) => {
+      // 1. Basic Filters
       if (catTarget && normalize(a?.category) !== catTarget) return false
       if (pr) {
         const p = getPriceNumber(a)
@@ -278,6 +286,15 @@ const CardsGrid = ({ filters, onClearFilters, showAllHref = '/shop', showButcher
         const w = getWeightNumber(a)
         if (w == null || w < wr.min || w > wr.max) return false
       }
+
+      // 2. Smart Navigation Filters (Strict matches)
+      if (activeBreed && normalize(a?.breed) !== activeBreed) return false
+      if (activeGender && normalize(a?.gender) !== activeGender) return false
+      if (activeCity && normalize(a?.city) !== activeCity) return false
+      if (activeStatus && normalize(a?.status) !== activeStatus) return false
+      if (activeWeightRaw && normalize(a?.weight) !== activeWeightRaw) return false
+
+      // 3. Search Filter
       if (q) {
         const hay = [
           normalize(a?.name),
@@ -289,7 +306,18 @@ const CardsGrid = ({ filters, onClearFilters, showAllHref = '/shop', showButcher
       }
       return true
     })
-  }, [activeCategory, activePrice, activeSearch, activeWeight, animals])
+  }, [
+    activeCategory,
+    activePrice,
+    activeSearch,
+    activeWeight,
+    activeBreed,
+    activeGender,
+    activeCity,
+    activeStatus,
+    activeWeightRaw,
+    animals,
+  ])
 
   const sortedAnimals = useMemo(
     () =>
@@ -314,7 +342,12 @@ const CardsGrid = ({ filters, onClearFilters, showAllHref = '/shop', showButcher
     activeCategory ||
     activeSearch ||
     activePrice !== 'all' ||
-    activeWeight !== 'all'
+    activeWeight !== 'all' ||
+    activeBreed ||
+    activeGender ||
+    activeCity ||
+    activeStatus ||
+    activeWeightRaw
 
   return (
     <section className="cg-section">
@@ -424,6 +457,31 @@ const CardsGrid = ({ filters, onClearFilters, showAllHref = '/shop', showButcher
                       {activeWeight !== 'all' && (
                         <span className="cg-filter-tag">
                           {weightLabel(activeWeight)}
+                        </span>
+                      )}
+                      {activeBreed && (
+                        <span className="cg-filter-tag">
+                          Breed: {activeBreed}
+                        </span>
+                      )}
+                      {activeGender && (
+                        <span className="cg-filter-tag">
+                          Gender: {activeGender}
+                        </span>
+                      )}
+                      {activeCity && (
+                        <span className="cg-filter-tag">
+                          City: {activeCity}
+                        </span>
+                      )}
+                      {activeStatus && (
+                        <span className="cg-filter-tag">
+                          Status: {activeStatus}
+                        </span>
+                      )}
+                      {activeWeightRaw && (
+                        <span className="cg-filter-tag">
+                          Weight: {activeWeightRaw} KG
                         </span>
                       )}
                       <button

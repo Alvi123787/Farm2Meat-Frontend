@@ -1,8 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../css/HomeFeaturedCard.css";
 import { formatPrice } from "../utils/priceUtils";
+import { useSmartNavigation } from "../hooks/useSmartNavigation";
 
 const HomeFeaturedCard = () => {
+    const navigate = useNavigate();
+    const { smartNavigate } = useSmartNavigation();
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef(null);
 
@@ -34,6 +38,9 @@ const HomeFeaturedCard = () => {
             badgeIcon: "🔥",
             breed: "Pure Beetal",
             color: "128, 0, 0",
+            item_type_id: 1,
+            enableRedirection: true,
+            category: "Bakra",
         },
         {
             id: 2,
@@ -48,6 +55,8 @@ const HomeFeaturedCard = () => {
             badgeIcon: "⭐",
             breed: "Rajanpuri",
             color: "163, 130, 35",
+            // item_type_id: 1, // Redirection NOT enabled for this item
+            // enableRedirection: false,
         },
         {
             id: 3,
@@ -149,7 +158,14 @@ const HomeFeaturedCard = () => {
                                     </div>
 
                                     <div className="homeFeatured-card-footer">
-                                        <button className="homeFeatured-view-btn">
+                                        <button 
+                                            className="homeFeatured-view-btn"
+                                            onClick={() => {
+                                                if (!smartNavigate(goat)) {
+                                                    navigate(`/shop/${goat.id}`);
+                                                }
+                                            }}
+                                        >
                                             <span>View Details</span>
                                         </button>
                                         <button className="homeFeatured-cart-btn">

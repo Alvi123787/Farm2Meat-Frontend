@@ -2,6 +2,7 @@
 
 import { useNavigate } from "react-router-dom";
 import "../css/MeatByCategory.css";
+import { useSmartNavigation } from "../hooks/useSmartNavigation";
 
 const CATEGORIES = [
   {
@@ -11,6 +12,9 @@ const CATEGORIES = [
     description: "Tender, slow‑grown cuts from our grass‑fed flock",
     image: "https://res.cloudinary.com/dqclqmuhi/image/upload/v1780451671/821_x2485m.jpg",
     tag: "Best Seller",
+    item_type_id: 2,
+    category: "mutton",
+    enableRedirection: true,
   },
   {
     id: "beef",
@@ -19,6 +23,9 @@ const CATEGORIES = [
     description: "Rich, marbled beef from ethically raised cattle",
     image: "https://res.cloudinary.com/dqclqmuhi/image/upload/v1780451655/72395_zpgbkk.jpg",
     tag: "Popular",
+    item_type_id: 2,
+    category: "beef",
+    enableRedirection: true,
   },
   {
     id: "chicken",
@@ -27,6 +34,9 @@ const CATEGORIES = [
     description: "Juicy, free‑range chicken raised without hormones",
     image: "https://res.cloudinary.com/dqclqmuhi/image/upload/v1780451647/13456_qkjktf.jpg",
     tag: "Daily Fresh",
+    item_type_id: 2,
+    category: "chicken",
+    enableRedirection: true,
   },
   {
     id: "fish",
@@ -35,11 +45,15 @@ const CATEGORIES = [
     description: "Wild‑caught and freshwater varieties, delivered daily",
     image: "https://res.cloudinary.com/dqclqmuhi/image/upload/v1780451674/18223_n8tjrv.jpg",
     tag: "Fresh Catch",
+    item_type_id: 2,
+    category: "fish",
+    enableRedirection: true,
   },
 ];
 
 const MeatByCategory = () => {
   const navigate = useNavigate();
+  const { smartNavigate } = useSmartNavigation();
 
   return (
     <section className="mbc">
@@ -63,7 +77,11 @@ const MeatByCategory = () => {
             key={cat.id}
             className="mbc__card"
             style={{ "--i": index }}
-            onClick={() => navigate(`/shop?category=${cat.id}`)}
+            onClick={() => {
+              if (!smartNavigate(cat)) {
+                navigate(`/shop?category=${cat.id}`);
+              }
+            }}
           >
             {/* Image */}
             <div className="mbc__card-img-wrap">

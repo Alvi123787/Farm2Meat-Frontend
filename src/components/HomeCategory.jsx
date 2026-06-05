@@ -2,11 +2,13 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import '../css/HomeCategory.css';
+import { useSmartNavigation } from '../hooks/useSmartNavigation';
 
 const normalize = (v) => String(v || '').trim().toLowerCase()
 
 const HomeCategory = () => {
   const navigate = useNavigate();
+  const { smartNavigate } = useSmartNavigation();
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [counts, setCounts] = useState({})
   const [countsLoading, setCountsLoading] = useState(true)
@@ -19,6 +21,9 @@ const HomeCategory = () => {
       gradientColor: "139, 69, 19",
       accentColor: "#D2691E",
       tag: "Most Popular",
+      item_type_id: 1,
+      category: "Bakra",
+      enableRedirection: true,
     },
     {
       title: "Patth",
@@ -27,6 +32,9 @@ const HomeCategory = () => {
       gradientColor: "34, 85, 34",
       accentColor: "#2E8B57",
       tag: "Best Value",
+      item_type_id: 1,
+      category: "Patth",
+      enableRedirection: true,
     },
     {
       title: "Bakri",
@@ -35,6 +43,9 @@ const HomeCategory = () => {
       gradientColor: "128, 0, 0",
       accentColor: "#A0522D",
       tag: "Top Quality",
+      item_type_id: 1,
+      category: "Bakri",
+      enableRedirection: true,
     }
   ]), []);
 
@@ -145,7 +156,13 @@ const HomeCategory = () => {
                   <button
                     className="homeCategory-card-btn"
                     type="button"
-                    onClick={() => navigate(`/shop?category=${encodeURIComponent(cat.title)}`)}
+                    onClick={() => {
+                      // Attempt smart navigation first
+                      if (!smartNavigate(cat)) {
+                        // Fallback to default if not handled
+                        navigate(`/shop?category=${encodeURIComponent(cat.title)}`);
+                      }
+                    }}
                   >
                     <span>Explore Now</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"

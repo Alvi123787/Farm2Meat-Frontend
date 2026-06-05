@@ -54,6 +54,7 @@ const statusOptions = [
 const defaultFormState = {
   name: '',
   type: 'animal',
+  item_type_id: 1,        // ← Approach 1: Hardcoded as 1 (Livestock) for this form
   category: '',
   breed: '',
   gender: 'male',
@@ -100,19 +101,17 @@ const formatPrice = (val) => {
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Helper: Parse age string back to number
-// Database stores numeric age and unit separately now
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const parseAge = (animal) => {
   if (!animal) return { age: '', ageUnit: 'months' }
-  return { 
-    age: animal.age !== undefined && animal.age !== null ? animal.age : '', 
-    ageUnit: animal.ageUnit || 'months' 
+  return {
+    age: animal.age !== undefined && animal.age !== null ? animal.age : '',
+    ageUnit: animal.ageUnit || 'months'
   }
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Helper: Parse weight string back to number
-// Database stores "38 KG" or numeric values
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const parseWeight = (weightValue) => {
   if (weightValue === null || weightValue === undefined || weightValue === '') return ''
@@ -134,8 +133,6 @@ const AddAnimal = () => {
   const [animalData, setAnimalData] = useState({ ...defaultFormState })
 
   // ── Media state ──
-  // Existing media = already saved in database (URLs)
-  // New media = freshly selected files (File objects)
   const [existingImages, setExistingImages] = useState([])
   const [newImages, setNewImages] = useState([])
   const [newImagePreviews, setNewImagePreviews] = useState([])
@@ -181,14 +178,13 @@ const AddAnimal = () => {
       if (result.success && result.data) {
         const animal = result.data
 
-        // Parse age and weight back to form-friendly values
         const { age, ageUnit } = parseAge(animal)
         const weight = parseWeight(animal.weight)
 
-        // Populate form state with database values
         setAnimalData({
           name: animal.name || '',
           type: animal.type || 'animal',
+          item_type_id: 1,          // ← Always 1 (Livestock) even in edit mode
           category: animal.category || '',
           breed: animal.breed || '',
           gender: animal.gender || 'male',
@@ -216,7 +212,6 @@ const AddAnimal = () => {
           meatYieldEstimate: animal.meatYieldEstimate || ''
         })
 
-        // Set existing media from database
         setExistingImages(animal.images || [])
         setExistingVideos(animal.videos || [])
       } else {
@@ -271,8 +266,7 @@ const AddAnimal = () => {
   const addImageUrl = () => {
     const val = String(imageUrlInput || '')
     if (!val.trim()) return
-    
-    // Simple validation for URL
+
     try {
       new URL(val)
     } catch {
@@ -325,7 +319,7 @@ const AddAnimal = () => {
 
   const addImages = (fileList) => {
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
-    const maxSize = 5 * 1024 * 1024 // 5MB (standardized)
+    const maxSize = 5 * 1024 * 1024
     const maxImagesAllowed = 8
 
     if (newImages.length + existingImages.length + urlImages.length >= maxImagesAllowed) {
@@ -347,20 +341,18 @@ const AddAnimal = () => {
     setErrorMsg('')
     const spaceLeft = maxImagesAllowed - (newImages.length + existingImages.length + urlImages.length)
     const filesToAdd = validFiles.slice(0, spaceLeft)
-    
+
     setNewImages(prev => [...prev, ...filesToAdd])
     const previews = filesToAdd.map(f => URL.createObjectURL(f))
     setNewImagePreviews(prev => [...prev, ...previews])
   }
 
-  // Remove an existing image (from database)
   const removeExistingImage = (index) => {
     const imageToRemove = existingImages[index]
     setRemovedImages(prev => [...prev, imageToRemove])
     setExistingImages(prev => prev.filter((_, i) => i !== index))
   }
 
-  // Remove a newly added image (not yet uploaded)
   const removeNewImage = (index) => {
     URL.revokeObjectURL(newImagePreviews[index])
     setNewImages(prev => prev.filter((_, i) => i !== index))
@@ -373,7 +365,7 @@ const AddAnimal = () => {
 
   const addVideos = (fileList) => {
     const validTypes = ['video/mp4', 'video/webm', 'video/quicktime']
-    const maxSize = 50 * 1024 * 1024 // 50MB for videos
+    const maxSize = 50 * 1024 * 1024
     const maxVideosAllowed = 1
 
     if (newVideos.length + existingVideos.length + urlVideos.length >= maxVideosAllowed) {
@@ -442,8 +434,6 @@ const AddAnimal = () => {
     if (!String(animalData.farmLocation || '').trim()) return 'Farm location is required'
     if (!String(animalData.city || '').trim()) return 'City is required'
 
-    // In add mode, at least one image required
-    // In edit mode, either existing, URL, or new images must exist
     const totalImages = existingImages.length + newImages.length + urlImages.length
     if (totalImages === 0) return 'Please upload at least one image'
 
@@ -508,14 +498,14 @@ const AddAnimal = () => {
       // Append new image files
       newImages.forEach(file => formData.append('images', file))
 
-      // Append new video files (sending as 'video' field)
+      // Append new video files
       newVideos.forEach(file => formData.append('video', file))
 
       // Append URL-based media
       formData.append('urlImages', JSON.stringify(urlImages))
       formData.append('urlVideos', JSON.stringify(urlVideos))
 
-      // In edit mode, also send which existing files to keep and remove
+      // In edit mode, send which existing files to keep and remove
       if (isEditMode) {
         formData.append('keepImages', JSON.stringify(existingImages))
         formData.append('removedImages', JSON.stringify(removedImages))
@@ -523,19 +513,14 @@ const AddAnimal = () => {
         formData.append('removedVideos', JSON.stringify(removedVideos))
       }
 
-      // Choose API endpoint and method
-      const url = isEditMode
-        ? `/api/animals/${id}`
-        : '/api/animals'
+      const url = isEditMode ? `/api/animals/${id}` : '/api/animals'
       const method = isEditMode ? 'put' : 'post'
 
       const response = await api({
         method,
         url,
         data: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+        headers: { 'Content-Type': 'multipart/form-data' }
       })
       const result = response.data
 
@@ -563,7 +548,7 @@ const AddAnimal = () => {
   }
 
   // ════════════════════════════════════════════
-  // Total image and video counts for display
+  // Counts for display
   // ════════════════════════════════════════════
 
   const totalImageCount = existingImages.length + newImages.length + urlImages.length
@@ -648,9 +633,7 @@ const AddAnimal = () => {
                 onClick={() => navigate(isEditMode ? -1 : '/shop')}
               >
                 <FaArrowLeft />
-                <span>
-                  {isEditMode ? 'Back to Inventory' : 'Back to Shop'}
-                </span>
+                <span>{isEditMode ? 'Back to Inventory' : 'Back to Shop'}</span>
               </button>
               <div className="aa-page-header-content">
                 <div className={`aa-page-header-icon ${isEditMode ? 'aa-page-header-icon--edit' : ''}`}>
@@ -694,14 +677,12 @@ const AddAnimal = () => {
                   <div className="aa-section-icon"><FaInfoCircle /></div>
                   <div>
                     <h2 className="aa-section-title">Basic Information</h2>
-                    <p className="aa-section-desc">
-                      Enter the primary details of the animal.
-                    </p>
+                    <p className="aa-section-desc">Enter the primary details of the animal.</p>
                   </div>
                 </div>
 
                 <div className="aa-section-body">
-                  {/* Row: Name */}
+                  {/* Name */}
                   <div className="aa-grid">
                     <div className="aa-field">
                       <label className="aa-label">
@@ -718,7 +699,7 @@ const AddAnimal = () => {
                     </div>
                   </div>
 
-                  {/* Row: Category + Breed */}
+                  {/* Category + Breed */}
                   <div className="aa-grid aa-grid--2">
                     <div className="aa-field">
                       <label className="aa-label">
@@ -731,9 +712,7 @@ const AddAnimal = () => {
                         onChange={handleChange}
                       >
                         {categoryOptions.map(opt => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
+                          <option key={opt.value} value={opt.value}>{opt.label}</option>
                         ))}
                       </select>
                     </div>
@@ -752,15 +731,13 @@ const AddAnimal = () => {
                     </div>
                   </div>
 
-                  {/* Gender Radio Cards */}
+                  {/* Gender */}
                   <div className="aa-field">
                     <label className="aa-label">
                       Gender <span className="aa-required">*</span>
                     </label>
                     <div className="aa-radio-group">
-                      <label
-                        className={`aa-radio-card ${animalData.gender === 'male' ? 'aa-radio-card--active' : ''}`}
-                      >
+                      <label className={`aa-radio-card ${animalData.gender === 'male' ? 'aa-radio-card--active' : ''}`}>
                         <input
                           type="radio"
                           name="gender"
@@ -771,9 +748,7 @@ const AddAnimal = () => {
                         />
                         <span>Male</span>
                       </label>
-                      <label
-                        className={`aa-radio-card ${animalData.gender === 'female' ? 'aa-radio-card--active' : ''}`}
-                      >
+                      <label className={`aa-radio-card ${animalData.gender === 'female' ? 'aa-radio-card--active' : ''}`}>
                         <input
                           type="radio"
                           name="gender"
@@ -787,7 +762,7 @@ const AddAnimal = () => {
                     </div>
                   </div>
 
-                  {/* Row: Age + Weight */}
+                  {/* Age + Weight */}
                   <div className="aa-grid aa-grid--2">
                     <div className="aa-field">
                       <label className="aa-label">
@@ -843,19 +818,15 @@ const AddAnimal = () => {
                   <div className="aa-section-icon"><FaMoneyBillWave /></div>
                   <div>
                     <h2 className="aa-section-title">Pricing & Status</h2>
-                    <p className="aa-section-desc">
-                      Set the pricing and availability.
-                    </p>
+                    <p className="aa-section-desc">Set the pricing and availability.</p>
                   </div>
                 </div>
 
                 <div className="aa-section-body">
-                  {/* Row: Purchase Price + Price */}
+                  {/* Purchase Price + Price */}
                   <div className="aa-grid aa-grid--2">
                     <div className="aa-field">
-                      <label className="aa-label">
-                        Purchase Price
-                      </label>
+                      <label className="aa-label">Purchase Price</label>
                       <div className="aa-input-adorned">
                         <span className="aa-input-prefix">Rs.</span>
                         <input
@@ -886,7 +857,7 @@ const AddAnimal = () => {
                     </div>
                   </div>
 
-                  {/* Row: Discount + Status */}
+                  {/* Discount + Status */}
                   <div className="aa-grid aa-grid--2">
                     <div className="aa-field">
                       <label className="aa-label">Discount Price</label>
@@ -921,10 +892,7 @@ const AddAnimal = () => {
                   {/* Visibility */}
                   <div className="aa-field">
                     <label className="aa-label">Visibility</label>
-                    <div
-                      className="aa-toggle-wrap"
-                      onClick={() => handleToggle('visibility')}
-                    >
+                    <div className="aa-toggle-wrap" onClick={() => handleToggle('visibility')}>
                       <div className={`aa-toggle-track ${animalData.visibility ? 'aa-toggle-track--on' : ''}`}>
                         <div className="aa-toggle-thumb"></div>
                       </div>
@@ -944,7 +912,7 @@ const AddAnimal = () => {
                     </div>
                   </div>
 
-                  {/* Advance Payment Preview */}
+                  {/* Payment Preview */}
                   {cleanPrice(animalData.price) > 0 && (
                     <div className="aa-payment-preview">
                       <div className="aa-payment-preview-header">
@@ -978,14 +946,12 @@ const AddAnimal = () => {
                   <div className="aa-section-icon"><FaHeartbeat /></div>
                   <div>
                     <h2 className="aa-section-title">Physical Details</h2>
-                    <p className="aa-section-desc">
-                      Describe the animal's physical characteristics.
-                    </p>
+                    <p className="aa-section-desc">Describe the animal's physical characteristics.</p>
                   </div>
                 </div>
 
                 <div className="aa-section-body">
-                  {/* Row: Color + Teeth */}
+                  {/* Color + Teeth */}
                   <div className="aa-grid aa-grid--2">
                     <div className="aa-field">
                       <label className="aa-label">Color</label>
@@ -1013,7 +979,7 @@ const AddAnimal = () => {
                     </div>
                   </div>
 
-                  {/* Row: Health */}
+                  {/* Health */}
                   <div className="aa-grid">
                     <div className="aa-field">
                       <label className="aa-label">Health Status</label>
@@ -1030,7 +996,7 @@ const AddAnimal = () => {
                     </div>
                   </div>
 
-                  {/* Row: Location + City */}
+                  {/* Location + City */}
                   <div className="aa-grid aa-grid--2">
                     <div className="aa-field">
                       <label className="aa-label">
@@ -1064,10 +1030,7 @@ const AddAnimal = () => {
                   <div className="aa-meat-integration">
                     <div className="aa-field">
                       <label className="aa-label">Meat & Qurbani Status</label>
-                      <div
-                        className="aa-toggle-wrap"
-                        onClick={() => handleToggle('isForMeat')}
-                      >
+                      <div className="aa-toggle-wrap" onClick={() => handleToggle('isForMeat')}>
                         <div className={`aa-toggle-track ${animalData.isForMeat ? 'aa-toggle-track--on' : ''}`}>
                           <div className="aa-toggle-thumb"></div>
                         </div>
@@ -1122,9 +1085,7 @@ const AddAnimal = () => {
                   <div className="aa-section-icon"><FaCamera /></div>
                   <div>
                     <h2 className="aa-section-title">Media Upload</h2>
-                    <p className="aa-section-desc">
-                      Upload photos and videos of the animal.
-                    </p>
+                    <p className="aa-section-desc">Upload photos and videos of the animal.</p>
                   </div>
                 </div>
 
@@ -1135,16 +1096,14 @@ const AddAnimal = () => {
                     <label className="aa-label">
                       Photos <span className="aa-required">*</span>
                       {totalImageCount > 0 && (
-                        <span className="aa-media-count">
-                          ({totalImageCount} / 8 photos)
-                        </span>
+                        <span className="aa-media-count">({totalImageCount} / 8 photos)</span>
                       )}
                     </label>
                     <div className="aa-media-limit-note">
                       Max 8 images allowed. Each file should be under 5MB.
                     </div>
 
-                    {/* Existing Images from Database */}
+                    {/* Existing Images */}
                     {existingImages.length > 0 && (
                       <div className="aa-preview-grid aa-preview-grid--existing">
                         <div className="aa-existing-label">Current Photos</div>
@@ -1156,8 +1115,7 @@ const AddAnimal = () => {
                                 alt={`Existing ${i + 1}`}
                                 className="aa-preview-img"
                               />
-                              {/* First existing image = current thumbnail */}
-                              {i === 0 && !isFirstImageExisting ? null : i === 0 && (
+                              {i === 0 && isFirstImageExisting && (
                                 <span className="aa-preview-badge">
                                   <FaStar /> THUMBNAIL
                                 </span>
@@ -1176,7 +1134,7 @@ const AddAnimal = () => {
                       </div>
                     )}
 
-                    {/* Upload Zone for New Images */}
+                    {/* Upload Zone */}
                     <div
                       className={`aa-upload-zone ${isDraggingImage ? 'aa-upload-zone--active' : ''}`}
                       onDragOver={handleImageDragOver}
@@ -1207,18 +1165,11 @@ const AddAnimal = () => {
                     {/* New Image Previews */}
                     {newImagePreviews.length > 0 && (
                       <div className="aa-preview-grid">
-                        <div className="aa-existing-label">
-                          New Photos to Upload
-                        </div>
+                        <div className="aa-existing-label">New Photos to Upload</div>
                         <div className="aa-preview-items">
                           {newImagePreviews.map((src, i) => (
                             <div key={`new-img-${i}`} className="aa-preview-item">
-                              <img
-                                src={src}
-                                alt={`New ${i + 1}`}
-                                className="aa-preview-img"
-                              />
-                              {/* If no existing images, first new = thumbnail */}
+                              <img src={src} alt={`New ${i + 1}`} className="aa-preview-img" />
                               {existingImages.length === 0 && i === 0 && (
                                 <span className="aa-preview-badge">
                                   <FaStar /> THUMBNAIL
@@ -1227,10 +1178,7 @@ const AddAnimal = () => {
                               <button
                                 type="button"
                                 className="aa-preview-remove"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  removeNewImage(i)
-                                }}
+                                onClick={(e) => { e.stopPropagation(); removeNewImage(i) }}
                               >
                                 <FaTimes />
                               </button>
@@ -1246,9 +1194,7 @@ const AddAnimal = () => {
                     <label className="aa-label">
                       Videos
                       {totalVideoCount > 0 && (
-                        <span className="aa-media-count">
-                          ({totalVideoCount} / 1 video)
-                        </span>
+                        <span className="aa-media-count">({totalVideoCount} / 1 video)</span>
                       )}
                     </label>
                     <div className="aa-media-limit-note">
@@ -1262,11 +1208,7 @@ const AddAnimal = () => {
                         <div className="aa-preview-items aa-preview-items--videos">
                           {existingVideos.map((vidPath, i) => (
                             <div key={`existing-vid-${i}`} className="aa-preview-item aa-preview-item--video">
-                              <video
-                                src={buildMediaUrl(vidPath)}
-                                className="aa-preview-video"
-                                controls
-                              />
+                              <video src={buildMediaUrl(vidPath)} className="aa-preview-video" controls />
                               <button
                                 type="button"
                                 className="aa-preview-remove"
@@ -1281,7 +1223,7 @@ const AddAnimal = () => {
                       </div>
                     )}
 
-                    {/* Upload Zone for New Videos */}
+                    {/* Upload Zone */}
                     <div
                       className={`aa-upload-zone aa-upload-zone--video ${isDraggingVideo ? 'aa-upload-zone--active' : ''}`}
                       onDragOver={handleVideoDragOver}
@@ -1293,9 +1235,7 @@ const AddAnimal = () => {
                       <p className="aa-upload-zone-text">
                         <strong>Drag & Drop</strong> videos here or <strong>click to browse</strong>
                       </p>
-                      <p className="aa-upload-zone-hint">
-                        MP4, WebM • Max 50MB each
-                      </p>
+                      <p className="aa-upload-zone-hint">MP4, WebM • Max 50MB each</p>
                       <input
                         type="file"
                         ref={videoInputRef}
@@ -1313,18 +1253,11 @@ const AddAnimal = () => {
                         <div className="aa-preview-items aa-preview-items--videos">
                           {newVideoPreviews.map((src, i) => (
                             <div key={`new-vid-${i}`} className="aa-preview-item aa-preview-item--video">
-                              <video
-                                src={src}
-                                className="aa-preview-video"
-                                controls
-                              />
+                              <video src={src} className="aa-preview-video" controls />
                               <button
                                 type="button"
                                 className="aa-preview-remove"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  removeNewVideo(i)
-                                }}
+                                onClick={(e) => { e.stopPropagation(); removeNewVideo(i) }}
                               >
                                 <FaTimes />
                               </button>
@@ -1343,7 +1276,6 @@ const AddAnimal = () => {
                     </p>
 
                     <div className="aa-grid aa-grid--2">
-                      {/* Image URL Input */}
                       <div className="aa-field">
                         <label className="aa-label">Image URL</label>
                         <div className="aa-input-adorned">
@@ -1354,17 +1286,11 @@ const AddAnimal = () => {
                             value={imageUrlInput}
                             onChange={(e) => setImageUrlInput(e.target.value)}
                           />
-                          <button
-                            type="button"
-                            className="aa-url-add-btn"
-                            onClick={addImageUrl}
-                          >
+                          <button type="button" className="aa-url-add-btn" onClick={addImageUrl}>
                             Add
                           </button>
                         </div>
                       </div>
-
-                      {/* Video URL Input */}
                       <div className="aa-field">
                         <label className="aa-label">Video URL</label>
                         <div className="aa-input-adorned">
@@ -1375,18 +1301,13 @@ const AddAnimal = () => {
                             value={videoUrlInput}
                             onChange={(e) => setVideoUrlInput(e.target.value)}
                           />
-                          <button
-                            type="button"
-                            className="aa-url-add-btn"
-                            onClick={addVideoUrl}
-                          >
+                          <button type="button" className="aa-url-add-btn" onClick={addVideoUrl}>
                             Add
                           </button>
                         </div>
                       </div>
                     </div>
 
-                    {/* URL Previews */}
                     {(urlImages.length > 0 || urlVideos.length > 0) && (
                       <div className="aa-url-previews mt-3">
                         {urlImages.length > 0 && (
@@ -1399,16 +1320,9 @@ const AddAnimal = () => {
                                     src={url}
                                     alt={`URL ${i + 1}`}
                                     className="aa-preview-img"
-                                    onError={(e) => {
-                                      e.target.onerror = null
-                                      e.target.src = '/placeholder.jpg'
-                                    }}
+                                    onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.jpg' }}
                                   />
-                                  <button
-                                    type="button"
-                                    className="aa-preview-remove"
-                                    onClick={() => removeUrlImage(i)}
-                                  >
+                                  <button type="button" className="aa-preview-remove" onClick={() => removeUrlImage(i)}>
                                     <FaTimes />
                                   </button>
                                 </div>
@@ -1427,15 +1341,9 @@ const AddAnimal = () => {
                                     src={url}
                                     className="aa-preview-video"
                                     controls
-                                    onError={() => {
-                                      console.error('Video URL failed to load:', url)
-                                    }}
+                                    onError={() => console.error('Video URL failed to load:', url)}
                                   />
-                                  <button
-                                    type="button"
-                                    className="aa-preview-remove"
-                                    onClick={() => removeUrlVideo(i)}
-                                  >
+                                  <button type="button" className="aa-preview-remove" onClick={() => removeUrlVideo(i)}>
                                     <FaTimes />
                                   </button>
                                 </div>
@@ -1457,9 +1365,7 @@ const AddAnimal = () => {
                   <div className="aa-section-icon"><FaFileAlt /></div>
                   <div>
                     <h2 className="aa-section-title">Description & Extra Details</h2>
-                    <p className="aa-section-desc">
-                      Add descriptions and additional preferences.
-                    </p>
+                    <p className="aa-section-desc">Add descriptions and additional preferences.</p>
                   </div>
                 </div>
 
@@ -1486,11 +1392,11 @@ const AddAnimal = () => {
                       className="aa-quill-editor"
                       modules={{
                         toolbar: [
-                          [{ 'header': [1, 2, 3, false] }],
+                          [{ header: [1, 2, 3, false] }],
                           ['bold', 'italic', 'underline', 'strike'],
-                          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                          [{ list: 'ordered' }, { list: 'bullet' }],
                           ['clean']
-                        ],
+                        ]
                       }}
                     />
                   </div>
@@ -1507,14 +1413,11 @@ const AddAnimal = () => {
                     />
                   </div>
 
-                  {/* Row: Delivery + Negotiable */}
+                  {/* Delivery + Negotiable */}
                   <div className="aa-grid aa-grid--2">
                     <div className="aa-field">
                       <label className="aa-label">Delivery Available</label>
-                      <div
-                        className="aa-toggle-wrap"
-                        onClick={() => handleToggle('deliveryAvailable')}
-                      >
+                      <div className="aa-toggle-wrap" onClick={() => handleToggle('deliveryAvailable')}>
                         <div className={`aa-toggle-track ${animalData.deliveryAvailable ? 'aa-toggle-track--on' : ''}`}>
                           <div className="aa-toggle-thumb"></div>
                         </div>
@@ -1578,7 +1481,6 @@ const AddAnimal = () => {
               </div>
 
             </form>
-
           </div>
         </div>
       </div>
