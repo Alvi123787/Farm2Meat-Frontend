@@ -437,8 +437,8 @@ export default function About() {
                       <a href={PHONE_LINK} className="abt-founder-contact-item">
                         <FaPhoneAlt /> <span>{PHONE_DISPLAY}</span>
                       </a>
-                      <a href="mailto:onlymeat@gmail.com" className="abt-founder-contact-item">
-                        <FaEnvelope /> <span>onlymeat@gmail.com</span>
+                      <a href="mailto:rebalalvi123@gmail.com" className="abt-founder-contact-item">
+                        <FaEnvelope /> <span>rebalalvi123@gmail.com</span>
                       </a>
                     </div>
                     <div className="abt-founder-location">

@@ -1,6 +1,6 @@
-# OnlyMeat Frontend
+# MeatByAlvi Frontend
 
-OnlyMeat helps customers browse healthy bakray, place orders, and stay connected with trusted service.
+MeatByAlvi helps customers browse healthy bakray, place orders, and stay connected with trusted service.
 
 ## Tech Stack
 

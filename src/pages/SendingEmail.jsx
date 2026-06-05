@@ -199,7 +199,7 @@ const SendingEmail = () => {
   // Form state
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
-  const [senderName, setSenderName] = useState('OnlyMeat');
+  const [senderName, setSenderName] = useState('MeatByAlvi');
   
   // Recipient state
   const [sendToAll, setSendToAll] = useState(false);

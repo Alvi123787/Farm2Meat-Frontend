@@ -320,7 +320,7 @@ const Terms = () => {
                   {/* Footer Note */}
                   <div className="tp-footer-note">
                     <p>
-                      © 2024 OnlyMeat — All Rights Reserved. These terms and conditions are
+                      © 2024 MeatByAlvi — All Rights Reserved. These terms and conditions are
                       governed by the laws of Pakistan. By continuing to use this website, you
                       acknowledge and accept these terms.
                     </p>

@@ -89,7 +89,7 @@ const ForgotPassword = () => {
                 style={{ width: '40px', height: '40px', objectFit: 'contain' }}
               />
             </div>
-            <span style={{ marginLeft: '14px', color: 'white' }}>OnlyMeat</span>
+            <span style={{ marginLeft: '14px', color: 'white' }}>MeatByAlvi</span>
           </div>
           <div className="fp-quote">
             <h2>Secure Your Account</h2>

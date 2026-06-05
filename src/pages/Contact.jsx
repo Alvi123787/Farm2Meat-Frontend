@@ -45,8 +45,8 @@ const contactInfo = [
     id: 3,
     icon: <FaEnvelope />,
     label: 'Email',
-    value: 'onlymeat@gmail.com',
-    href: 'mailto:onlymeat@gmail.com',
+    value: 'rebalalvi123@gmail.com',
+    href: 'mailto:rebalalvi123@gmail.com',
     color: 'accent',
   },
   {

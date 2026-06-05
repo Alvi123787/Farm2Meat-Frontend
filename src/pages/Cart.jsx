@@ -256,8 +256,8 @@ const Cart = () => {
     return () => window.removeEventListener('cart-expired', handleExpired);
   }, []);
 
-  const buildWhatsAppMessage = () => {
-    let msg = `Assalam o Alaikum!%0A%0A🛒 *New Order from OnlyMeat Website*%0A%0A`
+  const handleCheckoutWhatsApp = () => {
+    let msg = `Assalam o Alaikum!%0A%0A🛒 *New Order from MeatByAlvi Website*%0A%0A`
 
     cartItems.forEach((item, i) => {
       const qty = getEffectiveQuantity(item)
@@ -314,7 +314,7 @@ const Cart = () => {
       }
     }
 
-    const msg = buildWhatsAppMessage()
+    const msg = handleCheckoutWhatsApp()
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank')
   }
 

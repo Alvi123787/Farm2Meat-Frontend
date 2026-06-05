@@ -197,7 +197,7 @@ const Login = () => {
               <div className="lg-brand">
                 <img 
                   src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-                  alt="OnlyMeat" 
+                  alt="MeatByAlvi" 
                   className="lg-brand-logo"
                 />
                 <span className="lg-brand-text">Only<span>Meat</span></span>

@@ -469,7 +469,7 @@ const ProductDetail = () => {
                 </div>
                 <div className="seller-name">
                   <FaUserShield />
-                  <span>OnlyMeat Official</span>
+                  <span>MeatByAlvi Official</span>
                 </div>
               </div>
 

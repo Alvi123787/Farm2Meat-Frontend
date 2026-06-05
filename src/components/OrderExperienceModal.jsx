@@ -414,7 +414,7 @@ export default function OrderExperienceModal({
 
     const { customer, products, total, butcher, animalCare, orderId: id, animalCarePrice } = orderData
     
-    let msg = `Assalam o Alaikum!%0A%0A✅ *ORDER DETAILS — OnlyMeat*%0A%0A`
+    let msg = `Assalam o Alaikum!%0A%0A✅ *ORDER DETAILS — MeatByAlvi*%0A%0A`
     if (id) msg += `*Order ID: ${id}*%0A`
     msg += `━━━━━━━━━━━━━━━%0A`
 
