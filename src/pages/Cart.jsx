@@ -272,7 +272,6 @@ const Cart = () => {
     msg += `━━━━━━━━━━━━━━━%0A`
     msg += `Items: ${totalItems}%0A`
     msg += `Subtotal: Rs ${formatPrice(subtotal)}%0A`
-    msg += `Delivery: Free%0A`
     msg += `*Total: Rs ${formatPrice(total)}*%0A`
 
     return msg
@@ -358,10 +357,6 @@ const Cart = () => {
                   <div className="cart-header-title-row">
                     <FaShoppingCart className="cart-header-icon" />
                     <h1 className="cart-header-title">My Shopping Cart</h1>
-                  </div>
-                  <div className="cart-free-delivery-badge">
-                    <FaTruck />
-                    <span>Free Home Delivery Available</span>
                   </div>
                 </div>
               </div>
@@ -559,16 +554,6 @@ const Cart = () => {
                       <div className="cart-summary-row">
                         <span className="cart-summary-label">Subtotal</span>
                         <span className="cart-summary-value">{formatPrice(subtotal)}</span>
-                      </div>
-
-                      <div className="cart-summary-row">
-                        <span className="cart-summary-label">
-                          <FaTruck className="cart-summary-label-icon" />
-                          Delivery
-                        </span>
-                        <span className="cart-summary-value cart-summary-value--delivery">
-                          Free
-                        </span>
                       </div>
 
                       <div className="cart-summary-divider cart-summary-divider--total"></div>

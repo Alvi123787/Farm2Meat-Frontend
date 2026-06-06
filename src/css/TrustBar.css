@@ -69,7 +69,7 @@
   display: flex;
   align-items: center;
   gap: 18px;
-  padding: 28px 20px;
+  padding: 14px 20px;
   cursor: default;
   transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   opacity: 0;
@@ -240,7 +240,7 @@
   }
 
   .tb-item {
-    padding: 24px 18px;
+    padding: 20px 18px;
   }
 
   /* Remove right dividers on 2nd column items */
@@ -270,9 +270,10 @@
 /* ===================================
    RESPONSIVE – MOBILE (2×2 compact)
 ==================================== */
-@media (max-width: 576px) {
+@media (max-width: 480px) {
   .tb-wrapper {
     border-radius: 0;
+    padding: 12px 0;
   }
 
   .tb-inner {
@@ -284,7 +285,7 @@
     flex-direction: column;
     text-align: center;
     gap: 10px;
-    padding: 22px 10px;
+    padding: 18px 10px;
   }
 
   .tb-divider-line {
@@ -356,7 +357,7 @@
 ==================================== */
 @media (max-width: 380px) {
   .tb-item {
-    padding: 16px 6px;
+    padding: 14px 6px;
     gap: 8px;
   }
 

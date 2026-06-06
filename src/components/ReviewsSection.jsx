@@ -100,7 +100,7 @@ const ReviewsSection = ({ mode = 'home', limit = 4, hideWhenEmpty = true } = {})
             </h2>
             <p className="rv-subtitle">
               {isHome
-                ? 'RYK ke mutmaen customers ki apni zubani — jo bharosa kiya, wo raha sahi!'
+                ? 'Hear from our satisfied customers in RYK — where trust is delivered in every order!'
                 : `Showing ${total} review${total === 1 ? '' : 's'} from customers.`}
             </p>
             <div className="rv-title-divider">

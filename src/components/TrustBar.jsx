@@ -60,11 +60,10 @@ const TrustBar = () => {
   }, []);
 
   return (
-    <div className="container-fluid px-lg-3 px-2">
-      <div
-        className={`tb-wrapper mt-2 ${isVisible ? "tb-visible" : ""}`}
-        ref={barRef}
-      >
+    <div
+      className={`tb-wrapper ${isVisible ? "tb-visible" : ""}`}
+      ref={barRef}
+    >
         {/* Animated Top Border */}
         <div className="tb-top-line"></div>
 
@@ -107,7 +106,6 @@ const TrustBar = () => {
         {/* Bottom Accent */}
         <div className="tb-bottom-line"></div>
       </div>
-    </div>
   );
 };
 

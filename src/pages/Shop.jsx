@@ -82,10 +82,12 @@ const Shop = () => {
 
   return (
     <div className="shp-page">
-      {/* Header — highest z-index */}
-      <div className="shp-header-wrapper">
-        <ShopHeader activeCategory={activeCategory} />
-      </div>
+      {/* Header — only show on livestock shop page, not when menu is displayed */}
+      {!showMenu && (
+        <div className="shp-header-wrapper">
+          <ShopHeader activeCategory={activeCategory} />
+        </div>
+      )}
 
       {showMenu ? (
         <div className="shp-menu-wrapper">

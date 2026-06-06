@@ -24,30 +24,30 @@ const HowItWorks = () => {
     {
       id: 1,
       icon: <FaSearch />,
-      title: 'Browse Products / Animals',
-      description: 'Explore our premium selection of meat products and livestock listings. We offer healthy, farm-raised animals with detailed descriptions and images.',
-      points: ['Detailed weight and breed info', 'Live video verification available', 'Premium quality meat products']
+      title: 'Browse Premium Meat',
+      description: 'Explore our editorial meat menu featuring hand-picked cuts of mutton, beef, and chicken. We provide detailed information on aging, marbling, and weight for every item.',
+      points: ['Expertly hand-trimmed cuts', 'Hygienic tray-wrapped packaging', '100% Halal certified process']
     },
     {
       id: 2,
       icon: <FaShoppingCart />,
-      title: 'Add to Cart',
-      description: 'Select your desired meat products or livestock and add them to your shopping cart. You can review your selection and adjust quantities easily.',
-      points: ['Secure shopping cart', 'Multiple categories', 'Easy item management']
+      title: 'Add to Order',
+      description: 'Select your preferred meat cuts or explore our healthy livestock options. Review your selection in the cart and customize your order according to your needs.',
+      points: ['Secure checkout', 'Custom weight selection', 'Easy order management']
     },
     {
       id: 3,
       icon: <FaClipboardCheck />,
-      title: 'Place Order',
-      description: 'Provide your delivery details and contact information. Our checkout process is secure, transparent, and designed for your convenience.',
-      points: ['No hidden charges', 'Transparent pricing', 'Simple contact form']
+      title: 'Secure Payment & Details',
+      description: 'Provide your delivery information and choose your preferred contact method. Our process is fully transparent with no hidden service charges.',
+      points: ['Direct farm-to-table pricing', 'Cash on delivery available', 'Simple 1-minute form']
     },
     {
       id: 4,
       icon: <FaTruck />,
-      title: 'Order Confirmation & Delivery',
-      description: 'Once confirmed, our team will coordinate the delivery. We offer free home delivery to your doorstep, ensuring your order arrives safely.',
-      points: ['Free home delivery', 'Safe and secure handling', 'Timely updates on WhatsApp']
+      title: 'Fast & Fresh Delivery',
+      description: 'Our specialized delivery fleet ensures your meat reaches you fresh and within the cold-chain window. We coordinate via WhatsApp for precise delivery timing.',
+      points: ['Temperature controlled handling', 'Safe & contactless delivery', 'Real-time WhatsApp updates']
     }
   ];
 
@@ -77,7 +77,7 @@ const HowItWorks = () => {
                   </div>
                   <div className="hiw-free-delivery-badge">
                     <FaTruck />
-                    <span>Free Home Delivery Available</span>
+                    <span>Premium Meat Delivery Service</span>
                   </div>
                 </div>
               </div>
@@ -94,10 +94,10 @@ const HowItWorks = () => {
           <div className="row justify-content-center">
             <div className="col-lg-10">
               <div className="hiw-intro">
-                <h2 className="hiw-intro-title">Buying made simple and transparent</h2>
+                <h2 className="hiw-intro-title">Premium Meat, Simple Process</h2>
                 <p className="hiw-intro-text">
-                  Humara platform aapke liye behtareen quality ka gosht aur janwar khareedna asaan banata hai.
-                  Neechay diye gaye steps follow karein aur apna order aaj hi place karein.
+                  Our platform is designed to provide you with the highest quality, farm-fresh meat with uncompromising hygiene standards.
+                  Follow our simple process to bring the finest cuts of mutton, beef, and chicken to your table.
                 </p>
               </div>
 
@@ -126,9 +126,9 @@ const HowItWorks = () => {
 
               <div className="hiw-cta-section">
                 <div className="hiw-cta-card">
-                  <h3 className="hiw-cta-title">Tayyar hain khareedari ke liye?</h3>
-                  <p className="hiw-cta-text">Hamari collection dekhein aur apna pasandida janwar ya meat product muntakhib karein.</p>
-                  <button className="hiw-cta-btn" onClick={() => navigate('/shop')}>
+                  <h3 className="hiw-cta-title">Hungry for Quality?</h3>
+                  <p className="hiw-cta-text">Explore our premium meat cuts and livestock collection to place your order today.</p>
+                  <button className="hiw-cta-btn" onClick={() => navigate('/menu-page')}>
                     <span>Start Shopping</span>
                     <FaChevronRight />
                   </button>

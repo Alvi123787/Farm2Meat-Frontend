@@ -6,20 +6,20 @@ const steps = [
   {
     id: 1,
     icon: <FaHandPointer />,
-    title: 'Pasand Karen',
-    description: 'Browse our healthy collection and choose your preferred animal easily.',
+    title: 'Choose Your Cuts',
+    description: 'Browse our premium meat menu and select the finest cuts of mutton, beef, or chicken.',
   },
   {
     id: 2,
     icon: <FaWhatsapp />,
-    title: 'Video Mangwayen',
-    description: 'WhatsApp par live video dekh kar tasalli karen before confirming your order.',
+    title: 'Hygiene Check',
+    description: 'Review our sterile processing standards or request a live view of our fresh stock on WhatsApp.',
   },
   {
     id: 3,
     icon: <FaTruck />,
-    title: 'Ghar Hasil Karen',
-    description: 'Free home delivery with Cash on Delivery service.',
+    title: 'Fresh Home Delivery',
+    description: 'Get your fresh, hygienically packed meat delivered to your doorstep in record time.',
   },
 ]
 
@@ -34,7 +34,7 @@ const HowItWorks = () => {
                 How It <span className="how-it-works-accent">Works</span>
               </h2>
               <p className="how-it-works-sub">
-                Sirf 3 aasan steps mein apna pasandida janwar ghar baithay hasil karen — bilkul asaan aur mehfooz!
+                Experience the finest meat delivery service in 3 simple steps — fresh, halal, and 100% hygienic.
               </p>
             </div>
 
@@ -65,7 +65,7 @@ const HowItWorks = () => {
             <div className="how-it-works-trust-badge">
               <span className="trust-badge-icon">🛡️</span>
               <span className="trust-badge-text">
-                100% Trusted &amp; Verified — RYK ki sab se bharosemand service
+                100% Trusted &amp; Verified — Rahim Yar Khan's premier fresh meat delivery service.
               </span>
             </div>
           </div>

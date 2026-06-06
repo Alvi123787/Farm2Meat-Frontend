@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
+import ShopHeader from '../components/ShopHeader'
 import {
   FaShareAlt,
   FaWhatsapp,
@@ -340,17 +341,13 @@ const ProductDetail = () => {
 
   return (
     <div className="product-detail-page">
-      {/* Breadcrumb */}
-      <div className="breadcrumb-wrapper">
-        <div className="container">
-          <nav className="breadcrumb">
-            <Link to="/"><FaHome /> Home</Link>
-            <FaChevronRight className="separator" />
-            <Link to="/shop"><FaStore /> Shop</Link>
-            <FaChevronRight className="separator" />
-            <span className="current">{productData.name}</span>
-          </nav>
-        </div>
+      {/* Header — consistent with shop/cart/checkout */}
+      <div className="shp-header-wrapper">
+        <ShopHeader 
+          activeCategory={productData?.category} 
+          productName={productData?.name}
+          pageTitle="Product Details"
+        />
       </div>
 
       <div className="container">

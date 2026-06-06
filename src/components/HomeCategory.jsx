@@ -95,10 +95,10 @@ const HomeCategory = () => {
           <div className="col-12">
             <span className="homeCategory-badge">CATEGORIES</span>
             <h2 className="homeCategory-title">
-              Shop by <span className="homeCategory-title-highlight">Categories</span>
+              Shop <span className="homeCategory-title-highlight">Livestocks</span>
             </h2>
             <p className="homeCategory-subtitle">
-              Apni zaroorat ke mutabiq category muntakhib karein
+              Select the most relevant category for your needs
             </p>
             <div className="homeCategory-title-divider">
               <span className="homeCategory-divider-dot"></span>

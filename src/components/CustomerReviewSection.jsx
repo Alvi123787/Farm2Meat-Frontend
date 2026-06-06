@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { FaPaperPlane, FaRegStar, FaStar, FaStarHalfAlt, FaSpinner, FaUser, FaCalendarAlt } from 'react-icons/fa';
 import '../css/CustomerReviewSection.css';
 import { reviewsService } from '../services/reviewsService';
 
@@ -23,36 +22,34 @@ const formatDate = (value) => {
   return d.toLocaleDateString('en-PK', { year: 'numeric', month: 'short', day: '2-digit' });
 };
 
-const renderStars = (rating) => {
+const StarDisplay = ({ rating }) => {
   const r = clampRating(rating);
-  const full = Math.floor(r);
-  const hasHalf = r - full >= 0.5;
-  const empty = 5 - full - (hasHalf ? 1 : 0);
-
-  const stars = [];
-  for (let i = 0; i < full; i++) stars.push(<FaStar key={`full-${i}`} className="cr-star cr-star--filled" />);
-  if (hasHalf) stars.push(<FaStarHalfAlt key="half" className="cr-star cr-star--filled" />);
-  for (let i = 0; i < empty; i++) stars.push(<FaRegStar key={`empty-${i}`} className="cr-star" />);
-  return stars;
+  return (
+    <div className="cr-star-display" aria-label={`${r} out of 5 stars`}>
+      {[1, 2, 3, 4, 5].map((n) => (
+        <span key={n} className={`cr-ds ${r >= n ? 'cr-ds--on' : ''}`} aria-hidden="true">★</span>
+      ))}
+    </div>
+  );
 };
 
 export default function CustomerReviewSection({
   title = 'Customer Reviews',
-  subtitle = 'Share your experience with our website. Your feedback helps us improve.',
+  subtitle = 'Your feedback shapes the way we serve. We read every word.',
   hideWhenEmpty = false,
 }) {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading]     = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [reviews, setReviews] = useState([]);
-  const [form, setForm] = useState({ name: '', rating: 0, text: '' });
+  const [error, setError]         = useState('');
+  const [success, setSuccess]     = useState('');
+  const [reviews, setReviews]     = useState([]);
+  const [form, setForm]           = useState({ name: '', rating: 0, text: '' });
   const [hoverRating, setHoverRating] = useState(0);
-  const [loaded, setLoaded] = useState(false);
+  const [loaded, setLoaded]       = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
-    const load = async () => {
+    (async () => {
       setLoading(true);
       setError('');
       try {
@@ -66,37 +63,33 @@ export default function CustomerReviewSection({
         setLoading(false);
         setLoaded(true);
       }
-    };
-    load();
+    })();
     return () => controller.abort();
   }, []);
 
-  const total = reviews.length;
-
-  const sorted = useMemo(() => {
-    return [...reviews].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-  }, [reviews]);
+  const sorted = useMemo(
+    () => [...reviews].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)),
+    [reviews]
+  );
 
   const visibleRating = hoverRating || form.rating;
 
   const setField = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
     if (success) setSuccess('');
-    if (error) setError('');
+    if (error)   setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (submitting) return;
-
-    const name = String(form.name || '').trim();
-    const text = String(form.text || '').trim();
+    const name   = String(form.name || '').trim();
+    const text   = String(form.text || '').trim();
     const rating = Number(form.rating);
-
     if (!name) return setError('Please enter your name.');
     if (!text) return setError('Please write a review message.');
-    if (!Number.isFinite(rating) || rating < 1 || rating > 5) return setError('Please select a rating (1–5).');
-
+    if (!Number.isFinite(rating) || rating < 1 || rating > 5)
+      return setError('Please select a rating (1–5).');
     setSubmitting(true);
     try {
       const result = await reviewsService.create({ name, rating, text });
@@ -104,7 +97,7 @@ export default function CustomerReviewSection({
       if (created) setReviews((prev) => [created, ...prev]);
       setForm({ name: '', rating: 0, text: '' });
       setHoverRating(0);
-      setSuccess('Thanks! Your review has been submitted.');
+      setSuccess('Thank you — your review has been published.');
     } catch (err) {
       setError(err?.message || 'Failed to submit review');
     } finally {
@@ -112,131 +105,162 @@ export default function CustomerReviewSection({
     }
   };
 
-  if (!loading && !error && total === 0 && hideWhenEmpty) return null;
+  if (!loading && !error && reviews.length === 0 && hideWhenEmpty) return null;
 
   return (
-    <section className={`cr-section ${loaded ? 'cr-section--loaded' : ''}`}>
-      <div className="cr-container">
-        <div className="cr-header">
-          <div className="cr-badge">Share Your Thoughts</div>
-          <h2 className="cr-title">{title}</h2>
-          <p className="cr-subtitle">{subtitle}</p>
+    <section className={`cr${loaded ? ' cr--loaded' : ''}`}>
+      <div className="cr-wrap">
+
+        {/* Header */}
+        <header className="cr-hdr">
+          <p className="cr-kicker">
+            <span className="cr-kicker-line" />
+            Share Your Experience
+            <span className="cr-kicker-line" />
+          </p>
+          <h2 className="cr-title">{title.split(' ').slice(0, -1).join(' ')} <em>{title.split(' ').slice(-1)}</em></h2>
+          <p className="cr-sub">{subtitle}</p>
+        </header>
+
+        <div className="cr-divider" aria-hidden="true">
+          <span /><span className="cr-divider-gem" /><span />
         </div>
 
         <div className="cr-grid">
-          {/* Review Form */}
-          <div className="cr-form-card">
-            <h3 className="cr-form-title">Write a Review</h3>
-            <form className="cr-form" onSubmit={handleSubmit}>
-              <div className="cr-form-group">
-                <label className="cr-label">
-                  <FaUser className="cr-label-icon" />
+
+          {/* ── Form panel ── */}
+          <div className="cr-panel">
+            <div className="cr-panel-head">
+              <p className="cr-panel-eyebrow">Leave a note</p>
+              <h3 className="cr-panel-title">Write a Review</h3>
+            </div>
+            <form className="cr-form" onSubmit={handleSubmit} noValidate>
+
+              <div className="cr-field">
+                <label className="cr-label" htmlFor="cr-name">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                   Your Name
                 </label>
                 <input
+                  id="cr-name"
                   className="cr-input"
                   value={form.name}
                   onChange={(e) => setField('name', e.target.value)}
-                  placeholder="e.g., Ahmed Khan"
+                  placeholder="e.g. Ahmed Khan"
                   autoComplete="name"
                 />
               </div>
 
-              <div className="cr-form-group">
-                <label className="cr-label">Rating</label>
-                <div className="cr-stars-input" onMouseLeave={() => setHoverRating(0)}>
+              <div className="cr-field">
+                <label className="cr-label">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  Rating
+                </label>
+                <div
+                  className="cr-star-row"
+                  onMouseLeave={() => setHoverRating(0)}
+                  role="group"
+                  aria-label="Star rating"
+                >
                   {[1, 2, 3, 4, 5].map((n) => (
                     <button
                       key={n}
                       type="button"
-                      className={`cr-star-btn ${visibleRating >= n ? 'cr-star-btn--active' : ''}`}
+                      className={`cr-sstar${visibleRating >= n ? ' cr-sstar--on' : ''}`}
                       onMouseEnter={() => setHoverRating(n)}
                       onClick={() => setField('rating', n)}
                       aria-label={`Rate ${n} star${n === 1 ? '' : 's'}`}
-                    >
-                      <FaStar />
-                    </button>
+                    >★</button>
                   ))}
-                  <span className="cr-rating-text">
-                    {form.rating ? `${form.rating}/5` : 'Select rating'}
+                  <span className="cr-star-txt">
+                    {form.rating ? `${form.rating} / 5` : 'Select rating'}
                   </span>
                 </div>
               </div>
 
-              <div className="cr-form-group">
-                <label className="cr-label">Your Review</label>
+              <div className="cr-field">
+                <label className="cr-label" htmlFor="cr-text">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  Your Review
+                </label>
                 <textarea
+                  id="cr-text"
                   className="cr-textarea"
                   rows={4}
                   value={form.text}
                   onChange={(e) => setField('text', e.target.value)}
-                  placeholder="Share your experience with us..."
+                  placeholder="Share your experience with us…"
                 />
               </div>
 
-              {error && <div className="cr-alert cr-alert--error">{error}</div>}
-              {success && <div className="cr-alert cr-alert--success">{success}</div>}
+              {error   && <div className="cr-alert cr-alert--err" role="alert">{error}</div>}
+              {success && <div className="cr-alert cr-alert--ok"  role="status">{success}</div>}
 
               <button className="cr-submit" type="submit" disabled={submitting}>
-                {submitting ? <FaSpinner className="cr-submit-spinner" /> : <FaPaperPlane />}
-                <span>{submitting ? 'Submitting...' : 'Submit Review'}</span>
+                {submitting ? (
+                  <svg className="cr-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                )}
+                <span>{submitting ? 'Submitting…' : 'Submit Review'}</span>
               </button>
             </form>
           </div>
 
-          {/* Reviews List */}
-          <div className="cr-list-card">
-            <div className="cr-list-header">
-              <h3 className="cr-list-title">Recent Reviews</h3>
-              <span className="cr-list-count">{total} review{total !== 1 ? 's' : ''}</span>
+          {/* ── Reviews panel ── */}
+          <div className="cr-rev-panel">
+            <div className="cr-rev-head">
+              <h3 className="cr-rev-title">Recent Reviews</h3>
+              <span className="cr-rev-count">
+                {reviews.length} review{reviews.length !== 1 ? 's' : ''}
+              </span>
             </div>
 
-            {loading && (
-              <div className="cr-state">
-                <FaSpinner className="cr-state-spinner" />
-                <p>Loading reviews...</p>
-              </div>
-            )}
+            <div className="cr-rev-body">
+              {loading && (
+                <div className="cr-state">
+                  <svg className="cr-spin cr-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                  <p>Loading reviews…</p>
+                </div>
+              )}
 
-            {!loading && error && (
-              <div className="cr-state cr-state--error">
-                <p>Unable to load reviews. Please try again later.</p>
-              </div>
-            )}
+              {!loading && error && (
+                <div className="cr-state cr-state--err" role="alert">
+                  <p>Unable to load reviews. Please try again later.</p>
+                </div>
+              )}
 
-            {!loading && !error && total === 0 && (
-              <div className="cr-state cr-state--empty">
-                <p>No reviews yet. Be the first to share your experience!</p>
-              </div>
-            )}
+              {!loading && !error && reviews.length === 0 && (
+                <div className="cr-state">
+                  <p>No reviews yet — be the first to share your experience.</p>
+                </div>
+              )}
 
-            {!loading && !error && total > 0 && (
-              <div className="cr-reviews-grid">
-                {sorted.map((r, idx) => (
-                  <div
-                    key={r._id || `${r.name}-${idx}`}
-                    className="cr-review-card"
-                    style={{ animationDelay: `${idx * 0.05}s` }}
-                  >
-                    <div className="cr-review-header">
-                      <div className="cr-avatar">{getInitials(r.name)}</div>
-                      <div className="cr-review-meta">
-                        <h4 className="cr-review-name">{r.name}</h4>
-                        <div className="cr-review-stars">{renderStars(r.rating)}</div>
-                      </div>
-                      {r.createdAt && (
-                        <div className="cr-review-date">
-                          <FaCalendarAlt className="cr-date-icon" />
-                          {formatDate(r.createdAt)}
-                        </div>
-                      )}
+              {!loading && !error && sorted.map((r, idx) => (
+                <article
+                  key={r._id || `${r.name}-${idx}`}
+                  className="cr-rc"
+                  style={{ animationDelay: `${idx * 0.05}s` }}
+                >
+                  <div className="cr-rc-top">
+                    <div className="cr-avatar">{getInitials(r.name)}</div>
+                    <div className="cr-rc-meta">
+                      <h4 className="cr-rc-name">{r.name}</h4>
+                      <StarDisplay rating={r.rating} />
                     </div>
-                    <p className="cr-review-text">{r.text}</p>
+                    {r.createdAt && (
+                      <time className="cr-rc-date" dateTime={r.createdAt}>
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        {formatDate(r.createdAt)}
+                      </time>
+                    )}
                   </div>
-                ))}
-              </div>
-            )}
+                  <p className="cr-rc-text">{r.text}</p>
+                </article>
+              ))}
+            </div>
           </div>
+
         </div>
       </div>
     </section>

@@ -64,61 +64,61 @@ function useReveal(threshold = 0.15) {
 
 const values = [
   {
-    icon: <FaHandshake />,
-    title: 'Trust & Integrity',
-    desc: 'We deal with every customer with complete honesty. Animal weight, health, and breed — everything is fully transparent. Our goal is not just to sell once, but to win your trust that lasts a lifetime.',
-    color: '128, 0, 0'
-  },
-  {
-    icon: <FaHeart />,
-    title: 'Animal Care',
-    desc: 'Every animal here is kept with full love and care. Their feed, clean water, and health are fully taken care of. We believe that only a healthy animal brings blessings to your home.',
-    color: '139, 69, 19'
-  },
-  {
     icon: <FaShieldAlt />,
-    title: 'Quality Promise',
-    desc: 'Every animal at OnlyMeat is carefully selected. We never compromise on quality. Every goat and sheep is checked under the supervision of experts to ensure you get only the best.',
+    title: 'Food Safety First',
+    desc: 'Our operations strictly adhere to food safety regulations. From sterile processing environments to temperature-controlled logistics, we ensure every cut of meat reaches you in its most hygienic and nutritious state.',
     color: '34, 85, 34'
   },
   {
+    icon: <FaHeart />,
+    title: 'Humane Handling',
+    desc: 'We treat every animal with the respect it deserves. Our management protocols prioritize low-stress environments, natural feed, and ethical treatment, believing that compassionate care is the foundation of quality.',
+    color: '139, 69, 19'
+  },
+  {
+    icon: <FaHandshake />,
+    title: 'Supply Chain Integrity',
+    desc: 'We maintain a transparent, closed-loop supply chain. By managing everything from rearing to final processing, we eliminate middle-man uncertainties and guarantee the pedigree and purity of our products.',
+    color: '128, 0, 0'
+  },
+  {
     icon: <FaGem />,
-    title: 'Customer First',
-    desc: 'You are our top priority. Answering your every need, question, and concern is our responsibility. Whether day or night, our team is always ready for your service — because you are our true asset.',
+    title: 'Culinary Excellence',
+    desc: 'Our meat isn\'t just a product; it\'s a culinary experience. We focus on marbling, texture, and aging to provide premium cuts that satisfy the most discerning chefs and home cooks alike.',
     color: '128, 0, 0'
   }
 ]
 
 const offerings = [
   {
-    icon: <FaBalanceScale />,
-    title: 'Honest Weight System',
-    desc: 'Accurate weight from a digital weighing machine — no guesses, no deception. You can see the weight with your own eyes and shop with complete satisfaction.'
-  },
-  {
-    icon: <FaWhatsapp />,
-    title: 'Live Video Inspection',
-    desc: 'You can see your animal via live video call on WhatsApp from the comfort of your home. Every angle, every detail — so that you have no doubt and making a decision becomes easy.'
-  },
-  {
-    icon: <FaTruck />,
-    title: 'Safe Home Delivery',
-    desc: 'Safe and timely delivery in Rahim Yar Khan and surrounding areas. The animal is delivered to your doorstep with full safety — exactly as you saw in the video.'
+    icon: <FaCheckCircle />,
+    title: 'Premium Meat Cuts',
+    desc: 'Expertly hand-trimmed mutton, beef, and chicken. Each piece is selected for quality, ensuring you get the perfect balance of tenderness and flavor in every meal.'
   },
   {
     icon: <FaSeedling />,
-    title: 'Farm-Raised Animals',
-    desc: 'All animals are raised in open and clean environments. Natural pastures, clean water, and full nutrition — this is why our animals are healthy and active.'
+    title: 'Ethical Livestock Rearing',
+    desc: 'Our animals are raised on open pastures with natural, organic feed. We strictly avoid growth hormones and antibiotics, focusing on slow, natural growth for better health.'
   },
   {
-    icon: <FaMedal />,
-    title: 'Premium Breeds',
-    desc: 'We only keep the best breeds of animals that are famous for their beauty, weight, and health. Whether for Qurbani or for raising — every breed has its own place.'
+    icon: <FaShieldAlt />,
+    title: 'Hygienic Processing',
+    desc: 'Our state-of-the-art processing facility follows rigorous sanitization protocols. Every cut is tray-wrapped and quality-bagged to preserve freshness and prevent contamination.'
   },
   {
-    icon: <FaPhoneAlt />,
-    title: '24/7 Support',
-    desc: 'Our team is always present for your help. Any question, any difficulty — just a call or message away. We believe in listening to you and solving the problem.'
+    icon: <FaBalanceScale />,
+    title: 'Honest Weight System',
+    desc: 'Digital precision in every transaction. We believe in "what you see is what you get," providing transparent weighing for both live animals and processed meat.'
+  },
+  {
+    icon: <FaWhatsapp />,
+    title: 'Farm-to-Table Transparency',
+    desc: 'Track your order from the farm to your door. We provide live updates and video inspections so you can be 100% sure of the source and quality of your food.'
+  },
+  {
+    icon: <FaTruck />,
+    title: 'Temperature Controlled Delivery',
+    desc: 'Our delivery fleet is optimized to maintain the cold chain. Your meat arrives at your doorstep fresh, never frozen, maintaining its natural juices and nutrients.'
   }
 ]
 
@@ -215,26 +215,16 @@ export default function About() {
                     <FaQuoteLeft />
                   </div>
                   <p className="abt-story-text">
-                    This journey started with a very simple thought — that the people of Rahim Yar Khan
-                    should get the best animals at home without any deception or trouble. We saw that
-                    in the market (mandi), people are often troubled — there is a difference in weight,
-                    quality is unknown, and it's hard to trust.
+                    This journey started with a simple but powerful realization: that the heart of a great meal begins long before the kitchen. In the markets of Rahim Yar Khan, we saw families struggling to find meat they could truly trust—meat that wasn't just fresh, but sourced with integrity and handled with the highest standards of hygiene.
                   </p>
                   <p className="abt-story-text">
-                    To solve this problem, the concept of MeatByAlvi was born. We thought that if we
-                    bring technology and honesty together — then we can create a platform where people
-                    not only get good quality but also have complete trust. And that's exactly what we did.
+                    MeatByAlvi was born to bridge that gap. We didn't just want to be another meat shop; we set out to build a complete farm-to-table ecosystem. By taking full control of our supply chain—from the natural pastures where our livestock grazes to the sterile environments where our meat is processed—we've made "quality" more than just a buzzword. It's a promise kept every single day.
                   </p>
                   <p className="abt-story-text">
-                    Today, MeatByAlvi is a well-known name in Rahim Yar Khan. Thanks to our customers,
-                    we are growing every day. Behind every animal we sell is the hard work, dedication
-                    of our entire team, and prayers for you. This is not just a business — it's our
-                    passion, our responsibility, and our promise that we will always deal with you honestly.
+                    Our livestock management is rooted in deep respect for the animals. We believe that healthy, low-stress animals raised on organic feed naturally produce superior meat. This commitment to humane handling, combined with our rigorous compliance with food safety regulations, ensures that every cut of mutton, beef, or chicken we deliver is of the highest nutritional grade.
                   </p>
                   <p className="abt-story-text">
-                    We started small — with just a few animals. But your trust has brought us so far
-                    that today we offer goats, sheep, and even lambs. And our intention is to bring
-                    even more categories and services in the future so that your every need can be met.
+                    Today, MeatByAlvi stands as a testament to what's possible when you combine traditional values with modern food safety standards. We started small, but your trust has allowed us to grow into a comprehensive livestock and meat provider. Whether you're looking for a specific cut for a family dinner or a healthy animal for your farm, we are here to provide excellence, transparency, and the finest quality in the region.
                   </p>
                 </div>
               </div>
@@ -271,12 +261,7 @@ export default function About() {
                 </div>
                 <h3 className="abt-mv-title">Our Mission</h3>
                 <p className="abt-mv-text">
-                  Our mission is to deliver healthy and farm-raised animals to every home in
-                  Rahim Yar Khan and its surroundings — at exactly the right price, with full
-                  transparency. We want every person to find the experience of buying an animal
-                  easy, reliable, and pleasant. No deception, no hiding — just a clean and
-                  straightforward matter. Using technology, we want to make this entire process
-                  so easy that you can choose your animal from home and buy with complete satisfaction.
+                  Our mission is to redefine the standards of meat and livestock in Pakistan by providing 100% halal, farm-fresh, and ethically raised products. We aim to deliver premium-grade mutton, beef, and chicken directly to your doorstep with full transparency in weight and quality. By integrating technology with traditional husbandry, we ensure a seamless and trustworthy experience for every family we serve.
                 </p>
               </div>
             </div>
@@ -288,12 +273,7 @@ export default function About() {
                 </div>
                 <h3 className="abt-mv-title">Our Vision</h3>
                 <p className="abt-mv-text">
-                  Our vision is that OnlyMeat should not be limited only to Rahim Yar Khan — but
-                  should become such a market across Pakistan where people trust online animal buying
-                  as much as they do seeing it with their own eyes. We want our name to be the first
-                  one taken in livestock online trading in the next few years. A platform where quality,
-                  trust, and customer satisfaction are above all — this is our dream and we work
-                  hard for it every day.
+                  Our vision is to become Pakistan's leading authority in the meat and livestock sector, recognized for our commitment to food safety, animal welfare, and customer trust. We envision a future where every household has access to healthy, traceable, and premium-quality meat, setting a benchmark for the entire industry through our farm-to-table excellence.
                 </p>
               </div>
             </div>
@@ -453,28 +433,16 @@ export default function About() {
                     <FaQuoteLeft />
                   </div>
                   <p className="abt-founder-text">
-                    My name is Muhammad Ahmad and I am a resident of Rahim Yar Khan. Since childhood,
-                    I have been associated with farming and animal husbandry. My father was also
-                    involved in this work and he taught me how to take care of animals and how to
-                    deal with people honestly.
+                    My name is Muhammad Ahmad, and my life has been defined by the rolling pastures of Rahim Yar Khan. Growing up in a family deeply rooted in agriculture, I learned early on that true quality comes from a place of respect—respect for the land, the livestock, and the families we feed.
                   </p>
                   <p className="abt-founder-text">
-                    When I saw that in today's era, people do online shopping but still use the old
-                    market method to buy animals — where there is often deception, weight differences,
-                    and it's hard to trust — then I thought why not create a platform where people
-                    can get quality animals from home with full transparency.
+                    When I looked at the traditional meat industry, I saw a gap between what families needed and what was available. There was a lack of transparency in sourcing, inconsistent hygiene standards, and a disconnect between the farm and the table. I realized that to fix this, we needed to own the entire process.
                   </p>
                   <p className="abt-founder-text">
-                    This thought gave birth to OnlyMeat. In the beginning, there were many difficulties —
-                    it was not easy to win people's trust. But we made honesty, quality, and customer
-                    care our principle and gradually people appreciated our hard work. Today, we can say
-                    with pride that OnlyMeat has brought happiness to many homes.
+                    MeatByAlvi was founded on the principle that meat should be more than just a commodity; it should be a source of health and vitality. By overseeing every step—from rearing livestock with natural feed to implementing sterile processing techniques—we've created a brand that stands for uncompromising quality.
                   </p>
                   <p className="abt-founder-text">
-                    I believe that if the intention is pure and the hard work is sincere, then Allah
-                    Almighty definitely grants success. I consider every customer as my guest and
-                    their happiness is my biggest success. OnlyMeat was my dream — and with your
-                    trust, this dream is becoming a reality.
+                    This isn't just a business for me; it's a lifelong commitment to my community. I consider every customer a guest at my own table, and ensuring your family receives the safest, freshest, and most ethical meat is my greatest priority. With your trust, we are raising the bar for the entire livestock industry in Pakistan.
                   </p>
                   <p className="abt-founder-text abt-founder-sign">
                     — Muhammad Ahmad, Founder OnlyMeat
@@ -499,9 +467,7 @@ export default function About() {
                 <FaUsers className="abt-cta-icon" />
                 <h2 className="abt-cta-title">Come, Join Us!</h2>
                 <p className="abt-cta-text">
-                  If you are also looking for a reliable place where you can get healthy and best
-                  animals — then OnlyMeat is your own platform. Contact us today and choose your
-                  favorite animal. We are always ready for your service.
+                  Whether you're looking for the finest meat for your kitchen or healthy livestock for your farm, MeatByAlvi is your trusted partner. Experience the difference that farm-to-table integrity makes. Contact us today to place an order or learn more about our processes.
                 </p>
                 <div className="abt-cta-actions">
                   <a href="/contact" className="abt-cta-btn abt-cta-btn-primary">

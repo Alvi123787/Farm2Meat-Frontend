@@ -13,26 +13,26 @@ import '../css/AboutPreview.css'
 const features = [
   {
     icon: <FaShieldAlt />,
-    title: 'Premium Quality',
-    desc: 'Har janwar carefully selected aur farm-raised hota hai.',
+    title: 'Premium Meat',
+    desc: 'Hand-selected livestock and expertly processed fresh cuts.',
     color: '128, 0, 0'
   },
   {
     icon: <FaBalanceScale />,
-    title: 'Honest Weight',
-    desc: 'Transparent pricing aur accurate wazan ki guarantee.',
+    title: 'Fair Pricing',
+    desc: 'Transparent weight and competitive market rates.',
     color: '139, 69, 19'
   },
   {
     icon: <FaWhatsapp />,
-    title: 'WhatsApp Support',
-    desc: 'Live video call par janwar dekh kar tasalli karein.',
+    title: 'Direct Support',
+    desc: 'Connect with our team for custom cuts and bulk orders.',
     color: '34, 85, 34'
   },
   {
     icon: <FaTruck />,
-    title: 'Home Delivery',
-    desc: 'Aapke ghar tak safe aur timely delivery ka intezaam.',
+    title: 'Fresh Delivery',
+    desc: 'Safe and timely delivery of meat and livestock to your home.',
     color: '128, 0, 0'
   }
 ]
@@ -106,29 +106,30 @@ export default function AboutPreview({
                 <div className="ap-desc-icon-wrap">
                   <FaShieldAlt />
                 </div>
-                <h3 className="ap-desc-heading">Hamari Pehchaan</h3>
+                <h3 className="ap-desc-heading">Our Expertise</h3>
                 <p className="ap-desc-text">
-                  MeatByAlvi par aapko sehatmand aur farm-raised bakray miltay
-                  hain — honest weight, transparent pricing, aur WhatsApp
-                  support ke saath. Har janwar carefully selected hota hai
-                  taake aapko premium quality aur trust dono milein.
+                  At MeatByAlvi, we provide premium quality meat and healthy
+                  livestock sourced directly from our managed farms. Our focus is
+                  on maintaining the highest standards of hygiene and transparency,
+                  ensuring every family receives fresh, halal, and nutritious food
+                  with complete peace of mind.
                 </p>
                 <ul className="ap-desc-list">
                   <li className="ap-desc-list-item">
                     <FaCheckCircle className="ap-check-icon" />
-                    <span>Verified &amp; Healthy Animals</span>
+                    <span>Hygienically Processed Meat</span>
                   </li>
                   <li className="ap-desc-list-item">
                     <FaCheckCircle className="ap-check-icon" />
-                    <span>Live WhatsApp Video Inspection</span>
+                    <span>Ethically Raised Livestock</span>
                   </li>
                   <li className="ap-desc-list-item">
                     <FaCheckCircle className="ap-check-icon" />
-                    <span>Cash on Delivery Available</span>
+                    <span>Cold-Chain Preservation</span>
                   </li>
                   <li className="ap-desc-list-item">
                     <FaCheckCircle className="ap-check-icon" />
-                    <span>Free Home Delivery in RYK</span>
+                    <span>Guaranteed Freshness &amp; Quality</span>
                   </li>
                 </ul>
                 <button

@@ -68,7 +68,7 @@ const Bestsellers = () => {
           <p className="bsc__empty">No bestsellers configured yet.</p>
         )}
 
-        {showItems && items.map((item, index) => (
+        {showItems && items.slice(0, 6).map((item, index) => (
           <div
             key={item._id}
             className="bsc__card"
@@ -119,7 +119,7 @@ const Bestsellers = () => {
       {/* View all CTA */}
       {showItems && (
         <div className="bsc__view-all">
-          <button className="bsc__view-all-btn" onClick={() => navigate('/menu')}>
+          <button className="bsc__view-all-btn" onClick={() => navigate('/menu-page')}>
             View Full Menu
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path d="M5 12h14m0 0-6-6m6 6-6 6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
