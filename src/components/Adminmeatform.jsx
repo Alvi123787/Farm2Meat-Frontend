@@ -123,7 +123,7 @@ export default function Adminmeatform() {
 
     if (!form.name.trim())              return showToast('error', 'Item name is required.')
     if (!form.category)                 return showToast('error', 'Please select a category.')
-    if (!form.price || form.price <= 0) return showToast('error', 'Please enter a valid price.')
+    if (!form.price || Number(form.price) <= 0) return showToast('error', 'Please enter a valid price.')
     if (!form.description.trim())       return showToast('error', 'Description is required.')
 
     setSubmitting(true)
@@ -136,6 +136,7 @@ export default function Adminmeatform() {
       showToast('success', `"${form.name}" added successfully! 🥩`)
       handleReset()
     } catch (err) {
+      console.error('Submit error:', err)
       const message = err.response?.data?.message || err.message || 'Failed to add item. Please try again.'
       showToast('error', message)
     } finally {

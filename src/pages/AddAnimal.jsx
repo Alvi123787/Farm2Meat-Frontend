@@ -428,11 +428,20 @@ const AddAnimal = () => {
     if (!String(animalData.name || '').trim()) return 'Animal name is required'
     if (!animalData.category) return 'Please select a category'
     if (!String(animalData.breed || '').trim()) return 'Breed is required'
-    if (!animalData.age) return 'Age is required'
-    if (!animalData.weight) return 'Weight (Zinda) is required'
-    if (!String(animalData.price || '').trim()) return 'Price is required'
+    if (animalData.age === '' || animalData.age === null) return 'Age is required'
+    if (animalData.weight === '' || animalData.weight === null) return 'Weight (Zinda) is required'
+    if (!String(animalData.price || '').trim() || cleanPrice(animalData.price) <= 0) return 'Valid price is required'
     if (!String(animalData.farmLocation || '').trim()) return 'Farm location is required'
     if (!String(animalData.city || '').trim()) return 'City is required'
+
+    if (animalData.isForMeat) {
+      if (animalData.slaughterWeight === '' || animalData.slaughterWeight === null) {
+        return 'Slaughter weight is required when available for meat'
+      }
+      if (parseFloat(animalData.slaughterWeight) <= 0) {
+        return 'Slaughter weight must be greater than 0'
+      }
+    }
 
     const totalImages = existingImages.length + newImages.length + urlImages.length
     if (totalImages === 0) return 'Please upload at least one image'
@@ -490,16 +499,27 @@ const AddAnimal = () => {
           formData.append(key, DOMPurify.sanitize(value))
         } else if (key === 'price' || key === 'purchasePrice' || key === 'discountPrice') {
           formData.append(key, cleanPrice(value))
+        } else if (key === 'age' || key === 'weight' || key === 'teeth' || key === 'slaughterWeight') {
+          // Ensure numbers are sent correctly
+          formData.append(key, value === '' || value === null ? '' : Number(value))
         } else {
           formData.append(key, value)
         }
       })
 
       // Append new image files
-      newImages.forEach(file => formData.append('images', file))
+      newImages.forEach(file => {
+        if (file instanceof File) {
+          formData.append('images', file)
+        }
+      })
 
       // Append new video files
-      newVideos.forEach(file => formData.append('video', file))
+      newVideos.forEach(file => {
+        if (file instanceof File) {
+          formData.append('video', file)
+        }
+      })
 
       // Append URL-based media
       formData.append('urlImages', JSON.stringify(urlImages))
