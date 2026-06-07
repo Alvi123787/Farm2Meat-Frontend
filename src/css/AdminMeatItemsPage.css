@@ -1,0 +1,461 @@
+/* AdminMeatItemsPage.css – Clean, professional meat items management */
+:root {
+  --deep-red: #800000;
+  --gold: #d4af37;
+  --gold-light: rgba(212, 175, 55, 0.12);
+  --white: #ffffff;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-600: #4b5563;
+  --gray-800: #1f2937;
+  --radius: 12px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.amip-container {
+  padding: 1.5rem;
+  background: var(--gray-50);
+  min-height: calc(100vh - 64px);
+}
+
+/* Header */
+.amip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+.amip-title-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.amip-title-icon {
+  font-size: 2.2rem;
+  color: var(--gold);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+.amip-title-section h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--gray-800);
+  margin: 0;
+  letter-spacing: -0.025em;
+}
+.amip-header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Buttons */
+.amip-btn {
+  padding: 0.7rem 1.4rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.amip-btn-primary {
+  background: var(--deep-red);
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(128, 0, 0, 0.2);
+}
+.amip-btn-primary:hover {
+  background: #6b0000;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px rgba(128, 0, 0, 0.3);
+}
+.amip-btn-secondary {
+  background: var(--white);
+  color: var(--gray-800);
+  border: 1px solid var(--gray-200);
+}
+.amip-btn-secondary:hover {
+  background: var(--gray-50);
+}
+.amip-btn-refresh {
+  background: var(--white);
+  color: var(--deep-red);
+  border: 1px solid var(--deep-red);
+}
+.amip-btn-danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.amip-btn-danger:hover {
+  background: #fecaca;
+}
+
+/* Toolbar */
+.amip-toolbar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  background: var(--white);
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  align-items: center;
+}
+.amip-search-box {
+  position: relative;
+  flex: 1;
+}
+.amip-search-box svg {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-600);
+}
+.amip-search-box input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.8rem;
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+.amip-search-box input:focus {
+  outline: none;
+  border-color: var(--deep-red);
+}
+.amip-select {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  background: var(--white);
+  min-width: 180px;
+}
+
+/* Table Styles */
+.amip-table-wrapper {
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  border: 1px solid var(--gray-100);
+}
+.amip-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.amip-table th {
+  background: var(--gray-50);
+  padding: 1rem;
+  text-align: left;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--gray-600);
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--gray-100);
+}
+.amip-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--gray-50);
+  vertical-align: middle;
+}
+.amip-product-cell {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.amip-item-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--gray-100);
+}
+.amip-product-info {
+  display: flex;
+  flex-direction: column;
+}
+.amip-name {
+  font-weight: 700;
+  color: var(--gray-800);
+}
+.amip-best-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #92400e;
+  background: #fef3c7;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  width: fit-content;
+  margin-top: 0.2rem;
+}
+
+.amip-category-badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+.cat-mutton { background: #fef2f2; color: #991b1b; }
+.cat-beef { background: #f0fdf4; color: #166534; }
+.cat-chicken { background: #fffbeb; color: #92400e; }
+.cat-fish { background: #eff6ff; color: #1e40af; }
+
+.amip-price-info strong { font-size: 1.1rem; color: var(--gray-800); }
+.amip-price-info span { font-size: 0.85rem; color: var(--gray-600); }
+
+.amip-stock-badge {
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: var(--gray-100);
+  color: var(--gray-800);
+  width: fit-content;
+}
+.amip-stock-badge.low {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.amip-expiry {
+  font-size: 0.85rem;
+  color: var(--gray-600);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.amip-status-btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+.amip-status-btn.available { color: #166534; background: #f0fdf4; }
+.amip-status-btn.unavailable { color: #991b1b; background: #fef2f2; }
+
+.amip-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.amip-btn-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--gray-200);
+  background: white;
+  color: var(--gray-600);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.amip-btn-icon:hover {
+  background: var(--gray-50);
+  color: var(--deep-red);
+  border-color: var(--deep-red);
+}
+.amip-btn-icon.delete:hover {
+  color: #d00000;
+  border-color: #d00000;
+  background: #fee2e2;
+}
+
+/* Modals */
+.amip-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+.amip-modal-form {
+  background: white;
+  width: 100%;
+  max-width: 650px;
+  max-height: 90vh;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  animation: modalIn 0.3s ease-out;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.amip-modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--gray-100);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.amip-modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--gray-800);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.amip-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--gray-400);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.amip-close-btn:hover { color: var(--gray-800); }
+
+.amip-form {
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+.amip-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+.amip-form-group.full {
+  grid-column: span 2;
+}
+.amip-form-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--gray-700);
+  margin-bottom: 0.5rem;
+}
+.amip-form-group input,
+.amip-form-group select,
+.amip-form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+.amip-form-group textarea { resize: vertical; }
+
+.amip-image-upload {
+  display: flex;
+  gap: 1rem;
+}
+.amip-preview-box {
+  width: 100%;
+  height: 150px;
+  border: 2px dashed var(--gray-200);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.amip-preview-box:hover { border-color: var(--deep-red); }
+.amip-preview-box img { width: 100%; height: 100%; object-fit: cover; }
+.amip-upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--gray-400);
+}
+
+.amip-form-toggles {
+  display: flex;
+  gap: 2rem;
+  padding: 0.5rem 0;
+}
+.amip-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--gray-700);
+}
+.amip-checkbox-label input { width: 18px; height: 18px; }
+
+.amip-form-actions {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+/* Delete Modal Specific */
+.amip-modal-delete {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 20px;
+  text-align: center;
+  max-width: 450px;
+  width: 100%;
+}
+.amip-delete-icon {
+  font-size: 3rem;
+  color: #ef4444;
+  margin-bottom: 1.5rem;
+}
+.amip-delete-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+.amip-delete-actions .amip-btn { justify-content: center; width: 100%; }
+
+/* States */
+.amip-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5rem;
+  color: var(--gray-500);
+}
+.amip-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--gray-100);
+  border-top-color: var(--deep-red);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 768px) {
+  .amip-header { flex-direction: column; align-items: flex-start; }
+  .amip-form-grid { grid-template-columns: 1fr; }
+  .amip-form-group.full { grid-column: span 1; }
+  .amip-toolbar { flex-direction: column; }
+  .amip-select { width: 100%; }
+}

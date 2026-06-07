@@ -20,6 +20,8 @@ import {
   faAddressBook,
   faUserShield,
   faPaperPlane,
+  faDrumstickBite,
+  faUtensils,
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/Sidebar.css";
 
@@ -76,6 +78,16 @@ const Sidebar = ({ isOpen, toggleSidebar, totalAnimals }) => {
       label: "Inventory",
       path: "/admin/animals",
       icon: faBoxesStacked,
+    },
+    {
+      label: "Meat Dashboard",
+      path: "/admin/meat-dashboard",
+      icon: faDrumstickBite,
+    },
+    {
+      label: "Meat Items",
+      path: "/admin/meat-items",
+      icon: faUtensils,
     },
     {
       label: "Orders",
