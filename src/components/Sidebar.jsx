@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faHorse,
   faPlusCircle,
   faUtensils,
   faEnvelopeOpenText,
@@ -21,7 +20,6 @@ import {
   faUserShield,
   faPaperPlane,
   faDrumstickBite,
-  faUtensils,
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/Sidebar.css";
 
@@ -33,7 +31,6 @@ const getStoredBool = (key, fallback) => {
     if (raw === null) return fallback;
     return raw === "1";
   } catch (e) {
-    void e;
     return fallback;
   }
 };
@@ -42,7 +39,7 @@ const setStoredBool = (key, value) => {
   try {
     localStorage.setItem(key, value ? "1" : "0");
   } catch (e) {
-    void e;
+    // ignore
   }
 };
 
@@ -65,6 +62,16 @@ const Sidebar = ({ isOpen, toggleSidebar, totalAnimals }) => {
       icon: faTachometerAlt,
     },
     {
+      label: "Meat Dashboard",
+      path: "/admin/meat-dashboard",
+      icon: faDrumstickBite,
+    },
+    {
+      label: "Meat Items",
+      path: "/admin/meat-items",
+      icon: faUtensils,
+    },
+    {
       label: "Add Product",
       path: "/admin/add-animal",
       icon: faPlusCircle,
@@ -78,16 +85,6 @@ const Sidebar = ({ isOpen, toggleSidebar, totalAnimals }) => {
       label: "Inventory",
       path: "/admin/animals",
       icon: faBoxesStacked,
-    },
-    {
-      label: "Meat Dashboard",
-      path: "/admin/meat-dashboard",
-      icon: faDrumstickBite,
-    },
-    {
-      label: "Meat Items",
-      path: "/admin/meat-items",
-      icon: faUtensils,
     },
     {
       label: "Orders",
@@ -135,7 +132,7 @@ const Sidebar = ({ isOpen, toggleSidebar, totalAnimals }) => {
       />
 
       <aside className={`sidebar ${isCollapsed ? "collapsed" : ""} ${isOpen ? "open" : ""}`}>
-        {/* Toggle Button - Amazing Design */}
+        {/* Toggle Button */}
         <button 
           className={`sidebar-toggle-btn ${isCollapsed ? "collapsed" : ""}`}
           onClick={toggleCollapse}
