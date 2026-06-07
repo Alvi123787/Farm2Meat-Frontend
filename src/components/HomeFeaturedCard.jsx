@@ -38,7 +38,7 @@ const HomeFeaturedCard = () => {
             badgeIcon: "🔥",
             breed: "Pure Beetal",
             color: "128, 0, 0",
-            item_type_id: 1,
+            type: "livestock",
             enableRedirection: true,
             category: "Bakra",
         },

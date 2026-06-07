@@ -469,7 +469,7 @@ const AdminDashboard = () => {
                           >
                             <span className="search-dd-item-title">{a.name}</span>
                             <span className="search-dd-item-meta">
-                              {a.tagId ? `#${a.tagId}` : ""} {a.breed ? `• ${a.breed}` : ""}
+                              {a.breed ? `${a.breed}` : ""}
                             </span>
                             <FontAwesomeIcon icon={faChevronRight} className="search-dd-item-arrow" />
                           </button>

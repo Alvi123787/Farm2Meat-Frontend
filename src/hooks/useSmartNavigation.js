@@ -2,29 +2,29 @@ import { useNavigate } from 'react-router-dom';
 
 /**
  * useSmartNavigation Hook
- * Implements a conditional navigation system based on item_type_id.
+ * Implements a conditional navigation system based on item type.
  * 
  * Principle:
- * - item_type_id === 1 (Livestock) -> Redirect to /shop with livestock filters
- * - item_type_id === 2 (Meat)      -> Redirect to /menu-page with meat filters
- * - If redirection is not configured for the item, or item_type_id is unknown,
+ * - type === 'livestock' -> Redirect to /shop with livestock filters
+ * - type === 'meat'      -> Redirect to /menu-page with meat filters
+ * - If redirection is not configured for the item, or type is unknown,
  *   it falls back to normal behavior.
  */
 export const useSmartNavigation = () => {
   const navigate = useNavigate();
 
   const smartNavigate = (item) => {
-    // 1. Strict Principle: If no item_type_id or missing redirection config, do nothing.
+    // 1. Strict Principle: If no type or missing redirection config, do nothing.
     // Redirection must be explicitly enabled via 'enableRedirection' property on the item.
-    if (!item || !item.item_type_id || !item.enableRedirection) {
+    if (!item || !item.type || !item.enableRedirection) {
       return false; // Signals to the caller that smart navigation did not run
     }
 
-    const { item_type_id } = item;
+    const { type } = item;
     const params = new URLSearchParams();
 
-    // 2. Livestock Path (item_type_id === 1)
-    if (item_type_id === 1) {
+    // 2. Livestock Path (type === 'livestock')
+    if (type === 'livestock') {
       // Collect relevant livestock properties
       if (item.category) params.set('category', item.category);
       if (item.breed)    params.set('breed', item.breed);
@@ -37,8 +37,8 @@ export const useSmartNavigation = () => {
       return true;
     }
 
-    // 3. Meat Path (item_type_id === 2)
-    if (item_type_id === 2) {
+    // 3. Meat Path (type === 'meat')
+    if (type === 'meat') {
       // Collect relevant meat properties
       if (item.category)     params.set('category', item.category.toLowerCase());
       if (item.unit)         params.set('unit', item.unit);
@@ -49,7 +49,7 @@ export const useSmartNavigation = () => {
       return true;
     }
 
-    // fallback for unknown item_type_id
+    // fallback for unknown type
     return false;
   };
 

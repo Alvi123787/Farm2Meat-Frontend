@@ -53,8 +53,7 @@ const statusOptions = [
 // ── Default empty form state ──
 const defaultFormState = {
   name: '',
-  type: 'animal',
-  item_type_id: 1,        // ← Approach 1: Hardcoded as 1 (Livestock) for this form
+  type: 'livestock',
   category: '',
   breed: '',
   gender: 'male',
@@ -183,8 +182,7 @@ const AddAnimal = () => {
 
         setAnimalData({
           name: animal.name || '',
-          type: animal.type || 'animal',
-          item_type_id: 1,          // ← Always 1 (Livestock) even in edit mode
+          type: 'livestock',
           category: animal.category || '',
           breed: animal.breed || '',
           gender: animal.gender || 'male',

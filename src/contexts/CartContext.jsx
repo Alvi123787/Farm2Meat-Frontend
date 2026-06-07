@@ -56,7 +56,7 @@ export const CartProvider = ({ children }) => {
   }, [cartMeta?.expiresAt, clearCart]);
 
   const addItem = (product) => {
-    const isMeat = product.itemType === 'meat' || product.purchaseMode === 'multi';
+    const isMeat = product.type === 'meat' || product.purchaseMode === 'multi';
     
     const newItem = {
       _id: product._id,
@@ -68,11 +68,10 @@ export const CartProvider = ({ children }) => {
       images: product.images || [],
       imageUrl: product.imageUrl || '',
       stock: product.status || 'available',
-      tagId: product.animalid || product.meatid || '',
       category: product.category || '',
       farmLocation: product.farmLocation || '',
       city: product.city || '',
-      itemType: product.itemType || (isMeat ? 'meat' : 'livestock'),
+      itemType: product.type || (isMeat ? 'meat' : 'livestock'),
       purchaseMode: product.purchaseMode || (isMeat ? 'multi' : 'single'),
       quantity: 1
     };
@@ -106,7 +105,7 @@ export const CartProvider = ({ children }) => {
     updateCart(newCart);
   };
 
-  const updateQuantity = (itemId, delta) => {
+  const updateQuantity = useCallback((itemId, delta) => {
     const newCart = cart.map(item => {
       if (item._id === itemId) {
         const isMeat = item.itemType === 'meat' || item.purchaseMode === 'multi';
@@ -117,7 +116,7 @@ export const CartProvider = ({ children }) => {
       return item;
     });
     updateCart(newCart);
-  };
+  }, [cart, updateCart]);
 
   const refreshCart = useCallback(() => {
     const state = cartStorage.load();

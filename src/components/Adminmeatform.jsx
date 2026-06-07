@@ -36,7 +36,7 @@ const INITIAL = {
   isAvailable: true,
   showInHeader: false,
   imageUrl: '',
-  item_type_id: 2,   // ← Approach 1: Hardcoded as 2 (Meat Item) for this form
+  type: 'meat',
 }
 
 const DESC_MAX = 120
@@ -70,6 +70,11 @@ export default function Adminmeatform() {
   const handleFileChange = async (file) => {
     if (!file || !file.type.startsWith('image/')) return
 
+    // Revoke previous blob if exists to prevent memory leaks
+    if (imagePreview && imagePreview.startsWith('blob:')) {
+      URL.revokeObjectURL(imagePreview)
+    }
+
     // Show local preview immediately
     const localUrl = URL.createObjectURL(file)
     setImagePreview(localUrl)
@@ -98,6 +103,9 @@ export default function Adminmeatform() {
   }
 
   const removeImage = () => {
+    if (imagePreview && imagePreview.startsWith('blob:')) {
+      URL.revokeObjectURL(imagePreview)
+    }
     setImagePreview(null)
     set('imageUrl', '')
     if (fileRef.current) fileRef.current.value = ''
@@ -105,13 +113,19 @@ export default function Adminmeatform() {
 
   const handleUrlChange = (e) => {
     const url = e.target.value
+    if (imagePreview && imagePreview.startsWith('blob:')) {
+      URL.revokeObjectURL(imagePreview)
+    }
     setForm(f => ({ ...f, imageUrl: url }))
     if (url) setImagePreview(url)
     else setImagePreview(null)
   }
 
   const handleReset = () => {
-    setForm(INITIAL)        // ← Reset bhi INITIAL use karta hai, so item_type_id: 2 reset mein bhi safe hai
+    if (imagePreview && imagePreview.startsWith('blob:')) {
+      URL.revokeObjectURL(imagePreview)
+    }
+    setForm(INITIAL)        // ← Reset will use INITIAL state with type: 'meat'
     setImagePreview(null)
     setDescLen(0)
     if (fileRef.current) fileRef.current.value = ''
@@ -121,23 +135,28 @@ export default function Adminmeatform() {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
+    const priceNum = parseFloat(form.price)
+
     if (!form.name.trim())              return showToast('error', 'Item name is required.')
     if (!form.category)                 return showToast('error', 'Please select a category.')
-    if (!form.price || Number(form.price) <= 0) return showToast('error', 'Please enter a valid price.')
+    if (isNaN(priceNum) || priceNum <= 0) return showToast('error', 'Please enter a valid price.')
     if (!form.description.trim())       return showToast('error', 'Description is required.')
 
     setSubmitting(true)
     try {
       await createItem({
         ...form,
-        price:        Number(form.price),
-        item_type_id: 2,   // ← Explicitly ensure item_type_id = 2 (Meat) on submit
+        price:        priceNum,
       })
       showToast('success', `"${form.name}" added successfully! 🥩`)
       handleReset()
     } catch (err) {
       console.error('Submit error:', err)
-      const message = err.response?.data?.message || err.message || 'Failed to add item. Please try again.'
+      const message = 
+        err.response?.data?.message || 
+        (err.response?.data?.errors && Object.values(err.response.data.errors).join(', ')) ||
+        err.message || 
+        'Failed to add item. Please try again.'
       showToast('error', message)
     } finally {
       setSubmitting(false)

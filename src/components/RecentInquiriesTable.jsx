@@ -646,11 +646,6 @@ export default function RecentInquiriesTable() {
                         </span>
                         <span className="detail-value">
                           {inquiry.animalName}
-                          {inquiry.animalTag && (
-                            <span className="animal-tag">
-                              {inquiry.animalTag}
-                            </span>
-                          )}
                         </span>
                       </div>
                       <div className="mobile-detail">
