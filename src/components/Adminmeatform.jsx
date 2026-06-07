@@ -136,7 +136,8 @@ export default function Adminmeatform() {
       showToast('success', `"${form.name}" added successfully! 🥩`)
       handleReset()
     } catch (err) {
-      showToast('error', err.message || 'Failed to add item. Please try again.')
+      const message = err.response?.data?.message || err.message || 'Failed to add item. Please try again.'
+      showToast('error', message)
     } finally {
       setSubmitting(false)
     }
