@@ -36,6 +36,7 @@ import AdminButchers from './pages/AdminButchers'
 import SendingEmail from './pages/SendingEmail'
 import WelcomeModal from './components/WelcomeModal';
 import UnavailableItem from './pages/UnavailableItem'
+import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext.jsx';
 import { CartProvider } from './contexts/CartContext';
 import PageTitle from './components/PageTitle';
@@ -69,6 +70,7 @@ function AppShell() {
   return (
     <AuthProvider>
       <CartProvider>
+        <Toaster position="top-right" reverseOrder={false} />
         <SplashScreen isVisible={showSplash} />
         {location.pathname === '/' && !showSplash && <WelcomeModal />}
         <Navbar />
