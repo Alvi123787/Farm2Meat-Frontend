@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useMeatItems, useAdminItems } from '../hooks/useMeatItems'
 import api from '../services/api'
-import './AdminMeatDashboard.css'
+import '../css/AdminMeatDashboard.css'
 import { toast } from 'react-hot-toast'
 import { useAuth } from '../contexts/authContextCore'
 import { Navigate } from 'react-router-dom'
