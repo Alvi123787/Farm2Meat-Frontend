@@ -588,6 +588,17 @@ const Cart = () => {
                         Prices include all applicable charges. No hidden fees.
                       </p>
                     </div>
+
+                    {/* ── QUALITY GUARANTEE SECTION ── */}
+                    <div className="cart-guarantee-card">
+                      <div className="cart-guarantee-icon-wrap">
+                        <FaShieldAlt className="cart-guarantee-icon" />
+                      </div>
+                      <h3 className="cart-guarantee-title">100% Quality Assurance</h3>
+                      <p className="cart-guarantee-text">
+                        We take pride in the quality of our meat and livestock. If your order doesn't meet our standards for freshness, tenderness, or taste, we offer a full refund for any valid quality concerns. Your satisfaction is our primary commitment.
+                      </p>
+                    </div>
                   </div>
                 </div>
               )}

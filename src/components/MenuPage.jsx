@@ -6,6 +6,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useMenuItems } from '../hooks/useMeatItems'
 import { useCart } from '../contexts/cartContextCore'
 import CustomerReviewSection from './CustomerReviewSection'
+import ButcherSection from './ButcherSection'
 import '../css/MenuPage.css'
 
 const FILTERS = [
@@ -233,6 +234,9 @@ export default function MenuPage() {
           </div>
         )}
       </main>
+
+      {/* ── BUTCHER CTA ── */}
+      <ButcherSection />
 
       {/* ── REVIEWS ── */}
       <section className="mp-reviews">

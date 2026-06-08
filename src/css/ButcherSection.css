@@ -1,730 +1,147 @@
-/* ButcherSection.css - Professional Butcher Theme with unique btr- prefix */
+/* ButcherSection.css - Modern CTA Redesign */
 
 :root {
-  --btr-primary: #8B1E1E;      /* Deep butcher red */
-  --btr-secondary: #2C1810;     /* Dark leather brown */
-  --btr-accent: #D4A853;        /* Aged gold/brass */
-  --btr-light: #FDF8F5;         /* Warm cream */
-  --btr-gray: #4A4A4A;
-  --btr-border: #E8D5C4;
-  --btr-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --btr-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
-  --btr-shadow-lg: 0 16px 32px rgba(0, 0, 0, 0.12);
-  --btr-transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --btr-primary-red: #8B1E1E;
+  --btr-text-light: #ffffff;
+  --btr-wa-green: #25D366;
+  --btr-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Main Section */
 .btr-section {
   padding: 80px 0;
-  background: linear-gradient(180deg, #FCF9F7 0%, #FDF8F5 100%);
-  position: relative;
-  overflow: hidden;
-}
-
-/* Subtle butcher pattern overlay */
-.btr-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: 
-    repeating-linear-gradient(45deg, rgba(139, 30, 30, 0.02) 0px, rgba(139, 30, 30, 0.02) 2px, 
-                              transparent 2px, transparent 8px);
-  pointer-events: none;
+  background-color: #fcf9f7;
 }
 
 .btr-container {
-  max-width: 1320px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
+}
+
+.btr-cta-card {
+  background-color: #141414;
+  border-radius: 32px;
+  padding: 64px;
+  color: var(--btr-text-light);
   position: relative;
-  z-index: 1;
-}
-
-/* Section Header */
-.btr-section-header {
-  text-align: left;
-  margin-bottom: 48px;
-  max-width: 680px;
-}
-
-.btr-section-badge {
-  display: inline-block;
-  padding: 0;
-  background: none;
-  color: var(--btr-primary);
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  border-radius: 0;
-  margin-bottom: 12px;
-  text-transform: uppercase;
-}
-
-.btr-section-title {
-  font-size: clamp(2.5rem, 6vw, 3.5rem);
-  color: var(--btr-secondary);
-  font-weight: 800;
-  margin: 0 0 16px;
-  letter-spacing: -0.04em;
-  line-height: 1.1;
-}
-
-.btr-section-title-highlight {
-  color: var(--btr-primary);
-}
-
-.btr-section-subtitle {
-  font-size: 1.05rem;
-  color: var(--btr-gray);
-  max-width: 650px;
-  margin: 0 0 24px;
-  line-height: 1.7;
-  opacity: 0.88;
-}
-
-.btr-section-divider {
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.btr-cta-icon-wrapper {
+  background: transparent;
+  width: auto;
+  height: auto;
+  margin-bottom: 4px;
+  display: flex;
   justify-content: flex-start;
 }
 
-.btr-section-divider-line {
-  width: 50px;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--btr-primary);
+.btr-cta-icon {
+  font-size: 32px;
+  color: var(--btr-primary-red);
 }
 
-/* Grid Layout */
-.btr-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  justify-content: center;
-  gap: 24px;
-  padding: 8px 0;
-}
-
-/* Card Styles */
-.btr-card {
-  background: var(--btr-light);
-  border-radius: 20px;
-  padding: 24px 16px 20px;
-  position: relative;
-  box-shadow: var(--btr-shadow-sm);
-  transition: var(--btr-transition);
-  border: 1px solid var(--btr-border);
-  overflow: hidden;
-  width: 100%;
-  margin: 0 auto;
-}
-
-.btr-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--btr-shadow-lg);
-  border-color: var(--btr-accent);
-}
-
-/* Corner accent */
-.btr-card-corner-accent {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, transparent 50%, rgba(139, 30, 30, 0.03) 50%);
-  pointer-events: none;
-}
-
-/* Experience Badge */
-.btr-experience-badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: linear-gradient(135deg, var(--btr-secondary) 0%, #3D2319 100%);
-  color: var(--btr-accent);
-  padding: 4px 8px;
-  border-radius: 40px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  box-shadow: var(--btr-shadow-sm);
-  z-index: 2;
-  white-space: nowrap;
-}
-
-.btr-star-icon {
-  font-size: 10px;
-  color: var(--btr-accent);
-}
-
-/* Avatar Section */
-.btr-avatar-wrapper {
-  position: relative;
-  width: 90px;
-  height: 90px;
-  margin: 0 auto 16px;
-}
-
-.btr-avatar {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid var(--btr-light);
-  box-shadow: var(--btr-shadow-md);
-  transition: var(--btr-transition);
-}
-
-.btr-card:hover .btr-avatar {
-  border-color: var(--btr-accent);
-}
-
-.btr-avatar-placeholder {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--btr-primary) 0%, #6B1515 100%);
-  color: var(--btr-light);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.5rem;
-  font-weight: 700;
-  border: 3px solid var(--btr-light);
-  box-shadow: var(--btr-shadow-md);
-  text-transform: uppercase;
-}
-
-.btr-verified-badge {
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
-  background: #22C55E;
-  color: white;
-  border-radius: 50%;
-  width: 26px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  box-shadow: 0 4px 8px rgba(34, 197, 94, 0.3);
-  border: 2px solid var(--btr-light);
-}
-
-/* Card Information */
-.btr-card-info {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.btr-name-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  margin-bottom: 0;
-  flex-wrap: wrap;
-}
-
-.btr-butcher-name {
-  font-size: 1.1rem;
-  color: var(--btr-secondary);
-  font-weight: 700;
+.btr-cta-title {
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  margin: 0;
   letter-spacing: -0.01em;
-  margin: 0;
-  line-height: 1.3;
+  color: #ffffff;
 }
 
-.btr-verified-icon {
-  color: #22C55E;
-  font-size: 16px;
-  flex-shrink: 0;
-}
-
-.btr-specialty {
-  margin-bottom: 0;
-}
-
-.btr-specialty span {
-  display: inline-block;
-  padding: 3px 8px;
-  background: rgba(139, 30, 30, 0.06);
-  color: var(--btr-primary);
-  border-radius: 20px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-}
-
-.btr-location {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  color: var(--btr-gray);
-  font-size: 0.8rem;
-  margin-bottom: 0;
-  padding: 6px 0;
-  border-top: 1px dashed var(--btr-border);
-  border-bottom: 1px dashed var(--btr-border);
-  flex-wrap: wrap;
-}
-
-.btr-location-icon {
-  color: var(--btr-primary);
-  font-size: 12px;
-  flex-shrink: 0;
-}
-
-/* Contact Button */
-.btr-contact-btn {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  background: linear-gradient(135deg, var(--btr-primary) 0%, #A52828 100%);
-  color: var(--btr-light);
-  padding: 10px 12px;
-  border-radius: 12px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: var(--btr-transition);
-  width: 100%;
-  border: none;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(139, 30, 30, 0.2);
-  min-height: 44px;
-}
-
-.btr-contact-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s ease;
-}
-
-.btr-contact-btn:hover::before {
-  left: 100%;
-}
-
-.btr-contact-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(139, 30, 30, 0.3);
-}
-
-.btr-phone-icon {
-  font-size: 14px;
-  animation: btr-subtle-ring 2s ease-in-out infinite;
-  flex-shrink: 0;
-}
-
-.btr-contact-text {
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  flex: 1;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.btr-contact-label {
-  font-size: 0.65rem;
-  opacity: 0.9;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-@keyframes btr-subtle-ring {
-  0%, 100% { transform: rotate(0deg); }
-  10%, 30% { transform: rotate(-5deg); }
-  20%, 40% { transform: rotate(5deg); }
-  50% { transform: rotate(0deg); }
-}
-
-/* Footer */
-.btr-footer {
-  margin-top: 48px;
-  padding-top: 24px;
-  border-top: 1px solid var(--btr-border);
-}
-
-.btr-footer-text {
-  color: var(--btr-gray);
-  font-size: 0.9rem;
-  margin: 0;
-  opacity: 0.65;
+.btr-cta-description {
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: #999;
+  max-width: 800px;
+  margin: 0 0 10px 0;
   font-weight: 400;
-  text-align: center;
 }
 
-/* Skeleton Loading States */
-.btr-card--skeleton {
-  background: white;
-  pointer-events: none;
-  min-height: 320px;
-}
-
-.btr-skeleton-badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  width: 70px;
-  height: 24px;
-  background: linear-gradient(90deg, #E8D5C4 0%, #F0E6DC 50%, #E8D5C4 100%);
-  background-size: 200% 100%;
-  animation: btr-shimmer 1.5s infinite;
-  border-radius: 40px;
-}
-
-.btr-skeleton-avatar {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  background: linear-gradient(90deg, #E8D5C4 0%, #F0E6DC 50%, #E8D5C4 100%);
-  background-size: 200% 100%;
-  animation: btr-shimmer 1.5s infinite;
-  margin: 0 auto 16px;
-}
-
-.btr-skeleton-line {
-  height: 16px;
-  background: linear-gradient(90deg, #E8D5C4 0%, #F0E6DC 50%, #E8D5C4 100%);
-  background-size: 200% 100%;
-  animation: btr-shimmer 1.5s infinite;
-  margin-bottom: 8px;
-  border-radius: 8px;
-}
-
-.btr-skeleton-line--short {
-  width: 60%;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.btr-skeleton-button {
-  height: 44px;
-  background: linear-gradient(90deg, #E8D5C4 0%, #F0E6DC 50%, #E8D5C4 100%);
-  background-size: 200% 100%;
-  animation: btr-shimmer 1.5s infinite;
+.btr-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
   margin-top: 20px;
-  border-radius: 12px;
 }
 
-@keyframes btr-shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+.btr-btn-contact {
+  background-color: #ffffff;
+  color: var(--btr-primary-red);
+  border: none;
+  padding: 16px 40px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: var(--btr-transition);
 }
 
-/* Responsive Design - Mobile First Approach */
+.btr-btn-contact:hover {
+  transform: translateY(-3px);
+  background-color: #f0f0f0;
+  box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
+}
 
-/* Default mobile styles (up to 640px) - 2 cards per row */
-@media (max-width: 640px) {
-  .btr-section {
-    padding: 40px 0;
+.btr-btn-arrow {
+  font-size: 14px;
+  transition: transform 0.3s ease;
+}
+
+.btr-btn-contact:hover .btr-btn-arrow {
+  transform: translateX(5px);
+}
+
+.btr-btn-whatsapp {
+  background-color: #2c2c2c;
+  color: #ffffff;
+  border: 1px solid #444;
+  padding: 16px 40px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: var(--btr-transition);
+}
+
+.btr-btn-whatsapp:hover {
+  background-color: #383838;
+  border-color: #666;
+  transform: translateY(-3px);
+}
+
+.btr-wa-icon {
+  font-size: 22px;
+  color: var(--btr-wa-green);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .btr-cta-card {
+    padding: 48px 32px;
+    border-radius: 24px;
   }
-
-  .btr-container {
-    padding: 0 12px;
+  
+  .btr-cta-actions {
+    flex-direction: column;
   }
-
-  .btr-section-header {
-    margin-bottom: 32px;
-    padding: 0 4px;
+  
+  .btr-btn-contact, .btr-btn-whatsapp {
+    width: 100%;
+    justify-content: center;
   }
-
-  .btr-section-badge {
-    font-size: 11px;
-    letter-spacing: 1.5px;
-    margin-bottom: 8px;
-  }
-
-  .btr-section-title {
-    font-size: 1.6rem;
-    margin-bottom: 8px;
-  }
-
-  .btr-section-subtitle {
-    font-size: 0.85rem;
-    margin-bottom: 16px;
-  }
-
-  .btr-section-divider-line {
-    width: 40px;
-    height: 3px;
-  }
-
-  /* Force 2 columns on mobile */
-  .btr-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    padding: 4px 0;
-  }
-
-  .btr-card {
-    padding: 16px 8px 14px;
-    border-radius: 16px;
-    max-width: none;
-  }
-
-  .btr-card-corner-accent {
-    width: 50px;
-    height: 50px;
-  }
-
-  .btr-experience-badge {
-    top: 8px;
-    left: 8px;
-    padding: 3px 6px;
-    font-size: 0.6rem;
-    gap: 3px;
-  }
-
-  .btr-star-icon {
-    font-size: 8px;
-  }
-
-  .btr-avatar-wrapper {
-    width: 70px;
-    height: 70px;
-    margin-bottom: 12px;
-  }
-
-  .btr-avatar-placeholder {
+  
+  .btr-cta-title {
     font-size: 2rem;
-  }
-
-  .btr-verified-badge {
-    width: 22px;
-    height: 22px;
-    font-size: 11px;
-    bottom: 2px;
-    right: 2px;
-  }
-
-  .btr-card-info {
-    gap: 6px;
-  }
-
-  .btr-butcher-name {
-    font-size: 0.9rem;
-  }
-
-  .btr-verified-icon {
-    font-size: 13px;
-  }
-
-  .btr-specialty span {
-    padding: 2px 6px;
-    font-size: 0.6rem;
-    letter-spacing: 0.3px;
-  }
-
-  .btr-location {
-    font-size: 0.7rem;
-    padding: 4px 0;
-    gap: 4px;
-  }
-
-  .btr-location-icon {
-    font-size: 10px;
-  }
-
-  .btr-contact-btn {
-    padding: 8px 8px;
-    min-height: 38px;
-    border-radius: 10px;
-    gap: 5px;
-  }
-
-  .btr-phone-icon {
-    font-size: 12px;
-  }
-
-  .btr-contact-text {
-    font-size: 0.7rem;
-  }
-
-  .btr-contact-label {
-    display: none; /* Hide "Call Now" on very small screens */
-  }
-
-  .btr-footer {
-    margin-top: 32px;
-    padding-top: 20px;
-  }
-
-  .btr-footer-text {
-    font-size: 0.8rem;
-  }
-
-  /* Skeleton adjustments */
-  .btr-card--skeleton {
-    min-height: 280px;
-  }
-
-  .btr-skeleton-badge {
-    top: 8px;
-    left: 8px;
-    width: 60px;
-    height: 20px;
-  }
-
-  .btr-skeleton-avatar {
-    width: 70px;
-    height: 70px;
-    margin-bottom: 12px;
-  }
-
-  .btr-skeleton-line {
-    height: 14px;
-    margin-bottom: 6px;
-  }
-
-  .btr-skeleton-button {
-    height: 38px;
-    margin-top: 16px;
-  }
-}
-
-/* Extra small devices (up to 380px) */
-@media (max-width: 380px) {
-  .btr-container {
-    padding: 0 8px;
-  }
-
-  .btr-grid {
-    gap: 8px;
-  }
-
-  .btr-card {
-    padding: 12px 6px 10px;
-    border-radius: 12px;
-  }
-
-  .btr-experience-badge {
-    padding: 2px 5px;
-    font-size: 0.55rem;
-  }
-
-  .btr-experience-badge span {
-    display: none; /* Hide text, show only icon on extremely small screens */
-  }
-
-  .btr-star-icon {
-    font-size: 9px;
-  }
-
-  .btr-avatar-wrapper {
-    width: 60px;
-    height: 60px;
-    margin-bottom: 10px;
-  }
-
-  .btr-avatar-placeholder {
-    font-size: 1.8rem;
-  }
-
-  .btr-verified-badge {
-    width: 20px;
-    height: 20px;
-    font-size: 10px;
-  }
-
-  .btr-butcher-name {
-    font-size: 0.8rem;
-  }
-
-  .btr-verified-icon {
-    font-size: 12px;
-  }
-
-  .btr-specialty span {
-    padding: 2px 4px;
-    font-size: 0.55rem;
-  }
-
-  .btr-location {
-    font-size: 0.65rem;
-  }
-
-  .btr-location span {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100px;
-  }
-
-  .btr-contact-btn {
-    padding: 6px 6px;
-    min-height: 34px;
-  }
-
-  .btr-contact-text {
-    font-size: 0.65rem;
-  }
-
-  .btr-phone-icon {
-    font-size: 11px;
-  }
-}
-
-/* Tablet devices (641px to 1024px) */
-@media (min-width: 641px) and (max-width: 1024px) {
-  .btr-section {
-    padding: 60px 0;
-  }
-
-  .btr-grid {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-  }
-
-  .btr-card {
-    padding: 20px 12px 18px;
-  }
-
-  .btr-avatar-wrapper {
-    width: 100px;
-    height: 100px;
-  }
-
-  .btr-butcher-name {
-    font-size: 1.2rem;
-  }
-
-  .btr-contact-label {
-    display: block;
-  }
-}
-
-/* Desktop (above 1024px) */
-@media (min-width: 1025px) {
-  .btr-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
-  }
-
-  .btr-card {
-    max-width: 280px;
   }
 }
