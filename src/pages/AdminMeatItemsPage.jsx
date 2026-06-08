@@ -57,6 +57,9 @@ const INITIAL_FORM = {
   imageUrl: '',
   isAvailable: true,
   isBestseller: false,
+  showInHeader: false,
+  titleTop: '',
+  titleBottom: '',
 }
 
 export default function AdminMeatItemsPage() {
@@ -490,7 +493,46 @@ export default function AdminMeatItemsPage() {
                       />
                       <span>Mark as Bestseller</span>
                     </label>
+                    <label className="amip-checkbox-label">
+                      <input
+                        type="checkbox"
+                        name="showInHeader"
+                        checked={form.showInHeader}
+                        onChange={handleInputChange}
+                      />
+                      <span>Show in Home Slider</span>
+                    </label>
                   </div>
+
+                  {form.showInHeader && (
+                    <div className="amip-form-group full" style={{ background: '#fef3c7', padding: '15px', borderRadius: '8px', marginTop: '10px' }}>
+                      <p style={{ fontSize: '0.8rem', fontWeight: 700, color: '#92400e', marginBottom: '10px' }}>Slider Text Configuration</p>
+                      <div className="amip-form-grid">
+                        <div className="amip-form-group">
+                          <label>Slider Top Title</label>
+                          <input
+                            type="text"
+                            name="titleTop"
+                            value={form.titleTop}
+                            onChange={handleInputChange}
+                            placeholder="e.g. Premium Quality"
+                            required={form.showInHeader}
+                          />
+                        </div>
+                        <div className="amip-form-group">
+                          <label>Slider Bottom Title</label>
+                          <input
+                            type="text"
+                            name="titleBottom"
+                            value={form.titleBottom}
+                            onChange={handleInputChange}
+                            placeholder="e.g. Mutton Chops"
+                            required={form.showInHeader}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="amip-form-actions">

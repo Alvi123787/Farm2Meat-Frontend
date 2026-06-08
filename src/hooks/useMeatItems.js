@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import api from '../services/api'
 
 export const useBestsellers = (limit = 6) => {
@@ -30,7 +30,7 @@ export const useMenuItems = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const fetchMenuItems = async () => {
+  const fetchMenuItems = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -43,11 +43,11 @@ export const useMenuItems = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     fetchMenuItems()
-  }, [])
+  }, [fetchMenuItems])
 
   return { grouped, loading, error, refetch: fetchMenuItems }
 }
@@ -56,7 +56,7 @@ export const useMeatItems = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  const getAllItems = async (params = {}) => {
+  const getAllItems = useCallback(async (params = {}) => {
     setLoading(true)
     try {
       const response = await api.get('/api/meat-items', { params })
@@ -67,9 +67,9 @@ export const useMeatItems = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
-  const getByCategory = async () => {
+  const getByCategory = useCallback(async () => {
     setLoading(true)
     try {
       const response = await api.get('/api/meat-items/by-category')
@@ -80,9 +80,9 @@ export const useMeatItems = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
-  const getBestsellers = async () => {
+  const getBestsellers = useCallback(async () => {
     setLoading(true)
     try {
       const response = await api.get('/api/meat-items/bestsellers')
@@ -93,7 +93,7 @@ export const useMeatItems = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   return { loading, error, getAllItems, getByCategory, getBestsellers }
 }
@@ -102,7 +102,7 @@ export const useAdminItems = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  const createItem = async (data) => {
+  const createItem = useCallback(async (data) => {
     setLoading(true)
     try {
       const response = await api.post('/api/meat-items', data)
@@ -113,9 +113,9 @@ export const useAdminItems = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
-  const updateItem = async (id, data) => {
+  const updateItem = useCallback(async (id, data) => {
     setLoading(true)
     try {
       const response = await api.put(`/api/meat-items/${id}`, data)
@@ -126,9 +126,9 @@ export const useAdminItems = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
-  const deleteItem = async (id) => {
+  const deleteItem = useCallback(async (id) => {
     setLoading(true)
     try {
       const response = await api.delete(`/api/meat-items/${id}`)
@@ -139,9 +139,9 @@ export const useAdminItems = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
-  const toggleAvailability = async (id) => {
+  const toggleAvailability = useCallback(async (id) => {
     setLoading(true)
     try {
       const response = await api.patch(`/api/meat-items/${id}/toggle-availability`)
@@ -152,9 +152,9 @@ export const useAdminItems = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
-  const toggleBestseller = async (id) => {
+  const toggleBestseller = useCallback(async (id) => {
     setLoading(true)
     try {
       const response = await api.patch(`/api/meat-items/${id}/toggle-bestseller`)
@@ -165,9 +165,9 @@ export const useAdminItems = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
-  const reorderItems = async (items) => {
+  const reorderItems = useCallback(async (items) => {
     setLoading(true)
     try {
       const response = await api.patch('/api/meat-items/reorder', { items })
@@ -178,7 +178,7 @@ export const useAdminItems = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   return {
     loading,

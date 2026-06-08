@@ -260,7 +260,7 @@ export default function AdminMeatDashboard() {
           )}
 
           {activeTab === 'orders' && (
-            <OrdersSection />
+            <OrdersSection onStatusUpdate={fetchDashboardStats} />
           )}
         </div>
       </main>
@@ -499,7 +499,7 @@ function MeatItemsManager({
             <option value="chicken">Chicken</option>
             <option value="fish">Fish</option>
           </select>
-          <a href="/admin/add-meat-item" className="ad-btn ad-btn-primary">
+          <a href="/admin/add-animal/meat" className="ad-btn ad-btn-primary">
             <FontAwesomeIcon icon={faPlus} /> Add New Item
           </a>
         </div>
@@ -581,7 +581,7 @@ function MeatItemsManager({
   )
 }
 
-function OrdersSection() {
+function OrdersSection({ onStatusUpdate }) {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -622,7 +622,7 @@ function OrdersSection() {
       toast.success(`Order marked as ${status}`)
       fetchOrders()
       // Also refresh dashboard stats since revenue might change
-      fetchDashboardStats()
+      if (onStatusUpdate) onStatusUpdate()
     } catch (err) {
       const msg = err.response?.data?.message || 'Failed to update status'
       toast.error(msg)

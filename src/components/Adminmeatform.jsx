@@ -35,6 +35,8 @@ const INITIAL = {
   isBestseller: false,
   isAvailable: true,
   showInHeader: false,
+  titleTop: '',
+  titleBottom: '',
   imageUrl: '',
   type: 'meat',
 }
@@ -141,6 +143,10 @@ export default function Adminmeatform() {
     if (!form.category)                 return showToast('error', 'Please select a category.')
     if (isNaN(priceNum) || priceNum <= 0) return showToast('error', 'Please enter a valid price.')
     if (!form.description.trim())       return showToast('error', 'Description is required.')
+    if (form.showInHeader && !form.imageUrl) return showToast('error', 'Image is required for Home Header Slider.')
+    if (form.showInHeader && (!form.titleTop.trim() || !form.titleBottom.trim())) {
+      return showToast('error', 'Slider titles are required when featured in header.')
+    }
 
     setSubmitting(true)
     try {
@@ -428,6 +434,41 @@ export default function Adminmeatform() {
             <p className="amf-helper" style={{ marginTop: '12px' }}>
               Enabling <strong>Main Header Slider</strong> will feature this item in the rotating slider on the top of the homepage.
             </p>
+
+            {form.showInHeader && (
+              <div className="amf-header-titles-box" style={{ marginTop: '16px', padding: '16px', background: 'rgba(212,175,55,0.05)', borderRadius: '12px', border: '1px dashed var(--gold)' }}>
+                <p style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--deep-red)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>✨</span> Slider Custom Titles (Required for Slider)
+                </p>
+                <div className="amf-row">
+                  <div className="amf-field">
+                    <label className="amf-label">Slider Top Title</label>
+                    <input
+                      className="amf-input"
+                      type="text"
+                      placeholder="e.g. Premium Quality"
+                      value={form.titleTop}
+                      onChange={e => set('titleTop', e.target.value)}
+                      required={form.showInHeader}
+                    />
+                  </div>
+                  <div className="amf-field">
+                    <label className="amf-label">Slider Bottom Title</label>
+                    <input
+                      className="amf-input"
+                      type="text"
+                      placeholder="e.g. Mutton Chops"
+                      value={form.titleBottom}
+                      onChange={e => set('titleBottom', e.target.value)}
+                      required={form.showInHeader}
+                    />
+                  </div>
+                </div>
+                <p className="amf-helper" style={{ marginTop: '8px', fontSize: '0.75rem' }}>
+                  These titles appear over the image in the home slider.
+                </p>
+              </div>
+            )}
 
             <div style={{ marginTop: '24px' }}>
               {/* Availability */}
