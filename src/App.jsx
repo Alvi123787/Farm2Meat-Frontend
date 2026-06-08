@@ -46,6 +46,7 @@ import MenuPage from './components/MenuPage'
 import FormSelection from './components/FormSelection'
 import AdminMeatDashboard from './pages/AdminMeatDashboard'
 import AdminMeatItemsPage from './pages/AdminMeatItemsPage'
+import AdminEditMeatItem from './pages/AdminEditMeatItem'
 
 
 
@@ -121,6 +122,7 @@ function AppShell() {
             <Route path="analytics" element={withPageTitle(<UserAnalytics />, 'User Analytics')} />
             <Route path="meat-dashboard" element={withPageTitle(<AdminMeatDashboard />, 'Meat Dashboard')} />
             <Route path="meat-items" element={withPageTitle(<AdminMeatItemsPage />, 'Meat Items')} />
+            <Route path="edit-meat/:id" element={withPageTitle(<AdminEditMeatItem />, 'Edit Meat Item')} />
           </Route>
 
           <Route path="/add-animal" element={<Navigate to="/admin/add-animal" replace />} />

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useMeatItems, useAdminItems } from '../hooks/useMeatItems'
 import api from '../services/api'
 import { toast } from 'react-hot-toast'
@@ -64,6 +65,7 @@ const INITIAL_FORM = {
 
 export default function AdminMeatItemsPage() {
   const { role, token, loading: authLoading, logout } = useAuth()
+  const navigate = useNavigate()
   
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
@@ -72,7 +74,6 @@ export default function AdminMeatItemsPage() {
   
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [modalMode, setModalMode] = useState('add') // 'add' or 'edit'
   const [form, setForm] = useState(INITIAL_FORM)
   const [submitting, setSubmitting] = useState(false)
   const [imagePreview, setImagePreview] = useState(null)
@@ -123,20 +124,13 @@ export default function AdminMeatItemsPage() {
 
   // Handlers
   const handleOpenAdd = () => {
-    setModalMode('add')
     setForm(INITIAL_FORM)
     setImagePreview(null)
     setIsModalOpen(true)
   }
 
   const handleOpenEdit = (item) => {
-    setModalMode('edit')
-    setForm({
-      ...item,
-      expirationDate: item.expirationDate ? new Date(item.expirationDate).toISOString().split('T')[0] : ''
-    })
-    setImagePreview(item.imageUrl)
-    setIsModalOpen(true)
+    navigate(`/admin/edit-meat/${item._id}`)
   }
 
   const handleCloseModal = () => {
@@ -189,13 +183,8 @@ export default function AdminMeatItemsPage() {
 
     setSubmitting(true)
     try {
-      if (modalMode === 'add') {
-        await createItem(form)
-        toast.success('Item added successfully')
-      } else {
-        await updateItem(form._id, form)
-        toast.success('Item updated successfully')
-      }
+      await createItem(form)
+      toast.success('Item added successfully')
       handleCloseModal()
       fetchItems()
     } catch (err) {
@@ -375,8 +364,8 @@ export default function AdminMeatItemsPage() {
             <div className="amip-modal-form" onClick={e => e.stopPropagation()}>
               <div className="amip-modal-header">
                 <h3>
-                  <FontAwesomeIcon icon={modalMode === 'add' ? faPlus : faEdit} />
-                  {modalMode === 'add' ? 'Add New Meat Item' : `Edit: ${form.name}`}
+                  <FontAwesomeIcon icon={faPlus} />
+                  Add New Meat Item
                 </h3>
                 <button className="amip-close-btn" onClick={handleCloseModal}>
                   <FontAwesomeIcon icon={faTimes} />
@@ -550,7 +539,7 @@ export default function AdminMeatItemsPage() {
                     {submitting ? 'Processing...' : (
                       <>
                         <FontAwesomeIcon icon={faSave} />
-                        {modalMode === 'add' ? ' Create Product' : ' Save Changes'}
+                        Create Product
                       </>
                     )}
                   </button>

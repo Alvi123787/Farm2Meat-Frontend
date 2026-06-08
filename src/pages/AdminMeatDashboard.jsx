@@ -461,7 +461,7 @@ function DashboardOverview({ dashboardData, loading, onRefresh }) {
                   </div>
                   <button 
                     className="ad-alert-action"
-                    onClick={() => window.location.href=`/admin/edit-meat-item/${item._id}`}
+                    onClick={() => window.location.href=`/admin/edit-meat/${item._id}`}
                   >
                     Update
                   </button>
@@ -574,7 +574,7 @@ function MeatItemsManager({
                     </td>
                     <td>
                       <div className="ad-actions">
-                        <a href={`/admin/edit-meat-item/${item._id}`} className="ad-action-link" title="Edit">
+                        <a href={`/admin/edit-meat/${item._id}`} className="ad-action-link" title="Edit">
                           <FontAwesomeIcon icon={faEdit} />
                         </a>
                         <button
