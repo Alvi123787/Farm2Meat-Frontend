@@ -97,8 +97,13 @@ export default function AdminMeatDashboard() {
         setLastUpdated(new Date(res.data.updatedAt))
       }
     } catch (err) {
-      toast.error('Failed to fetch dashboard metrics')
-      console.error(err)
+      const errorMsg = err.response?.data?.message || err.message
+      if (err.response?.status === 503) {
+        toast.error('Server is temporarily unavailable. Retrying...')
+      } else {
+        toast.error(`Failed to fetch dashboard metrics: ${errorMsg}`)
+      }
+      console.error('Dashboard Stats Error:', err)
     } finally {
       setStatsLoading(false)
     }
@@ -110,10 +115,21 @@ export default function AdminMeatDashboard() {
   }, [fetchItems, fetchDashboardStats])
 
   useEffect(() => {
-    refreshAll()
+    let isMounted = true
+    const loadData = async () => {
+      if (isMounted) await refreshAll()
+    }
+    loadData()
+
     // Auto refresh every 5 minutes
-    const interval = setInterval(refreshAll, 5 * 60 * 1000)
-    return () => clearInterval(interval)
+    const interval = setInterval(() => {
+      if (isMounted) refreshAll()
+    }, 5 * 60 * 1000)
+
+    return () => {
+      isMounted = false
+      clearInterval(interval)
+    }
   }, [refreshAll])
 
   // Derived stats for the "Items" tab
@@ -584,17 +600,20 @@ function MeatItemsManager({
 function OrdersSection({ onStatusUpdate }) {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   const fetchOrders = useCallback(async () => {
     setLoading(true)
+    setError(null)
     try {
-      const res = await api.get('/api/inquiries/all')
+      const res = await api.get('/api/inquiries/meat')
       if (res.data.success) {
-        // Filter for meat orders only
-        setOrders(res.data.data.filter(o => o.itemType === 'meat'))
+        setOrders(res.data.data)
       }
     } catch (err) {
-      toast.error('Failed to load orders')
+      const msg = err.response?.data?.message || 'Failed to load meat orders'
+      setError(msg)
+      toast.error(msg)
     } finally {
       setLoading(false)
     }

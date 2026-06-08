@@ -89,16 +89,23 @@ export default function AdminMeatItemsPage() {
       const res = await getAllItems({ limit: 500 })
       setItems(res?.data || [])
     } catch (err) {
-      toast.error('Failed to fetch meat items')
+      const errorMsg = err.response?.data?.message || err.message
+      if (err.response?.status === 503) {
+        toast.error('Inventory service temporarily unavailable. Retrying...')
+      } else {
+        toast.error(`Failed to fetch meat items: ${errorMsg}`)
+      }
     } finally {
       setLoading(false)
     }
   }, [getAllItems])
 
   useEffect(() => {
+    let isMounted = true
     if (token && role === 'admin') {
-      fetchItems()
+      if (isMounted) fetchItems()
     }
+    return () => { isMounted = false }
   }, [fetchItems, token, role])
 
   // RBAC Guard
