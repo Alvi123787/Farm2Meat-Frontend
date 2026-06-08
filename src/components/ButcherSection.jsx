@@ -21,13 +21,14 @@ const ButcherSection = () => {
             <FaUsers className="btr-cta-icon" />
           </div>
           
-          <h2 className="btr-cta-title">Come, Join Us!</h2>
+          <h2 className="btr-cta-title">Professional Butcher Services</h2>
           
           <p className="btr-cta-description">
-            Whether you're looking for the finest meat for your kitchen or healthy livestock 
-            for your farm, MeatByAlvi is your trusted partner. Experience the difference 
-            that farm-to-table integrity makes. Contact us today to place an order or 
-            learn more about our processes.
+            Experience premium, halal-certified meat processing right at your doorstep. 
+            Our expert butchers are available 24/7 to provide precision cutting, 
+            hygienic handling, and professional packaging services. Whether it's for 
+            daily needs or special occasions, we guarantee master-level craftsmanship 
+            and total convenience.
           </p>
           
           <div className="btr-cta-actions">
