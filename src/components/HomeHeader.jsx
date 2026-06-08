@@ -45,14 +45,17 @@ const HomeHeader = () => {
       try {
         const response = await api.get('/api/meat-items?showInHeader=true&isAvailable=true');
         if (response.data.success && response.data.data.length > 0) {
-          const dynamicSlides = response.data.data.map(item => ({
-            src: item.imageUrl,
-            alt: item.name,
-            badge: item.badge || "Featured",
-            titleTop: item.name.split(' ').slice(0, 2).join(' '),
-            titleBottom: item.name.split(' ').slice(2).join(' ') || "Special",
-            id: item._id
-          }));
+          const dynamicSlides = response.data.data.map(item => {
+            const nameParts = (item.name || "").trim().split(' ');
+            return {
+              src: item.imageUrl || HERO_IMAGES[0].src,
+              alt: item.name || "Meat Product",
+              badge: item.badge || "Premium Choice",
+              titleTop: nameParts.length > 1 ? nameParts.slice(0, 2).join(' ') : (nameParts[0] || "Quality"),
+              titleBottom: nameParts.length > 2 ? nameParts.slice(2).join(' ') : (nameParts.length === 2 ? nameParts[1] : "Meat"),
+              id: item._id
+            };
+          });
           setSlides(dynamicSlides);
         }
       } catch (error) {
