@@ -199,16 +199,8 @@ const Confirmation = () => {
                 <span className="status-text">Your order has been </span>
                 <span className="status-highlight">confirmed</span>
               </div>
-              <p>We've received your order and will process it right away</p>
-            </div>
-
-            {/* Order ID Card */}
-            <div className="order-id-card">
-              <div className="order-id-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="currentColor" strokeWidth="1.5"/>
-                  <path d="M22 6L12 13L2 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                </svg>
+              <p>We've received your order and will process it right away.</p>
+              <p className="quality-guarantee-note">If the quality of your meat or livestock does not meet expectations, we will issue a refund with a valid reason. Your satisfaction and trust are our top priorities.</p>
               </div>
               <div className="order-id-content">
                 <span className="order-id-label">Order ID</span>
