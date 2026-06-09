@@ -314,7 +314,7 @@ const PrivacyPolicy = () => {
                     <FaShieldAlt className="pp-sidebar-commitment-icon" />
                     <div>
                       <strong>Our Commitment</strong>
-                      <p>OnlyMeat is committed to protecting your data with the highest standards of security and transparency.</p>
+                      <p>MeatByAlvi is committed to protecting your data with the highest standards of security and transparency.</p>
                     </div>
                   </div>
                 </aside>
@@ -327,7 +327,7 @@ const PrivacyPolicy = () => {
                     <div className="pp-intro-icon">🔒</div>
                     <div className="pp-intro-text">
                       <p>
-                        <strong>OnlyMeat</strong> is committed to protecting your privacy.
+                        <strong>MeatByAlvi</strong> is committed to protecting your privacy.
                         This policy explains how we collect, use, and safeguard your personal
                         information when you use our website and services.
                       </p>
@@ -409,7 +409,7 @@ const PrivacyPolicy = () => {
                             <FaCheckCircle className="pp-callout-icon" />
                             <span>
                               To exercise any of your rights, contact us via WhatsApp at
-                              {PHONE_DISPLAY} or email onlymeat@gmail.com. We will respond
+                              {PHONE_DISPLAY} or email MeatByAlvi@gmail.com. We will respond
                               within 7 business days.
                             </span>
                           </div>
@@ -439,7 +439,7 @@ const PrivacyPolicy = () => {
                         <FaPhoneAlt />
                         <span>Call Us</span>
                       </a>
-                      <a href="mailto:onlymeat@gmail.com" className="pp-contact-link pp-contact-link--email">
+                      <a href="mailto:MeatByAlvi@gmail.com" className="pp-contact-link pp-contact-link--email">
                         <FaEnvelope />
                         <span>Email</span>
                       </a>
@@ -466,3 +466,4 @@ const PrivacyPolicy = () => {
 }
 
 export default PrivacyPolicy
+

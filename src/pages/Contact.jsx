@@ -222,7 +222,7 @@ const Contact = () => {
                   {/* Google Map */}
                   <div className="cp-map-container">
                     <iframe
-                      title="OnlyMeat Location"
+                      title="MeatByAlvi Location"
                       src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d55676.27637825424!2d70.2895822!3d28.4209205!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39375d22992a57d5%3A0xf0e1eb8f8e1ec6c7!2sRahim%20Yar%20Khan%2C%20Punjab%2C%20Pakistan!5e0!3m2!1sen!2s!4v1700000000000!5m2!1sen!2s"
                       width="100%"
                       height="100%"
@@ -440,3 +440,4 @@ const Contact = () => {
 }
 
 export default Contact
+

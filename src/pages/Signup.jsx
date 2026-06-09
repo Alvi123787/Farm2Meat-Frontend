@@ -206,13 +206,13 @@ const Signup = () => {
             </div>
 
             <h1 className="su-hero-title">
-              Join the most trusted
-              <span className="su-hero-title-accent"> livestock community</span>
+              Premium Halal Meat,
+              <span className="su-hero-title-accent"> Trusted & Fresh</span>
             </h1>
 
             <p className="su-hero-desc">
-              Create your account and get instant access to verified animals, 
-              professional butchers, and seamless delivery across Rahim Yar Khan.
+              Join our community to access the finest quality meat, directly from farm to table,
+              with verified suppliers and express delivery across Rahim Yar Khan.
             </p>
 
             <div className="su-hero-features">
@@ -254,7 +254,7 @@ const Signup = () => {
                   alt="MeatByAlvi" 
                   className="su-brand-logo"
                 />
-                <span className="su-brand-text">Only<span>Meat</span></span>
+                <span className="su-brand-text">Meat<span>ByAlvi</span></span>
               </div>
 
               <h2 className="su-title">Create your account</h2>

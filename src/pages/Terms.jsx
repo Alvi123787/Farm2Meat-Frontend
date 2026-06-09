@@ -253,13 +253,13 @@ const Terms = () => {
                     <div className="tp-intro-icon">📜</div>
                     <div className="tp-intro-text">
                       <p>
-                        Welcome to <strong>OnlyMeat</strong>. By using our website and services,
+                        Welcome to <strong>MeatByAlvi</strong>. By using our website and services,
                         you agree to the following terms and conditions. Please read them carefully
                         before proceeding with any transaction on our platform.
                       </p>
                       <p>
                         These terms apply to all users — buyers, sellers, and visitors —
-                        accessing <strong>onlymeat.com</strong> from Rahim Yar Khan and beyond.
+                        accessing <strong>meatbyalvi.com</strong> from Rahim Yar Khan and beyond.
                       </p>
                     </div>
                   </div>
@@ -310,7 +310,7 @@ const Terms = () => {
                         <FaPhoneAlt />
                         <span>Call Us</span>
                       </a>
-                      <a href="mailto:onlymeat@gmail.com" className="tp-contact-link tp-contact-link--email">
+                      <a href="mailto:MeatByAlvi@gmail.com" className="tp-contact-link tp-contact-link--email">
                         <FaEnvelope />
                         <span>Email</span>
                       </a>
@@ -337,3 +337,4 @@ const Terms = () => {
 }
 
 export default Terms
+

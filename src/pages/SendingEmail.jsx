@@ -389,7 +389,7 @@ const SendingEmail = () => {
               className="f2m-form-control"
               value={senderName}
               onChange={(e) => setSenderName(e.target.value)}
-              placeholder="OnlyMeat"
+              placeholder="MeatByAlvi"
               disabled
             />
           </div>
@@ -520,4 +520,5 @@ const SendingEmail = () => {
 };
 
 export default SendingEmail;
+
 

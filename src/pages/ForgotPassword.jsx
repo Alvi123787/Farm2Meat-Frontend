@@ -85,7 +85,7 @@ const ForgotPassword = () => {
             <div className="logo-visibility-wrapper" style={{ padding: '8px' }}>
               <img 
                 src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-                alt="OnlyMeat Logo" 
+                alt="MeatByAlvi Logo" 
                 style={{ width: '40px', height: '40px', objectFit: 'contain' }}
               />
             </div>

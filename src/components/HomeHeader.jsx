@@ -123,7 +123,7 @@ const HomeHeader = () => {
     const messages = {
       manual: "On iPhone, tap Share → Add to Home Screen",
       dismissed: "You can install anytime from the menu",
-      accepted: "Installing OnlyMeat...",
+      accepted: "Installing MeatByAlvi...",
       installed: "Already installed on this device",
     };
     setInstallFeedback(messages[outcome] || "Install not available in this browser");

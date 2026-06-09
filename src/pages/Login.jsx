@@ -153,7 +153,7 @@ const Login = () => {
 
             <h1 className="lg-hero-title">
               Welcome back to
-              <span className="lg-hero-title-accent"> OnlyMeat</span>
+              <span className="lg-hero-title-accent"> MeatByAlvi</span>
             </h1>
 
             <p className="lg-hero-desc">
@@ -200,7 +200,7 @@ const Login = () => {
                   alt="MeatByAlvi" 
                   className="lg-brand-logo"
                 />
-                <span className="lg-brand-text">Only<span>Meat</span></span>
+                <span className="lg-brand-text">Meat<span>ByAlvi</span></span>
               </div>
 
               <h2 className="lg-title">Sign in to your account</h2>

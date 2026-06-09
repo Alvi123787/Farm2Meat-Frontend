@@ -489,7 +489,7 @@ export default function OrderExperienceModal({
         rating,
         message: extraMessage.trim(),
         name: customerName ? customerName.trim() : 'Customer',
-        email: email ? email.trim().toLowerCase() : 'no-email@onlymeat.com',
+        email: email ? email.trim().toLowerCase() : 'no-email@MeatByAlvi.com',
         userId: userId || undefined,
       })
       setSuccess(true)

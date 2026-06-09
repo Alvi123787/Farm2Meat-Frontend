@@ -299,7 +299,7 @@ export default function About() {
                 What We <span className="abt-section-highlight">Offer</span>
               </h2>
               <p className="abt-section-subtitle">
-                At OnlyMeat, you get the best experience — from start to finish
+                At MeatByAlvi, you get the best experience — from start to finish
               </p>
               <div className="abt-section-divider">
                 <span className="abt-sec-div-dot"></span>
@@ -340,7 +340,7 @@ export default function About() {
                 Our <span className="abt-section-highlight">Core Values</span>
               </h2>
               <p className="abt-section-subtitle">
-                These are the principles on which the foundation of OnlyMeat was laid
+                These are the principles on which the foundation of MeatByAlvi was laid
               </p>
               <div className="abt-section-divider">
                 <span className="abt-sec-div-dot"></span>
@@ -403,7 +403,7 @@ export default function About() {
                   <div className="abt-founder-img-wrap">
                     <img
                       src="../uploads/founder.jpg"
-                      alt="Founder of OnlyMeat"
+                      alt="Founder of MeatByAlvi"
                       className="abt-founder-img"
                     />
                     <div className="abt-founder-img-border"></div>
@@ -412,7 +412,7 @@ export default function About() {
 
                   <div className="abt-founder-name-card">
                     <h3 className="abt-founder-name">Muhammad Ahmad</h3>
-                    <span className="abt-founder-role">Founder &amp; CEO — OnlyMeat</span>
+                    <span className="abt-founder-role">Founder &amp; CEO — MeatByAlvi</span>
                     <div className="abt-founder-contact">
                       <a href={PHONE_LINK} className="abt-founder-contact-item">
                         <FaPhoneAlt /> <span>{PHONE_DISPLAY}</span>
@@ -445,7 +445,7 @@ export default function About() {
                     This isn't just a business for me; it's a lifelong commitment to my community. I consider every customer a guest at my own table, and ensuring your family receives the safest, freshest, and most ethical meat is my greatest priority. With your trust, we are raising the bar for the entire livestock industry in Pakistan.
                   </p>
                   <p className="abt-founder-text abt-founder-sign">
-                    — Muhammad Ahmad, Founder OnlyMeat
+                    — Muhammad Ahmad, Founder MeatByAlvi
                   </p>
                 </div>
               </div>
@@ -492,3 +492,4 @@ export default function About() {
     </div>
   )
 }
+

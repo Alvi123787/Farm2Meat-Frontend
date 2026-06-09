@@ -68,7 +68,7 @@ export default function ResetPassword() {
                 style={{ width: '40px', height: '40px', objectFit: 'contain' }}
               />
             </div>
-            <span style={{ marginLeft: '14px', color: 'white' }}>OnlyMeat</span>
+            <span style={{ marginLeft: '14px', color: 'white' }}>MeatByAlvi</span>
           </div>
           <div className="auth-quote">
             <h2>Reset Password</h2>
@@ -143,3 +143,4 @@ export default function ResetPassword() {
     </div>
   )
 }
+
