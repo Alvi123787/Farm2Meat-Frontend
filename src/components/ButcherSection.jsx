@@ -1,16 +1,16 @@
 import React from 'react';
-import { FaWhatsapp, FaArrowRight, FaUsers } from 'react-icons/fa';
+import { FaWhatsapp, FaPhoneAlt, FaUsers } from 'react-icons/fa';
 import '../css/ButcherSection.css';
-import { WHATSAPP_NUMBER } from '../constants/contact';
+import { WHATSAPP_NUMBER, PHONE_LINK } from '../constants/contact';
 
 const ButcherSection = () => {
   const handleWhatsApp = () => {
-    const msg = "Assalam o Alaikum! I'm interested in your premium meat and livestock services. Can you provide more details?";
+    const msg = "Assalam o Alaikum! I'm interested in your professional butcher services. Can you provide more details?";
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
-  const handleContact = () => {
-    window.location.href = '/contact';
+  const handleCall = () => {
+    window.location.href = PHONE_LINK;
   };
 
   return (
@@ -32,8 +32,8 @@ const ButcherSection = () => {
           </p>
           
           <div className="btr-cta-actions">
-            <button className="btr-btn-contact" onClick={handleContact}>
-              Contact Us <FaArrowRight className="btr-btn-arrow" />
+            <button className="btr-btn-contact" onClick={handleCall}>
+              <FaPhoneAlt className="btr-call-icon" /> Call Now
             </button>
             <button className="btr-btn-whatsapp" onClick={handleWhatsApp}>
               <FaWhatsapp className="btr-wa-icon" /> Chat on WhatsApp

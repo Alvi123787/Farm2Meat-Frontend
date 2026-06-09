@@ -47,6 +47,7 @@ import FormSelection from './components/FormSelection'
 import AdminMeatDashboard from './pages/AdminMeatDashboard'
 import AdminMeatItemsPage from './pages/AdminMeatItemsPage'
 import AdminEditMeatItem from './pages/AdminEditMeatItem'
+import ScrollToTop from './components/ScrollToTop'
 
 
 
@@ -71,6 +72,7 @@ function AppShell() {
   return (
     <AuthProvider>
       <CartProvider>
+        <ScrollToTop />
         <Toaster position="top-right" reverseOrder={false} />
         <SplashScreen isVisible={showSplash} />
         {location.pathname === '/' && !showSplash && <WelcomeModal />}

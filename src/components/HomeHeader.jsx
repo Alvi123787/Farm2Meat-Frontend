@@ -44,23 +44,30 @@ const HomeHeader = () => {
     const fetchHeaderItems = async () => {
       try {
         const response = await api.get('/api/meat-items?showInHeader=true&isAvailable=true');
-        if (response.data.success && response.data.data.length > 0) {
+        if (response.data.success && Array.isArray(response.data.data) && response.data.data.length > 0) {
           const dynamicSlides = response.data.data.map(item => ({
-            src: item.imageUrl,
-            alt: item.name,
-            badge: item.badge || "Featured",
-            titleTop: item.titleTop || item.name.split(' ').slice(0, 2).join(' '),
-            titleBottom: item.titleBottom || item.name.split(' ').slice(2).join(' ') || "Special",
-            id: item._id
+            src: item.imageUrl || HERO_IMAGES[0].src,
+            alt: item.name || 'Featured meat item',
+            badge: item.badge || 'Featured',
+            titleTop: item.titleTop || (item.name ? item.name.split(' ').slice(0, 2).join(' ') : 'Premium'),
+            titleBottom: item.titleBottom || (item.name ? item.name.split(' ').slice(2).join(' ') : 'Special'),
+            id: item._id || `${item.name}-${Math.random()}`
           }));
           setSlides(dynamicSlides);
+          setActiveSlide(0);
         }
       } catch (error) {
-        console.error("Error fetching header items:", error);
+        console.error('Error fetching header items:', error);
       }
     };
     fetchHeaderItems();
   }, []);
+
+  useEffect(() => {
+    if (activeSlide >= slides.length) {
+      setActiveSlide(0);
+    }
+  }, [activeSlide, slides.length]);
 
   useEffect(() => {
     const timer = setTimeout(() => setLoaded(true), 100);
@@ -130,7 +137,7 @@ const HomeHeader = () => {
       ? "Add to Home Screen"
       : "Install App";
 
-  const currentSlide = slides[activeSlide];
+  const currentSlide = slides[activeSlide] || slides[0] || HERO_IMAGES[0];
 
   return (
     <section
@@ -283,9 +290,9 @@ const HomeHeader = () => {
       </div>
 
       {/* Slider Dots */}
-      {HERO_IMAGES.length > 1 && (
+      {slides.length > 1 && (
         <div className="hero__dots" role="tablist" aria-label="Background slides">
-          {HERO_IMAGES.map((image, index) => (
+          {slides.map((image, index) => (
             <button
               key={`dot-${index}`}
               type="button"
