@@ -86,7 +86,7 @@ export default function AboutPreview({
           <div className="col-12">
             <span className="ap-badge">ABOUT US</span>
             <h2 className="ap-title">
-              Why Choose <span className="ap-title-highlight">OnlyMeat</span>?
+              Why Choose <span className="ap-title-highlight">MeatByAlvi</span>?
             </h2>
             <div className="ap-title-divider">
               <span className="ap-divider-dot"></span>
