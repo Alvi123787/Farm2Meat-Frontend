@@ -89,7 +89,7 @@ const Navbar = () => {
     { name: 'Home', icon: faHouse, path: '/' },
     { name: 'Shop', icon: faStore, path: '/shop' },
     { name: 'Cart', icon: faCartShopping, path: '/cart', isCart: true },
-    { name: 'Contact', icon: faEnvelope, path: '/contact' },
+    { name: 'Feedback', icon: FaCommentAlt, path: '/feedback' },
     ...(role === 'admin' ? [{ name: 'Admin', icon: faUserShield, path: '/admin' }] : []),
     { name: 'Account', icon: faUserShield, path: '#account', isAccount: true },
   ], [role]);

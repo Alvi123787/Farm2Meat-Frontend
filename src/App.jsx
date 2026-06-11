@@ -5,7 +5,7 @@ import SplashScreen from './components/SplashScreen'
 import Home from './pages/Home'
 import About from './pages/About'
 import Shop from './pages/Shop'
-import Contact from './pages/Contact'
+import FeedbackPage from './pages/FeedbackPage'
 import Footer from './components/Footer'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
@@ -83,7 +83,7 @@ function AppShell() {
           <Route path="/how-it-works" element={withPageTitle(<HowItWorks />, 'How It Works')} />
           <Route path="/shop" element={withPageTitle(<Shop />, 'Products')} />
           <Route path="/all-reviews" element={withPageTitle(<AllReviews />, 'Reviews')} />
-          <Route path="/contact" element={withPageTitle(<Contact />, 'Contact')} />
+          <Route path="/feedback" element={withPageTitle(<FeedbackPage />, 'Feedback')} />
           <Route path="/cart" element={withPageTitle(<Cart />, 'Cart')} />
           <Route path="/checkout" element={withPageTitle(<Checkout />, 'Checkout')} />
           <Route path="/order-success" element={withPageTitle(<OrderSuccess />, 'Order Success')} />
