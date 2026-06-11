@@ -6,7 +6,7 @@ import {
   faHouse,
   faStore,
   faCartShopping,
-  faEnvelope,
+  FaCommentAlt,
   faUserShield,
 } from '@fortawesome/free-solid-svg-icons';
 import { Link, useLocation } from 'react-router-dom';
