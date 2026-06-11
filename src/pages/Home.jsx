@@ -8,6 +8,7 @@ import ButcherSection from '../components/ButcherSection'
 import AboutPreview from '../components/AboutPreview'
 import HowItWorks from '../components/HowItWorks'
 import ReviewsSection from '../components/ReviewsSection'
+import FAQSection from '../components/FAQSection'
 
 const Home = () => {
   return (
@@ -20,6 +21,7 @@ const Home = () => {
         <HomeCategory />
         <ButcherSection />
         <AboutPreview />
+        <FAQSection />
         <ReviewsSection mode="home" limit={4} />
         <HowItWorks />
       </div>
