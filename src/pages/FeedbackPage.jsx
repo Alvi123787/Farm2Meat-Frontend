@@ -23,6 +23,7 @@ import {
   WHATSAPP_DISPLAY,
   WHATSAPP_LINK,
 } from '../constants/contact'
+import feedbackService from '../services/feedbackService'
 
 const feedbackStats = [
   {
@@ -75,6 +76,7 @@ const FeedbackPage = () => {
   })
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const pageRef = useRef(null)
 
   useEffect(() => {
@@ -87,24 +89,27 @@ const FeedbackPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setErrorMessage('')
     setIsSubmitting(true)
 
-    // Build WhatsApp message as feedback
-    const message = `Assalam o Alaikum!%0A%0A*New Feedback from Website*%0A%0A👤 Name: ${formData.fullName}%0A📞 Phone: ${formData.phone}%0A%0A💬 Feedback:%0A${formData.feedback}`
+    try {
+      await feedbackService.sendFeedback({
+        fullName: formData.fullName,
+        phone: formData.phone,
+        feedback: formData.feedback
+      })
 
-    setTimeout(() => {
-      window.open(
-        `${WHATSAPP_LINK}?text=${message}`,
-        '_blank'
-      )
-      setIsSubmitting(false)
       setIsSubmitted(true)
       setFormData({ fullName: '', phone: '', feedback: '' })
-
       setTimeout(() => setIsSubmitted(false), 5000)
-    }, 800)
+    } catch (error) {
+      console.error('Feedback submit failed:', error)
+      setErrorMessage(error?.response?.data?.message || error.message || 'Could not send feedback. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -343,7 +348,7 @@ const FeedbackPage = () => {
                         ) : (
                           <>
                             <FaPaperPlane className="cp-submit-icon" />
-                            <span>Send Feedback via WhatsApp</span>
+                            <span>Submit Feedback</span>
                           </>
                         )}
                       </button>
@@ -353,6 +358,12 @@ const FeedbackPage = () => {
                         <div className="cp-form-success">
                           <FaCheckCircle className="cp-success-icon" />
                           <span>Thank you! Your feedback has been sent. We truly appreciate it.</span>
+                        </div>
+                      )}
+
+                      {errorMessage && (
+                        <div className="cp-form-error" style={{ color: '#b91c1c', fontWeight: 600 }}>
+                          {errorMessage}
                         </div>
                       )}
 

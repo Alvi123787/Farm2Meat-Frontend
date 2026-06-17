@@ -499,7 +499,7 @@ const Cart = () => {
                                   <button
                                     className="cart-qty-btn"
                                     onClick={() => handleUpdateQuantity(item._id, 1)}
-                                    disabled={(item.quantity || 1) >= 20}
+                                    disabled={(item.quantity || 1) >= (item.availableStock || 20)}
                                     aria-label="Increase quantity"
                                   >
                                     <FaPlus />
@@ -508,6 +508,16 @@ const Cart = () => {
                               ) : (
                                 <div className="cart-item-qty cart-item-qty--fixed">
                                   <span className="cart-qty-value">Qty: 1</span>
+                                </div>
+                              )}
+
+                              {isMultiQuantityItem(item) && (item.availableStock !== undefined && item.availableStock !== 20) && (
+                                <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '4px' }}>
+                                  {item.availableStock > 0 ? (
+                                    <>Only {item.availableStock} in stock</>
+                                  ) : (
+                                    <>Out of stock</>
+                                  )}
                                 </div>
                               )}
 

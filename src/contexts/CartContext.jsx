@@ -67,7 +67,8 @@ export const CartProvider = ({ children }) => {
       price: product.price || '0',
       images: product.images || [],
       imageUrl: product.imageUrl || '',
-      stock: product.status || 'available',
+      stock: product.stock || 'available',
+      availableStock: product.stock || (typeof product.stock === 'number' ? product.stock : 0),
       category: product.category || '',
       farmLocation: product.farmLocation || '',
       city: product.city || '',
@@ -82,11 +83,13 @@ export const CartProvider = ({ children }) => {
     if (existingIndex >= 0) {
       // If already in cart
       if (isMeat) {
-        // Increment quantity for meat items
+        // Increment quantity for meat items, respecting available stock
         const existingItem = newCart[existingIndex];
+        const maxQty = typeof newItem.availableStock === 'number' ? newItem.availableStock : 20;
         newCart[existingIndex] = { 
           ...existingItem, 
-          quantity: Math.min(20, (existingItem.quantity || 1) + 1) 
+          quantity: Math.min(maxQty, (existingItem.quantity || 1) + 1),
+          availableStock: newItem.availableStock
         };
       } else {
         // Just ensure it's there for single purchase livestock
@@ -109,7 +112,7 @@ export const CartProvider = ({ children }) => {
     const newCart = cart.map(item => {
       if (item._id === itemId) {
         const isMeat = item.itemType === 'meat' || item.purchaseMode === 'multi';
-        const maxQty = isMeat ? 20 : 1;
+        const maxQty = isMeat ? (typeof item.availableStock === 'number' ? item.availableStock : 20) : 1;
         const newQty = Math.max(1, Math.min(maxQty, (item.quantity || 1) + delta));
         return { ...item, quantity: newQty };
       }
