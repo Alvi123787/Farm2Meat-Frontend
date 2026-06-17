@@ -233,18 +233,14 @@ export default function Adminmeatform() {
 
               <div className="amf-field">
                 <label className="amf-label">Card Badge</label>
-                <div className="amf-select-wrap">
-                  <select
-                    className="amf-select"
-                    value={form.badge}
-                    onChange={e => set('badge', e.target.value)}
-                  >
-                    <option value="">Select a badge…</option>
-                    {BADGES.map(b => (
-                      <option key={b} value={b}>{b}</option>
-                    ))}
-                  </select>
-                </div>
+                <input
+                  className="amf-input"
+                  type="text"
+                  placeholder="e.g. Best Seller, Premium, Fresh"
+                  value={form.badge}
+                  onChange={e => set('badge', e.target.value)}
+                  maxLength={40}
+                />
               </div>
             </div>
 
