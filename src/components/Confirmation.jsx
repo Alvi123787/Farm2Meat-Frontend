@@ -170,7 +170,6 @@ const Confirmation = () => {
         orderId={orderData.orderId}
         customerName={orderData.customer.name}
         email={s.email || ''}
-        orderData={orderData}
       />
 
       <div className="conf-container">

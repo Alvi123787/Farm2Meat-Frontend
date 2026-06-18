@@ -3,7 +3,6 @@ import { motion, AnimatePresence, useAnimation } from 'framer-motion'
 import { jwtDecode } from 'jwt-decode'
 import '../css/OrderExperienceModal.css'
 import { reviewsService } from '../services/reviewsService'
-import { WHATSAPP_NUMBER } from '../constants/contact'
 import { formatPrice } from '../utils/priceUtils'
 
 /* ── data ────────────────────────────────────────────── */
@@ -366,7 +365,6 @@ export default function OrderExperienceModal({
   orderId,
   customerName,
   email,
-  orderData, // Pass full order data for WhatsApp
 }) {
   const [rating, setRating] = useState(null)
   const [extraMessage, setExtraMessage] = useState('')
@@ -376,7 +374,6 @@ export default function OrderExperienceModal({
   const [success, setSuccess] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
   const [showBurst, setShowBurst] = useState(false)
-  const hasTriggeredWhatsApp = useRef(false)
   const modalRef = useRef(null)
 
   const selectedLevel = LEVELS.find((l) => l.value === rating) || null
@@ -390,7 +387,6 @@ export default function OrderExperienceModal({
     setSuccess(false)
     setShowConfetti(false)
     setShowBurst(false)
-    hasTriggeredWhatsApp.current = false
   }, [])
 
   useEffect(() => {
@@ -408,52 +404,9 @@ export default function OrderExperienceModal({
     }
   }, [open])
 
-  const triggerWhatsApp = useCallback(() => {
-    if (hasTriggeredWhatsApp.current || !orderData) return
-    hasTriggeredWhatsApp.current = true
-
-    const { customer, products, total, butcher, animalCare, orderId: id, animalCarePrice } = orderData
-    
-    let msg = `Assalam o Alaikum!%0A%0A✅ *ORDER DETAILS — MeatByAlvi*%0A%0A`
-    if (id) msg += `*Order ID: ${id}*%0A`
-    msg += `━━━━━━━━━━━━━━━%0A`
-
-    products.forEach((item, i) => {
-      const qty = item.quantity || 1
-      msg += `${i + 1}. *${item.name}*%0A`
-      if (item.breed) msg += `   Breed: ${item.breed}`
-      if (item.weight) msg += ` | Weight: ${item.weight}`
-      msg += `%0A`
-      msg += `   Price: Rs ${formatPrice(item.price)} x ${qty}%0A%0A`
-    })
-
-    msg += `━━━━━━━━━━━━━━━%0A`
-    msg += `*Grand Total: Rs ${formatPrice(total + (animalCare ? animalCarePrice : 0))}*%0A%0A`
-
-    msg += `👤 *Customer Details*%0A`
-    msg += `Name: ${customer.name}%0A`
-    msg += `Phone: ${customer.phone}%0A`
-    msg += `Address: ${customer.address}%0A`
-
-    if (butcher) {
-      msg += `%0A*Butcher Service*%0A`
-      msg += `Selected Butcher: ${butcher.name}%0A`
-    }
-
-    if (animalCare) {
-      msg += `%0A*Animal Care Service*%0A`
-      msg += `Service: Enabled ✅%0A`
-    }
-
-    const encodedMsg = encodeURIComponent(msg)
-    const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMsg}`
-    window.open(waUrl, '_blank')
-  }, [orderData])
-
   const handleClose = useCallback(() => {
-    triggerWhatsApp()
     onClose?.()
-  }, [onClose, triggerWhatsApp])
+  }, [onClose])
 
   useEffect(() => {
     if (!open) return undefined
