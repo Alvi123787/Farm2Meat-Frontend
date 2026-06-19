@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
 import {
-  FaWhatsapp,
   FaFacebookF,
   FaPhoneAlt,
   FaMapMarkerAlt,
@@ -20,8 +19,6 @@ import {
   FACEBOOK_URL,
   PHONE_DISPLAY,
   PHONE_LINK,
-  WHATSAPP_DISPLAY,
-  WHATSAPP_LINK,
 } from '../constants/contact'
 import feedbackService from '../services/feedbackService'
 
@@ -48,7 +45,7 @@ const feedbackStats = [
     label: 'Response Rate',
     value: '100% in 1 Hour',
     href: null,
-    color: 'whatsapp',
+    color: 'primary',
   },
   {
     id: 4,
@@ -143,15 +140,6 @@ const FeedbackPage = () => {
 
                 {/* Quick Contact Buttons */}
                 <div className="cp-hero-quick">
-                  <a
-                    href={`${WHATSAPP_LINK}?text=Assalam%20o%20Alaikum!%20I%20want%20to%20share%20my%20feedback.`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="cp-hero-btn cp-hero-btn--wa"
-                  >
-                    <FaWhatsapp className="cp-hero-btn-icon" />
-                    <span>Send Feedback on WhatsApp</span>
-                  </a>
                   <a href={PHONE_LINK} className="cp-hero-btn cp-hero-btn--call">
                     <FaPhoneAlt className="cp-hero-btn-icon" />
                     <span>Call & Talk to Us</span>
@@ -395,22 +383,6 @@ const FeedbackPage = () => {
               </p>
 
               <div className="cp-social-grid">
-                {/* WhatsApp */}
-                <a
-                  href={WHATSAPP_LINK}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="cp-social-card cp-social-card--wa"
-                >
-                  <div className="cp-social-card-icon">
-                    <FaWhatsapp />
-                  </div>
-                  <div className="cp-social-card-info">
-                    <strong>WhatsApp</strong>
-                    <span>Send Feedback</span>
-                  </div>
-                </a>
-
                 {/* Facebook */}
                 <a
                   href={FACEBOOK_URL}
