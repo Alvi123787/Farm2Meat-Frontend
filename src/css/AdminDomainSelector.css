@@ -1,0 +1,276 @@
+/* AdminDomainSelector.css */
+
+.admin-domain-selector {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  overflow: hidden;
+  padding: 20px;
+}
+
+.domain-selector-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.domain-selector-container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 1000px;
+  animation: slideInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.domain-selector-header {
+  text-align: center;
+  margin-bottom: 60px;
+  color: white;
+}
+
+.domain-selector-header h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin: 0 0 15px 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.domain-selector-header p {
+  font-size: 1.1rem;
+  margin: 0;
+  opacity: 0.95;
+  font-weight: 300;
+}
+
+.domain-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 40px;
+  margin-bottom: 50px;
+}
+
+.domain-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 40px 30px;
+  background: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  overflow: hidden;
+}
+
+.domain-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, currentColor 0%, transparent 100%);
+}
+
+.domain-card.animal-card::before {
+  background: linear-gradient(90deg, #8b5cf6 0%, transparent 100%);
+}
+
+.domain-card.meat-card::before {
+  background: linear-gradient(90deg, #ef4444 0%, transparent 100%);
+}
+
+.domain-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+}
+
+.domain-card:active {
+  transform: translateY(-5px);
+}
+
+.domain-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  border-radius: 16px;
+  font-size: 2.5rem;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.domain-card.animal-card .domain-card-icon {
+  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+}
+
+.domain-card.meat-card .domain-card-icon {
+  background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+}
+
+.domain-card:hover .domain-card-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.domain-card-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: #1f2937;
+}
+
+.domain-card.animal-card .domain-card-title {
+  color: #6d28d9;
+}
+
+.domain-card.meat-card .domain-card-title {
+  color: #dc2626;
+}
+
+.domain-card-description {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin: 0 0 25px 0;
+  line-height: 1.6;
+  flex-grow: 1;
+}
+
+.domain-card-features {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 25px;
+  align-items: flex-start;
+}
+
+.feature {
+  font-size: 0.85rem;
+  color: #6b7280;
+  padding: 6px 12px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  display: inline-block;
+  align-self: center;
+  width: 100%;
+}
+
+.domain-card.animal-card .feature {
+  background: #f3e8ff;
+  color: #6d28d9;
+  font-weight: 500;
+}
+
+.domain-card.meat-card .feature {
+  background: #fee2e2;
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.domain-card-cta {
+  padding: 12px 24px;
+  font-weight: 600;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.domain-card.animal-card .domain-card-cta {
+  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+}
+
+.domain-card.meat-card .domain-card-cta {
+  background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+}
+
+.domain-card:hover .domain-card-cta {
+  transform: scale(1.05);
+  filter: brightness(0.95);
+}
+
+.domain-selector-footer {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .domain-selector-header h1 {
+    font-size: 2rem;
+  }
+
+  .domain-selector-header p {
+    font-size: 1rem;
+  }
+
+  .domain-cards {
+    gap: 25px;
+    margin-bottom: 30px;
+  }
+
+  .domain-card {
+    padding: 30px 20px;
+  }
+
+  .domain-card-icon {
+    width: 70px;
+    height: 70px;
+    font-size: 2rem;
+  }
+
+  .domain-card-title {
+    font-size: 1.5rem;
+  }
+
+  .domain-card-description {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-domain-selector {
+    padding: 15px;
+  }
+
+  .domain-selector-header {
+    margin-bottom: 40px;
+  }
+
+  .domain-selector-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .domain-selector-header p {
+    font-size: 0.9rem;
+  }
+
+  .domain-cards {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .domain-card {
+    padding: 25px 20px;
+  }
+}

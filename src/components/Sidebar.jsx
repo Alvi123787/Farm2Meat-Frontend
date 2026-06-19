@@ -1,6 +1,6 @@
 // src/components/Sidebar.jsx
 import React, { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlusCircle,
@@ -24,6 +24,7 @@ import {
 import "../css/Sidebar.css";
 
 import { useAuth } from "../contexts/authContextCore";
+import { useAdminDomain } from "../contexts/AdminDomainContext";
 
 const getStoredBool = (key, fallback) => {
   try {

@@ -48,6 +48,8 @@ import AdminMeatDashboard from './pages/AdminMeatDashboard'
 import AdminMeatItemsPage from './pages/AdminMeatItemsPage'
 import AdminEditMeatItem from './pages/AdminEditMeatItem'
 import ScrollToTop from './components/ScrollToTop'
+import AdminDomainSelector from './pages/AdminDomainSelector'
+import { AdminDomainProvider } from './contexts/AdminDomainContext'
 
 
 
@@ -69,7 +71,8 @@ function AppShell() {
     return () => clearTimeout(timer);
   }, []);
 
-  return (
+    return (
+      <AdminDomainProvider>
     <AuthProvider>
       <CartProvider>
         <ScrollToTop />
@@ -142,6 +145,7 @@ function AppShell() {
         <Footer />
       </CartProvider>
     </AuthProvider>
+      </AdminDomainProvider>
   )
 }
 

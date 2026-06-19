@@ -82,7 +82,7 @@ const Login = () => {
       login(result.token)
 
       if (result.role === 'admin') {
-        navigate('/admin')
+        navigate('/admin/select-domain')
       } else {
         const from = location.state?.from?.pathname || '/'
         navigate(from, { replace: true })

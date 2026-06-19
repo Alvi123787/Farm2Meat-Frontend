@@ -5,6 +5,7 @@ import { faBars } from '@fortawesome/free-solid-svg-icons'
 import Sidebar from './Sidebar'
 import { dashboardService } from '../services/dashboardService'
 import { useAdminLiveRefresh } from '../hooks/useAdminLiveRefresh'
+import { useAdminDomain } from '../contexts/AdminDomainContext'
 
 const getStoredBool = (key, fallback) => {
   try {
@@ -30,6 +31,13 @@ export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(() => getStoredBool('adminSidebarOpen', false))
   const [totalAnimals, setTotalAnimals] = useState(null)
 
+    const { isSelected, domain } = useAdminDomain()
+  
+    useEffect(() => {
+      if (!isSelected) {
+        navigate('/admin/select-domain', { replace: true })
+      }
+    }, [isSelected, navigate])
   const toggleSidebar = useCallback(() => setSidebarOpen((prev) => !prev), [])
   const loadTotalAnimals = useCallback(async ({ signal } = {}) => {
     try {
@@ -56,6 +64,7 @@ export default function DashboardLayout() {
   return (
     <div className="admin-layout">
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} totalAnimals={totalAnimals} />
+        <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} totalAnimals={totalAnimals} domain={domain} />
       <main className="admin-main">
         <button className="hamburger-btn" type="button" onClick={toggleSidebar}>
           <FontAwesomeIcon icon={faBars} />
