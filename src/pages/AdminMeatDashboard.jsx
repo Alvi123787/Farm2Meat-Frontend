@@ -5,6 +5,7 @@ import '../css/AdminMeatDashboard.css'
 import { toast } from 'react-hot-toast'
 import { useAuth } from '../contexts/authContextCore'
 import { Navigate } from 'react-router-dom'
+import DashboardLayout from '../components/DashboardLayout'
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar, Legend, Cell
@@ -28,18 +29,11 @@ import {
   faBoxOpen,
   faCheckCircle,
   faTimesCircle,
-  faBars,
-  faTimes as faClose,
-  faHome,
   faChartLine,
   faSync,
   faDollarSign,
   faWeightHanging,
-  faClock,
-  faUser,
-  faMapMarkerAlt,
-  faCalendarAlt,
-  faChevronRight
+  faClock
 } from '@fortawesome/free-solid-svg-icons'
 
 const TABS = [
@@ -63,7 +57,6 @@ export default function AdminMeatDashboard() {
   const [statsLoading, setStatsLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
-  const [sidebarOpen, setSidebarOpen] = useState(true)
   const [lastUpdated, setLastUpdated] = useState(null)
 
   // Delete confirmation
@@ -188,98 +181,89 @@ export default function AdminMeatDashboard() {
     }
   }
 
-  const toggleSidebar = () => setSidebarOpen(prev => !prev)
-
   return (
-    <div className="ad-wrapper">
-      <aside className={`ad-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
-        <div className="ad-sidebar-header">
-          <div className="ad-logo">
-            <FontAwesomeIcon icon={faDrumstickBite} className="ad-logo-icon" />
-            <span>MeatAdmin</span>
-          </div>
-          <button className="ad-sidebar-close" onClick={toggleSidebar}>
-            <FontAwesomeIcon icon={faClose} />
-          </button>
-        </div>
-
-        <nav className="ad-nav">
-          {TABS.map(tab => (
-            <button
-              key={tab.id}
-              className={`ad-nav-item ${activeTab === tab.id ? 'active' : ''}`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              <FontAwesomeIcon icon={tab.icon} fixedWidth />
-              <span>{tab.label}</span>
-            </button>
-          ))}
-        </nav>
-
-        <div className="ad-sidebar-footer">
-          <a href="/" className="ad-nav-item">
-            <FontAwesomeIcon icon={faHome} fixedWidth />
-            <span>Back to Site</span>
-          </a>
-        </div>
-      </aside>
-
-      <main className="ad-main">
-        <header className="ad-topbar">
-          <button className="ad-hamburger" onClick={toggleSidebar}>
-            <FontAwesomeIcon icon={faBars} />
-          </button>
-          <div className="ad-topbar-left">
-            <h2 className="ad-page-title">
+    <DashboardLayout>
+      <div className="ad-content">
+        <header style={{ marginBottom: '2rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+            <h2 style={{ margin: 0, color: '#1f2937' }}>
               {TABS.find(t => t.id === activeTab)?.label}
             </h2>
             {lastUpdated && (
-              <span className="ad-last-updated">
-                <FontAwesomeIcon icon={faClock} /> Updated: {lastUpdated.toLocaleTimeString()}
+              <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                <FontAwesomeIcon icon={faClock} style={{ marginRight: '0.25rem' }} /> 
+                Updated: {lastUpdated.toLocaleTimeString()}
               </span>
             )}
-          </div>
-          <div className="ad-topbar-actions">
-            <button className="ad-btn-icon ad-refresh-btn" onClick={refreshAll} title="Refresh Data">
+            <button 
+              onClick={refreshAll} 
+              style={{ 
+                background: 'transparent', 
+                border: 'none', 
+                cursor: 'pointer', 
+                fontSize: '1rem',
+                color: '#800000' 
+              }} 
+              title="Refresh Data"
+            >
               <FontAwesomeIcon icon={faSync} spin={statsLoading || loading} />
             </button>
-            <div className="ad-user-info">
-              <FontAwesomeIcon icon={faUser} />
-              <span>Admin</span>
-            </div>
+          </div>
+
+          {/* Tab Navigation */}
+          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem' }}>
+            {TABS.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  border: activeTab === tab.id ? '2px solid #800000' : '2px solid transparent',
+                  borderRadius: '8px',
+                  background: activeTab === tab.id ? '#fef2f2' : 'white',
+                  color: activeTab === tab.id ? '#800000' : '#374151',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+              >
+                <FontAwesomeIcon icon={tab.icon} />
+                {tab.label}
+              </button>
+            ))}
           </div>
         </header>
 
-        <div className="ad-content">
-          {activeTab === 'dashboard' && (
-            <DashboardOverview 
-              dashboardData={dashboardStats} 
-              loading={statsLoading} 
-              onRefresh={fetchDashboardStats}
-            />
-          )}
+        {activeTab === 'dashboard' && (
+          <DashboardOverview 
+            dashboardData={dashboardStats} 
+            loading={statsLoading} 
+            onRefresh={fetchDashboardStats}
+          />
+        )}
 
-          {activeTab === 'items' && (
-            <MeatItemsManager
-              items={filteredItems}
-              loading={loading}
-              search={search}
-              setSearch={setSearch}
-              categoryFilter={categoryFilter}
-              setCategoryFilter={setCategoryFilter}
-              onToggleAvailability={handleToggleAvailability}
-              onToggleBestseller={handleToggleBestseller}
-              onDelete={confirmDelete}
-              onRefresh={fetchItems}
-              stats={localStats}
-            />
-          )}
+        {activeTab === 'items' && (
+          <MeatItemsManager
+            items={filteredItems}
+            loading={loading}
+            search={search}
+            setSearch={setSearch}
+            categoryFilter={categoryFilter}
+            setCategoryFilter={setCategoryFilter}
+            onToggleAvailability={handleToggleAvailability}
+            onToggleBestseller={handleToggleBestseller}
+            onDelete={confirmDelete}
+            onRefresh={fetchItems}
+            stats={localStats}
+          />
+        )}
 
-          {activeTab === 'orders' && (
-            <OrdersSection onStatusUpdate={fetchDashboardStats} />
-          )}
-        </div>
-      </main>
+        {activeTab === 'orders' && (
+          <OrdersSection onStatusUpdate={fetchDashboardStats} />
+        )}
+      </div>
 
       {deleteModal && (
         <div className="ad-modal-overlay" onClick={cancelDelete}>
@@ -296,7 +280,7 @@ export default function AdminMeatDashboard() {
           </div>
         </div>
       )}
-    </div>
+    </DashboardLayout>
   )
 }
 
