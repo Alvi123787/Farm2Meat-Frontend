@@ -1,23 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-  FaTimes,
-  FaMapMarkerAlt,
-  FaArrowRight,
-  FaShippingFast,
-  FaInfoCircle,
-} from 'react-icons/fa';
 import { useAuth } from '../contexts/authContextCore';
 import '../css/WelcomeModal.css';
 
 const WelcomeModal = () => {
   const { role, loading } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen]   = useState(false);
   const [closing, setClosing] = useState(false);
 
   useEffect(() => {
     if (!loading && role === 'guest') {
       const seen = sessionStorage.getItem('welcome_modal_seen');
-
       if (!seen) {
         const timer = setTimeout(() => setIsOpen(true), 1000);
         return () => clearTimeout(timer);
@@ -27,7 +19,7 @@ const WelcomeModal = () => {
 
   useEffect(() => {
     if (isOpen) document.body.style.overflow = 'hidden';
-    return () => (document.body.style.overflow = 'auto');
+    return () => { document.body.style.overflow = 'auto'; };
   }, [isOpen]);
 
   const handleClose = useCallback(() => {
@@ -36,65 +28,87 @@ const WelcomeModal = () => {
       setIsOpen(false);
       setClosing(false);
       sessionStorage.setItem('welcome_modal_seen', 'true');
-    }, 200);
+    }, 220);
   }, []);
 
   if (!isOpen) return null;
 
   return (
-    <div className={`wm-overlay ${closing ? 'wm-closing' : ''}`} onClick={handleClose}>
+    <div
+      className={`wm-overlay${closing ? ' wm-overlay--closing' : ''}`}
+      onClick={handleClose}
+    >
       <div className="wm-modal" onClick={(e) => e.stopPropagation()}>
 
-        {/* Minimal Close Button - No Background, Just Icon */}
-        <button className="wm-close" onClick={handleClose}>
-          <FaTimes />
+        {/* Close */}
+        <button className="wm-close" onClick={handleClose} aria-label="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
         </button>
 
-        {/* Refined Header with better spacing */}
+        {/* Logo */}
+        <div className="wm-logo-wrap">
+          <img
+            src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png"
+            alt="MeatByAlvi"
+          />
+        </div>
+
+        {/* Heading */}
         <div className="wm-header">
-          <div className="wm-logo-wrap" style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'center' }}>
-            <div className="logo-visibility-wrapper" style={{ background: 'rgba(128, 0, 0, 0.05)', border: '1px solid rgba(128, 0, 0, 0.1)', padding: '10px' }}>
-              <img 
-                src="https://res.cloudinary.com/dqclqmuhi/image/upload/v1775796488/Gemini_Generated_Image_1vibo61vibo61vib-removebg-preview_me9etj.png" 
-                alt="MeatByAlvi Logo" 
-                style={{ width: '60px', height: '60px', objectFit: 'contain' }}
-              />
+          <h2>Delivery Area Notice</h2>
+          <p>We're growing fast. Here's where we currently serve.</p>
+        </div>
+
+        {/* Divider */}
+        <div className="wm-rule" aria-hidden="true" />
+
+        {/* Info rows */}
+        <div className="wm-info">
+
+          <div className="wm-row">
+            <div className="wm-row__icon" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            <div className="wm-row__body">
+              <p className="wm-row__label">Current service area</p>
+              <p className="wm-row__value">Rahim Yar Khan</p>
             </div>
           </div>
-          <div className="wm-icon-badge">
-            <FaMapMarkerAlt className="wm-icon" />
+
+          <div className="wm-row">
+            <div className="wm-row__icon" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div className="wm-row__body">
+              <p className="wm-row__label">Expansion</p>
+              <p className="wm-row__value">More cities across Pakistan — coming soon</p>
+            </div>
           </div>
-          <h2>Delivery Area Notice</h2>
-          <p>We're currently growing. Here's where we deliver.</p>
+
         </div>
 
-        {/* Primary Info Card - Cleaner Layout */}
-        <div className="wm-card wm-card-primary">
-          <div className="wm-card-icon-wrapper">
-            <FaShippingFast />
-          </div>
-          <div className="wm-card-content">
-            <h4>Current Service Area</h4>
-            <p>Available only in <strong>Rahim Yar Khan</strong>.</p>
-          </div>
-        </div>
-
-        {/* Secondary Info Card */}
-        <div className="wm-card wm-card-secondary">
-          <div className="wm-card-icon-wrapper">
-            <FaInfoCircle />
-          </div>
-          <div className="wm-card-content">
-            <h4>Expanding Nationwide</h4>
-            <p>More cities across Pakistan coming very soon.</p>
-          </div>
-        </div>
-
-        {/* Refined Button with Smooth Interaction */}
+        {/* CTA */}
         <button className="wm-btn" onClick={handleClose}>
-          <span>Understood, Continue</span>
-          <FaArrowRight className="wm-btn-icon" />
+          Understood, continue
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
         </button>
+
       </div>
     </div>
   );
