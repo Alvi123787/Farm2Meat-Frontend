@@ -11,7 +11,8 @@ import {
   FaShieldAlt, FaReceipt, FaHandHoldingUsd, FaCalendarCheck,
   FaImage, FaExternalLinkAlt, FaChevronUp, FaEllipsisV,
   FaPrint, FaShoppingCart, FaBan, FaHourglassHalf, FaWallet,
-  FaFileInvoiceDollar, FaPercent, FaMotorcycle, FaSpinner
+  FaFileInvoiceDollar, FaPercent, FaMotorcycle, FaSpinner,
+  FaBoxOpen
 } from 'react-icons/fa';
 import '../css/Orders.css';
 import { orderService } from '../services/orderService';
@@ -125,7 +126,13 @@ const Orders = () => {
       timeline: [
         { status: 'pending', date: orderGroup.createdAt, note: 'Order placed' },
       ],
-      items: orderGroup.items,
+      items: orderGroup.items.map(item => ({
+        ...item,
+        unit: item.unit || '',
+        price: Number(item.price || 0),
+        totalAmount: Number(item.totalAmount || 0),
+        quantity: Number(item.quantity || 0)
+      })),
     };
   }, []);
 
@@ -1094,31 +1101,56 @@ const Orders = () => {
                 </div>
               </div>
 
-              {/* Animal Details */}
+              {/* Items Details */}
               <div className="om-detail-box om-detail-box--full">
-                <h3><FaPaw /> Animal Details</h3>
-                <div className="om-detail-animal-grid">
-                  <div className="om-animal-detail-item">
-                    <span className="om-animal-detail-label">Animal ID</span>
-                    <span className="om-animal-detail-val">{selectedOrder.animal.animalId}</span>
+                <h3><FaBoxOpen /> Order Items</h3>
+                {selectedOrder.items.map((item, idx) => (
+                  <div key={idx} style={{ marginBottom: idx === selectedOrder.items.length - 1 ? 0 : '20px', paddingBottom: idx === selectedOrder.items.length - 1 ? 0 : '20px', borderBottom: idx === selectedOrder.items.length - 1 ? 'none' : '1px dashed var(--border-light)' }}>
+                    <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', fontWeight: '700', color: 'var(--primary)' }}>Item {idx + 1}: {item.animalName}</h4>
+                    <div className="om-detail-animal-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}>
+                      <div className="om-animal-detail-item">
+                        <span className="om-animal-detail-label">{item.itemType === 'meat' ? 'Item ID' : 'Animal ID'}</span>
+                        <span className="om-animal-detail-val">{item.inquiryId || item.animalId || 'N/A'}</span>
+                      </div>
+                      <div className="om-animal-detail-item">
+                        <span className="om-animal-detail-label">Type</span>
+                        <span className="om-animal-detail-val">{item.itemType === 'meat' ? 'Meat' : 'Livestock'}</span>
+                      </div>
+                      <div className="om-animal-detail-item">
+                        <span className="om-animal-detail-label">Category</span>
+                        <span className="om-animal-detail-val">{item.category || 'N/A'}</span>
+                      </div>
+                      {item.breed && item.itemType !== 'meat' && (
+                        <div className="om-animal-detail-item">
+                          <span className="om-animal-detail-label">Breed</span>
+                          <span className="om-animal-detail-val">{item.breed}</span>
+                        </div>
+                      )}
+                      {item.weight && item.itemType !== 'meat' && (
+                        <div className="om-animal-detail-item">
+                          <span className="om-animal-detail-label">Weight (Zinda)</span>
+                          <span className="om-animal-detail-val om-animal-detail-val--weight">{item.weight} kg</span>
+                        </div>
+                      )}
+                      {item.quantity && (
+                        <div className="om-animal-detail-item">
+                          <span className="om-animal-detail-label">Quantity</span>
+                          <span className="om-animal-detail-val">{item.quantity} {item.unit || (item.itemType === 'meat' ? 'units' : '')}</span>
+                        </div>
+                      )}
+                      <div className="om-animal-detail-item">
+                        <span className="om-animal-detail-label">Price per Unit</span>
+                        <span className="om-animal-detail-val">Rs. {item.price?.toLocaleString() || '0'}</span>
+                      </div>
+                      <div className="om-animal-detail-item">
+                        <span className="om-animal-detail-label">Item Total</span>
+                        <span className="om-animal-detail-val" style={{ fontWeight: '700', color: 'var(--primary)' }}>Rs. {item.totalAmount?.toLocaleString() || '0'}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="om-animal-detail-item">
-                    <span className="om-animal-detail-label">Name</span>
-                    <span className="om-animal-detail-val">{selectedOrder.animal.name}</span>
-                  </div>
-                  <div className="om-animal-detail-item">
-                    <span className="om-animal-detail-label">Category</span>
-                    <span className="om-animal-detail-val">{ANIMAL_CATEGORIES.find(c => c.value === selectedOrder.animal.category)?.label || selectedOrder.animal.category}</span>
-                  </div>
-                  <div className="om-animal-detail-item">
-                    <span className="om-animal-detail-label">Breed</span>
-                    <span className="om-animal-detail-val">{selectedOrder.animal.breed}</span>
-                  </div>
-                  <div className="om-animal-detail-item">
-                    <span className="om-animal-detail-label">Weight (Zinda)</span>
-                    <span className="om-animal-detail-val om-animal-detail-val--weight">{selectedOrder.animal.weight} kg</span>
-                  </div>
-                  <div className="om-animal-detail-item">
+                ))}
+                <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--border-light)' }}>
+                  <div className="om-animal-detail-item" style={{ justifyContent: 'flex-end' }}>
                     <span className="om-animal-detail-label">Delivery Date</span>
                     <span className="om-animal-detail-val">{formatDate(selectedOrder.deliveryDate)}</span>
                   </div>
