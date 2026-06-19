@@ -52,8 +52,6 @@ const CITIES = [
 
 const PER_PAGE_OPTIONS = [10, 15, 25, 50];
 
-const ORDER_STATUS_TIMELINE = ['pending', 'confirmed', 'delivered'];
-
 const OrdersSortIcon = ({ sortConfig, field }) => {
   if (sortConfig.field !== field) {
     return <FaSortAmountDown className="om-sort-icon om-sort-icon--inactive" />;
@@ -113,10 +111,10 @@ const Orders = () => {
       },
       pricing: {
         animalPrice: orderGroup.items.reduce((sum, i) => sum + i.price, 0),
-        deliveryCharges: 0, // Not explicitly in model yet
-        totalAmount: orderGroup.totalAmount,
+        deliveryCharges: 49,
+        totalAmount: orderGroup.totalAmount + 49, // Add delivery charge
         advancePaid: orderGroup.items.reduce((sum, i) => sum + (i.animalCarePrice || 0), 0),
-        remainingBalance: orderGroup.totalAmount - orderGroup.items.reduce((sum, i) => sum + (i.animalCarePrice || 0), 0),
+        remainingBalance: (orderGroup.totalAmount + 49) - orderGroup.items.reduce((sum, i) => sum + (i.animalCarePrice || 0), 0),
       },
       paymentStatus: paymentStatus,
       paymentScreenshot: null,
@@ -1070,7 +1068,7 @@ const Orders = () => {
                     </div>
                     <div className="om-price-row">
                       <span>Delivery Charges</span>
-                      <span className="om-green">Free</span>
+                      <span>Rs. 49</span>
                     </div>
                     <div className="om-price-row om-price-row--total">
                       <span>Total Amount</span>
@@ -1157,57 +1155,7 @@ const Orders = () => {
                 </div>
               </div>
 
-              {/* Order Timeline */}
-              <div className="om-detail-box om-detail-box--full">
-                <h3><FaClock /> Order Timeline</h3>
-                <div className="om-timeline">
-                  {ORDER_STATUS_TIMELINE.map((status) => {
-                    const event = selectedOrder.timeline.find((t) => t.status === status);
-                    const isCompleted = !!event;
-                    const isCurrent = selectedOrder.orderStatus === status;
 
-                    if (selectedOrder.orderStatus === 'cancelled' && !event && status !== 'pending') return null;
-
-                    return (
-                      <div
-                        key={status}
-                        className={`om-tl-item ${isCompleted && !isCurrent ? 'om-tl-item--done' : ''} ${isCurrent ? 'om-tl-item--current' : ''} ${!isCompleted ? 'om-tl-item--future' : ''}`}
-                      >
-                        <div className="om-tl-dot">
-                          {isCompleted ? <FaCheck /> : <span />}
-                        </div>
-                        <div className="om-tl-content">
-                          <span className="om-tl-status">{ORDER_STATUSES[status].label}</span>
-                          {event && (
-                            <>
-                              <span className="om-tl-date">{formatDateTime(event.date)}</span>
-                              <span className="om-tl-note">{event.note}</span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                  {selectedOrder.orderStatus === 'cancelled' && (
-                    <div className="om-tl-item om-tl-item--cancelled">
-                      <div className="om-tl-dot"><FaTimes /></div>
-                      <div className="om-tl-content">
-                        <span className="om-tl-status">Cancelled</span>
-                        {selectedOrder.timeline.find((t) => t.status === 'cancelled') && (
-                          <>
-                            <span className="om-tl-date">
-                              {formatDateTime(selectedOrder.timeline.find((t) => t.status === 'cancelled').date)}
-                            </span>
-                            <span className="om-tl-note">
-                              {selectedOrder.timeline.find((t) => t.status === 'cancelled').note}
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
 
               {/* Notes */}
               {selectedOrder.notes && (

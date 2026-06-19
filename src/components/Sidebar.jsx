@@ -46,7 +46,7 @@ const setStoredBool = (key, value) => {
   }
 };
 
-const Sidebar = ({ isOpen, toggleSidebar, totalAnimals, domain }) => {
+const Sidebar = React.memo(({ isOpen, toggleSidebar, totalAnimals, domain }) => {
   const { logout } = useAuth();
   const { clearDomain } = useAdminDomain();
   const navigate = useNavigate();
@@ -60,8 +60,8 @@ const Sidebar = ({ isOpen, toggleSidebar, totalAnimals, domain }) => {
     setStoredBool("adminSidebarCollapsed", isCollapsed);
   }, [isCollapsed]);
 
-  // Domain-specific navigation items
-  const getNavItems = () => {
+  // Domain-specific navigation items (memoized!)
+  const navItems = React.useMemo(() => {
     if (domain === "animal") {
       return [
         {
@@ -180,9 +180,7 @@ const Sidebar = ({ isOpen, toggleSidebar, totalAnimals, domain }) => {
       ];
     }
     return [];
-  };
-
-  const navItems = getNavItems();
+  }, [domain]);
 
   const handleSwitchDomain = () => {
     clearDomain();
@@ -338,6 +336,6 @@ const Sidebar = ({ isOpen, toggleSidebar, totalAnimals, domain }) => {
       </aside>
     </>
   );
-};
+});
 
 export default Sidebar;

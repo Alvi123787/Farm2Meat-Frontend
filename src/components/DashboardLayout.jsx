@@ -31,19 +31,25 @@ export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(() => getStoredBool('adminSidebarOpen', false))
   const [totalAnimals, setTotalAnimals] = useState(null)
 
-    const { isSelected, domain } = useAdminDomain()
+  const { isSelected, domain } = useAdminDomain()
   
-    useEffect(() => {
-      if (!isSelected) {
-        navigate('/admin/select-domain', { replace: true })
-      }
-    }, [isSelected, navigate])
+  useEffect(() => {
+    if (!isSelected) {
+      navigate('/admin/select-domain', { replace: true })
+    }
+  }, [isSelected, navigate])
+
   const toggleSidebar = useCallback(() => setSidebarOpen((prev) => !prev), [])
+  
   const loadTotalAnimals = useCallback(async ({ signal } = {}) => {
     try {
       const result = await dashboardService.getDashboard('month', { signal })
       const count = Number(result?.stats?.totalAnimals)
-      setTotalAnimals(Number.isFinite(count) ? count : null)
+      setTotalAnimals(prev => {
+        const newCount = Number.isFinite(count) ? count : null
+        // Only update if count actually changed to avoid unnecessary re-renders!
+        return prev === newCount ? prev : newCount
+      })
     } catch (err) {
       if (err?.code === 'UNAUTHORIZED') navigate('/login')
     }
@@ -59,7 +65,8 @@ export default function DashboardLayout() {
     return () => controller.abort()
   }, [loadTotalAnimals])
 
-  useAdminLiveRefresh(() => loadTotalAnimals({}), { intervalMs: 10000, enabled: true })
+  // Increase refresh interval from 10s to 60s to reduce re-renders!
+  useAdminLiveRefresh(() => loadTotalAnimals({}), { intervalMs: 60000, enabled: true })
 
   return (
     <div className="admin-layout">

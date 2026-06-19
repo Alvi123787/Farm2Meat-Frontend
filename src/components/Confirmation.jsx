@@ -128,7 +128,7 @@ const Confirmation = () => {
     },
     products: s.items || [],
     subtotal: s.subtotal || 0,
-    shipping: s.deliveryCharge || 50,
+    shipping: s.deliveryCharge || 49,
     total: s.grandTotal || 0,
     butcher: s.butcher || null,
     animalCare: s.animalCareSelected || false,
