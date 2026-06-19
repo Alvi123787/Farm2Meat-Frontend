@@ -72,7 +72,7 @@ function AppShell() {
   }, []);
 
     return (
-      <AdminDomainProvider>
+    <AdminDomainProvider>
     <AuthProvider>
       <CartProvider>
         <ScrollToTop />
@@ -98,6 +98,16 @@ function AppShell() {
           <Route path="/unavailable-item" element={withPageTitle(<UnavailableItem />, 'Unavailable Item')} />
           <Route path="/admin-dashboard" element={<Navigate to="/admin" replace />} />
           <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
+
+          {/* Domain Selector Route (outside DashboardLayout) */}
+          <Route
+            path="/admin/select-domain"
+            element={
+              <ProtectedRoute>
+                {withPageTitle(<AdminDomainSelector />, 'Select Domain')}
+              </ProtectedRoute>
+            }
+          />
 
           <Route
             path="/admin"

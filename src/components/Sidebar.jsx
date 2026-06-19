@@ -20,6 +20,8 @@ import {
   faUserShield,
   faPaperPlane,
   faDrumstickBite,
+  faPaw,
+  faExchangeAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/Sidebar.css";
 
@@ -44,8 +46,10 @@ const setStoredBool = (key, value) => {
   }
 };
 
-const Sidebar = ({ isOpen, toggleSidebar, totalAnimals }) => {
+const Sidebar = ({ isOpen, toggleSidebar, totalAnimals, domain }) => {
   const { logout } = useAuth();
+  const { clearDomain } = useAdminDomain();
+  const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(() => getStoredBool("adminSidebarCollapsed", false));
 
   const toggleCollapse = () => {
@@ -56,73 +60,134 @@ const Sidebar = ({ isOpen, toggleSidebar, totalAnimals }) => {
     setStoredBool("adminSidebarCollapsed", isCollapsed);
   }, [isCollapsed]);
 
-  const navItems = [
-    {
-      label: "Dashboard",
-      path: "/admin",
-      icon: faTachometerAlt,
-    },
-    {
-      label: "Meat Dashboard",
-      path: "/admin/meat-dashboard",
-      icon: faDrumstickBite,
-    },
-    {
-      label: "Meat Items",
-      path: "/admin/meat-items",
-      icon: faUtensils,
-    },
-    {
-      label: "Add Product",
-      path: "/admin/add-animal",
-      icon: faPlusCircle,
-    },
-    {
-      label: "Inquiries",
-      path: "/admin/inquiries",
-      icon: faEnvelopeOpenText,
-    },
-    {
-      label: "Inventory",
-      path: "/admin/animals",
-      icon: faBoxesStacked,
-    },
-    {
-      label: "Orders",
-      path: "/admin/orders",
-      icon: faChartLine,
-    },
-    {
-      label: "Analytics",
-      path: "/admin/analytics",
-      icon: faChartBar,
-    },
-    {
-      label: "Reviews",
-      path: "/admin/reviews",
-      icon: faCommentDots,
-    },
-    {
-      label: "Users",
-      path: "/admin/users",
-      icon: faUserFriends,
-    },
-    {
-      label: "Guest Users",
-      path: "/admin/guest-users",
-      icon: faAddressBook,
-    },
-    {
-      label: "Butchers",
-      path: "/admin/butchers",
-      icon: faUserShield,
-    },
-    {
-      label: "Send Email",
-      path: "/admin/send-email",
-      icon: faPaperPlane,
-    },
-  ];
+  // Domain-specific navigation items
+  const getNavItems = () => {
+    if (domain === "animal") {
+      return [
+        {
+          label: "Animal Dashboard",
+          path: "/admin",
+          icon: faTachometerAlt,
+        },
+        {
+          label: "Add Livestock",
+          path: "/admin/add-animal/livestock",
+          icon: faPlusCircle,
+        },
+        {
+          label: "Inventory",
+          path: "/admin/animals",
+          icon: faBoxesStacked,
+        },
+        {
+          label: "Orders",
+          path: "/admin/orders",
+          icon: faChartLine,
+        },
+        {
+          label: "Inquiries",
+          path: "/admin/inquiries",
+          icon: faEnvelopeOpenText,
+        },
+        {
+          label: "Reviews",
+          path: "/admin/reviews",
+          icon: faCommentDots,
+        },
+        {
+          label: "Analytics",
+          path: "/admin/analytics",
+          icon: faChartBar,
+        },
+        {
+          label: "Users",
+          path: "/admin/users",
+          icon: faUserFriends,
+        },
+        {
+          label: "Guest Users",
+          path: "/admin/guest-users",
+          icon: faAddressBook,
+        },
+        {
+          label: "Butchers",
+          path: "/admin/butchers",
+          icon: faUserShield,
+        },
+        {
+          label: "Send Email",
+          path: "/admin/send-email",
+          icon: faPaperPlane,
+        },
+      ];
+    } else if (domain === "meat") {
+      return [
+        {
+          label: "Meat Dashboard",
+          path: "/admin/meat-dashboard",
+          icon: faDrumstickBite,
+        },
+        {
+          label: "Meat Items",
+          path: "/admin/meat-items",
+          icon: faUtensils,
+        },
+        {
+          label: "Add Meat Item",
+          path: "/admin/add-animal/meat",
+          icon: faPlusCircle,
+        },
+        {
+          label: "Orders",
+          path: "/admin/orders",
+          icon: faChartLine,
+        },
+        {
+          label: "Inquiries",
+          path: "/admin/inquiries",
+          icon: faEnvelopeOpenText,
+        },
+        {
+          label: "Reviews",
+          path: "/admin/reviews",
+          icon: faCommentDots,
+        },
+        {
+          label: "Analytics",
+          path: "/admin/analytics",
+          icon: faChartBar,
+        },
+        {
+          label: "Users",
+          path: "/admin/users",
+          icon: faUserFriends,
+        },
+        {
+          label: "Guest Users",
+          path: "/admin/guest-users",
+          icon: faAddressBook,
+        },
+        {
+          label: "Butchers",
+          path: "/admin/butchers",
+          icon: faUserShield,
+        },
+        {
+          label: "Send Email",
+          path: "/admin/send-email",
+          icon: faPaperPlane,
+        },
+      ];
+    }
+    return [];
+  };
+
+  const navItems = getNavItems();
+
+  const handleSwitchDomain = () => {
+    clearDomain();
+    navigate("/admin/select-domain");
+  };
 
   return (
     <>
@@ -165,11 +230,11 @@ const Sidebar = ({ isOpen, toggleSidebar, totalAnimals }) => {
           {!isCollapsed && (
             <div className="sidebar-brand-text">
               <h2>
-                Livestock<span>Admin</span>
+                {domain === "animal" ? "Livestock" : "Meat"}<span>Admin</span>
               </h2>
               <div className="brand-badge">
-                <FontAwesomeIcon icon={faCrown} />
-                <span>Pro</span>
+                <FontAwesomeIcon icon={domain === "animal" ? faPaw : faDrumstickBite} />
+                <span>{domain === "animal" ? "Animal" : "Meat"}</span>
               </div>
             </div>
           )}
@@ -188,7 +253,7 @@ const Sidebar = ({ isOpen, toggleSidebar, totalAnimals }) => {
                   onClick={() => {
                     if (window.innerWidth <= 768) toggleSidebar();
                   }}
-                  end={item.path === "/admin"}
+                  end={item.path === "/admin" || item.path === "/admin/meat-dashboard"}
                 >
                   <span className="link-icon-wrapper">
                     <FontAwesomeIcon icon={item.icon} className="link-icon" />
@@ -214,12 +279,25 @@ const Sidebar = ({ isOpen, toggleSidebar, totalAnimals }) => {
               <FontAwesomeIcon icon={faChartLine} className="stat-icon" />
               {!isCollapsed && (
                 <div className="stat-info">
-                  <span className="stat-label">Total Animals</span>
+                  <span className="stat-label">Total {domain === "animal" ? "Animals" : "Meat Items"}</span>
                   <span className="stat-value">{Number(totalAnimals || 0).toLocaleString()}</span>
                 </div>
               )}
             </div>
           </div>
+
+          <button
+            className="sidebar-logout-btn"
+            type="button"
+            onClick={handleSwitchDomain}
+            style={{ marginBottom: '8px' }}
+          >
+            <div className="logout-icon-wrapper">
+              <FontAwesomeIcon icon={faExchangeAlt} />
+            </div>
+            {!isCollapsed && <span>Switch Domain</span>}
+            {isCollapsed && <span className="link-tooltip">Switch Domain</span>}
+          </button>
 
           <div className="sidebar-user">
             <div className="user-avatar-wrapper">

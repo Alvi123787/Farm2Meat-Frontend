@@ -45,6 +45,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userRole');
     localStorage.removeItem('lastVisit');
+    localStorage.removeItem('adminSelectedDomain');
     // Programmatic redirection to login page after logout
     navigate('/login', { state: { message: 'You have been logged out successfully.' } });
   }, [navigate]);

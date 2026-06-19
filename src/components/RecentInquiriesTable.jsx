@@ -3,6 +3,7 @@ import api from '../services/api'
 import '../css/RecentInquiriesTable.css'
 import { useAdminLiveRefresh } from '../hooks/useAdminLiveRefresh'
 import { formatPrice } from '../utils/priceUtils'
+import { useAdminDomain } from '../contexts/AdminDomainContext'
 
 /* ========================
    StatusBadge Component
@@ -34,6 +35,7 @@ const StatusBadge = ({ status }) => {
    Main Component
    ======================== */
 export default function RecentInquiriesTable() {
+  const { domain } = useAdminDomain()
   // ── Dynamic data state ──
   const [inquiries, setInquiries] = useState([])
   const [loading, setLoading] = useState(true)
@@ -58,7 +60,8 @@ export default function RecentInquiriesTable() {
       setLoading(true)
       setError('')
 
-      const response = await api.get('/api/inquiries/all')
+      const params = domain ? { domain } : {}
+      const response = await api.get('/api/inquiries/all', { params })
       const result = response.data
 
       if (result.success) {
@@ -72,7 +75,7 @@ export default function RecentInquiriesTable() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [domain])
 
   useEffect(() => {
     fetchInquiries()
@@ -304,12 +307,16 @@ export default function RecentInquiriesTable() {
               <i className="fa-solid fa-message" />
             </div>
             <div>
-              <h2 className="inquiries-title">Recent Inquiries</h2>
+              <h2 className="inquiries-title">
+                {domain === 'meat' ? 'Meat Inquiries' : 'Recent Inquiries'}
+              </h2>
               <div className="title-accent-bar" />
             </div>
           </div>
           <p className="inquiries-subtitle">
-            Manage and track customer inquiries for your livestock
+            {domain === 'meat' 
+              ? 'Manage and track customer inquiries for your meat products' 
+              : 'Manage and track customer inquiries for your livestock'}
           </p>
         </div>
 

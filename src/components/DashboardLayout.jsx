@@ -63,8 +63,7 @@ export default function DashboardLayout() {
 
   return (
     <div className="admin-layout">
-      <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} totalAnimals={totalAnimals} />
-        <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} totalAnimals={totalAnimals} domain={domain} />
+      <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} totalAnimals={totalAnimals} domain={domain} />
       <main className="admin-main">
         <button className="hamburger-btn" type="button" onClick={toggleSidebar}>
           <FontAwesomeIcon icon={faBars} />

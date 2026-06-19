@@ -16,7 +16,8 @@ import {
 import '../css/Orders.css';
 import { orderService } from '../services/orderService';
 import { useAuth } from '../contexts/authContextCore';
-import { useAdminLiveRefresh } from '../hooks/useAdminLiveRefresh'
+import { useAdminLiveRefresh } from '../hooks/useAdminLiveRefresh';
+import { useAdminDomain } from '../contexts/AdminDomainContext';
 
 /* ════════════════════════════════════════════════════
    CONSTANTS & CONFIGURATION
@@ -67,15 +68,17 @@ const OrdersSortIcon = ({ sortConfig, field }) => {
 
 const Orders = () => {
   const { role, loading: authLoading } = useAuth(); // ✅ Step 1: Wait for auth ready
+  const { domain } = useAdminDomain(); // Get current domain
   /* ─────── State ─────── */
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
 
-  // Helper: Map Inquiry to Order format
-  const mapInquiryToOrder = useCallback((inquiry) => {
+  // Helper: Map Grouped Order to Order format
+  const mapGroupedOrderToOrder = useCallback((orderGroup) => {
     // Map backend status to frontend status keys
     const orderStatusMap = {
       'Pending': 'pending',
@@ -84,48 +87,45 @@ const Orders = () => {
       'Cancelled': 'cancelled'
     };
 
-    const orderStatus = orderStatusMap[inquiry.status] || 'pending';
+    const orderStatus = orderStatusMap[orderGroup.status] || 'pending';
     
     // Determine payment status based on status and payment method
     let paymentStatus = 'unpaid';
-    if (inquiry.status === 'Completed') paymentStatus = 'fully_paid';
-    else if (inquiry.paymentMethod === 'advance') paymentStatus = 'advance_paid';
+    if (orderGroup.status === 'Completed') paymentStatus = 'fully_paid';
 
     return {
-      id: inquiry.inquiryId || `ORD-${inquiry._id.slice(-6).toUpperCase()}`,
-      _id: inquiry._id,
+      id: orderGroup.orderId,
+      orderGroupId: orderGroup.orderId,
       customer: {
-        name: inquiry.customerName,
-        phone: inquiry.phone,
-        email: inquiry.email,
-        address: inquiry.deliveryAddress,
-        city: inquiry.city,
-        specialInstructions: inquiry.notes,
+        name: orderGroup.customerName,
+        phone: orderGroup.phone,
+        email: orderGroup.email,
+        address: orderGroup.deliveryAddress,
+        city: orderGroup.city,
+        specialInstructions: orderGroup.items.map(i => i.notes).filter(Boolean).join(', '),
       },
       animal: {
-        name: inquiry.animalName,
-        category: inquiry.category || inquiry.breed || 'Livestock',
-        breed: inquiry.breed,
-        weight: inquiry.weight,
-        animalId: inquiry.animalTag || inquiry.animalId,
+        name: orderGroup.items.map(i => i.animalName).join(', '),
+        category: orderGroup.items.map(i => i.category || 'Item').filter(Boolean).join(', '),
+        breed: orderGroup.items.map(i => i.breed).filter(Boolean).join(', '),
+        weight: orderGroup.items.map(i => i.weight).filter(Boolean).join(', '),
       },
       pricing: {
-        animalPrice: inquiry.price,
+        animalPrice: orderGroup.items.reduce((sum, i) => sum + i.price, 0),
         deliveryCharges: 0, // Not explicitly in model yet
-        totalAmount: inquiry.totalAmount,
-        advancePaid: inquiry.paymentMethod === 'advance' ? (inquiry.totalAmount * 0.2) : 0, // Mocking advance
-        remainingBalance: inquiry.totalAmount - (inquiry.paymentMethod === 'advance' ? (inquiry.totalAmount * 0.2) : 0),
+        totalAmount: orderGroup.totalAmount,
+        advancePaid: orderGroup.items.reduce((sum, i) => sum + (i.animalCarePrice || 0), 0),
+        remainingBalance: orderGroup.totalAmount - orderGroup.items.reduce((sum, i) => sum + (i.animalCarePrice || 0), 0),
       },
-      paymentMethod: inquiry.paymentMethod,
       paymentStatus: paymentStatus,
       paymentScreenshot: null,
       orderStatus: orderStatus,
-      orderDate: inquiry.date ? inquiry.date.split('T')[0] : new Date().toISOString().split('T')[0],
-      deliveryDate: inquiry.deliveryDate || '',
+      orderDate: orderGroup.createdAt ? orderGroup.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
+      deliveryDate: orderGroup.deliveryDate || '',
       timeline: [
-        { status: 'pending', date: inquiry.date, note: 'Order placed' },
+        { status: 'pending', date: orderGroup.createdAt, note: 'Order placed' },
       ],
-      notes: inquiry.notes,
+      items: orderGroup.items,
     };
   }, []);
 
@@ -138,10 +138,10 @@ const Orders = () => {
     setError(null);
     try {
       const result = role === 'admin' 
-        ? await orderService.getAllOrders({ signal }) 
+        ? await orderService.getGroupedOrders({ domain, signal }) 
         : await orderService.getOrders({ signal });
       
-      const mappedOrders = (result.data || []).map(mapInquiryToOrder);
+      const mappedOrders = (result.data || []).map(mapGroupedOrderToOrder);
       setOrders(mappedOrders);
     } catch (err) {
       // ✅ BONUS FIX: Only show error if it's not an abort and not an auth timing issue
@@ -154,7 +154,7 @@ const Orders = () => {
     } finally {
       setLoading(false);
     }
-  }, [role, authLoading, mapInquiryToOrder]);
+  }, [role, authLoading, mapGroupedOrderToOrder, domain]);
 
   // ✅ Step 2: useEffect ko guard karo
   useEffect(() => {
@@ -368,9 +368,18 @@ const Orders = () => {
     }));
   };
 
-  const handleViewOrder = (order) => {
-    setSelectedOrder(order);
-    setShowDetailModal(true);
+  const handleViewOrder = async (order) => {
+    try {
+      const result = await orderService.getOrderGroup(order.orderGroupId, { domain });
+      if (result.success && result.data) {
+        // Map the detailed order
+        const detailedOrder = mapGroupedOrderToOrder(result.data);
+        setSelectedOrder(detailedOrder);
+        setShowDetailModal(true);
+      }
+    } catch (err) {
+      showNotif(err.message || 'Failed to fetch order details', 'error');
+    }
   };
 
   const handleDeleteClick = (order) => {
@@ -644,7 +653,7 @@ const Orders = () => {
             Orders Management
           </h1>
           <p className="om-header__subtitle">
-            Monitor, filter, and export livestock orders efficiently.
+            Monitor, filter, and export {domain === 'meat' ? 'meat' : 'livestock'} orders efficiently.
           </p>
         </div>
         <div className="om-header__counters">
