@@ -664,7 +664,16 @@
   display: flex;
   gap: 8px;
   margin-bottom: 1rem;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  min-width: 0;
 }
+
+.aa-url-row .aa-input-icon {
+  min-width: 0;
+  flex: 1;
+}
+
 
 .aa-btn-secondary {
   display: inline-flex;

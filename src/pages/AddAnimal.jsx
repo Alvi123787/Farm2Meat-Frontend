@@ -297,21 +297,26 @@ export default function AddAnimal() {
 
       // Separate file images from URL images
       const fileImages = form.images.filter(img => img instanceof File);
-      const urlImages = form.images.filter(img => typeof img === 'string' && img.startsWith('http'));
+      const urlImages = form.images.filter(img => typeof img === 'string');
 
       // Add file images
       fileImages.forEach(file => {
         formData.append('images', file);
       });
 
-      // Add URL images as JSON string
-      if (urlImages.length > 0) {
+      if (isEdit) {
+        // For edit mode: keep existing images (URLs) + add new ones
+        formData.append('keepImages', JSON.stringify(urlImages));
+      } else {
+        // For create mode: send URL images as urlImages
         formData.append('urlImages', JSON.stringify(urlImages));
       }
 
-      // Add URL videos as JSON string
-      const urlVideos = form.videos.filter(vid => typeof vid === 'string' && vid.startsWith('http'));
-      if (urlVideos.length > 0) {
+      // Add URL videos
+      const urlVideos = form.videos.filter(vid => typeof vid === 'string');
+      if (isEdit) {
+        formData.append('keepVideos', JSON.stringify(urlVideos));
+      } else {
         formData.append('urlVideos', JSON.stringify(urlVideos));
       }
 
@@ -338,6 +343,7 @@ export default function AddAnimal() {
 
   // Helper to get image source from either URL or File object
   const getImageSrc = (img) => {
+    if (!img) return '';
     if (img instanceof File) {
       return URL.createObjectURL(img);
     }
