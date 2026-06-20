@@ -17,6 +17,12 @@ api.interceptors.request.use(
     }
     // Remove credentials: 'include' if it was somehow set
     config.withCredentials = false
+    // If data is FormData, don't set Content-Type—let Axios handle it automatically!
+    if (!(config.data instanceof FormData)) {
+      config.headers['Content-Type'] = 'application/json'
+    } else {
+      delete config.headers['Content-Type']
+    }
     return config
   },
   (error) => {

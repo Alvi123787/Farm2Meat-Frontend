@@ -289,6 +289,7 @@ const Cart = () => {
           tagId: item.tagId || item._id || '',
           breed: item.breed || '',
           weight: item.weight || '',
+          unit: item.unit || '',
           price: item.price,
           quantity: getEffectiveQuantity(item),
           itemType: item.itemType || 'livestock',
