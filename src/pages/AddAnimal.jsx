@@ -1,1509 +1,873 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { useAuth } from '../contexts/authContextCore'
-import ReactQuill from 'react-quill-new'
-import 'react-quill-new/dist/quill.snow.css'
-import DOMPurify from 'dompurify'
-import {
-  FaArrowLeft,
-  FaPlusCircle,
-  FaCheckCircle,
-  FaExclamationCircle,
-  FaSpinner,
-  FaInfoCircle,
-  FaMoneyBillWave,
-  FaHeartbeat,
-  FaCamera,
-  FaFileAlt,
-  FaCloudUploadAlt,
-  FaTimes,
-  FaPlay,
-  FaStar,
-  FaEye,
-  FaEyeSlash,
-  FaTruck,
-  FaHandshake,
-  FaSave
-} from 'react-icons/fa'
-import api from '../services/api'
-import '../css/AddAnimal.css'
-import { buildMediaUrl } from '../utils/mediaUrl'
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import api from '../services/api';
+import '../css/AddAnimal.css';
 
-// ── Dropdown options ──
-const categoryOptions = [
-  { value: '', label: 'Select Category' },
-  { value: 'Bakra', label: 'Bakra' },
-  { value: 'Patth', label: 'Patth' },
-  { value: 'Bakri', label: 'Bakri' }
-]
-
-const healthOptions = [
+/* ============================================================
+   Constants
+   ============================================================ */
+const CATEGORIES = ['Bakra', 'Patth', 'Bakri'];
+const HEALTH_STATUSES = [
   { value: 'excellent', label: 'Excellent' },
   { value: 'good', label: 'Good' },
-  { value: 'average', label: 'Average' }
-]
-
-const statusOptions = [
+  { value: 'average', label: 'Average' },
+];
+const STATUSES = [
   { value: 'available', label: 'Available' },
-  { value: 'sold', label: 'Sold' },
   { value: 'reserved', label: 'Reserved' },
-  { value: 'new', label: 'New Arrival' }
-]
+  { value: 'sold', label: 'Sold' },
+  { value: 'new', label: 'New' },
+];
 
-// ── Default empty form state ──
-const defaultFormState = {
+const STEPS = [
+  { id: 'basic', label: 'Basic Information', note: 'Identity, breed & physical record' },
+  { id: 'pricing', label: 'Pricing & Status', note: 'Cost, sale price & availability' },
+  { id: 'media', label: 'Media', note: 'Photos and video for the listing' },
+  { id: 'seo', label: 'SEO & Description', note: 'Search visibility & buyer notes' },
+];
+
+const emptyForm = {
   name: '',
   type: 'livestock',
-  category: '',
+  category: 'Bakra',
   breed: '',
   gender: 'male',
   age: '',
   ageUnit: 'months',
   weight: '',
-  purchasePrice: '',
-  price: '',
-  discountPrice: '',
-  status: 'available',
-  visibility: true,
   color: '',
   teeth: '',
   healthStatus: 'good',
   farmLocation: '',
   city: '',
+
+  purchasePrice: '',
+  price: '',
+  discountPrice: '',
+  isForMeat: false,
+  slaughterWeight: '',
+  meatYieldEstimate: '',
+  status: 'available',
+  listingType: 'normal',
+  visibility: true,
+  deliveryAvailable: false,
+  negotiable: false,
+
+  images: [],
+  videos: [],
+  imageUrl: '',
+
   shortDescription: '',
   fullDescription: '',
   specialNotes: '',
-  deliveryAvailable: false,
-  negotiable: false,
-  // Meat Integration
-  isForMeat: false,
-  slaughterWeight: '',
-  meatYieldEstimate: ''
-}
+  seoTitle: '',
+  seoDescription: '',
+};
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// Helper: Clean Price (Remove commas/letters)
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-const cleanPrice = (val) => {
-  if (val === null || val === undefined) return 0
-  const cleaned = String(val).replace(/[^0-9.]/g, '')
-  return cleaned ? parseFloat(cleaned) : 0
-}
+/* ============================================================
+   Small Icon set (inline SVG, no dependency)
+   ============================================================ */
+const Icon = ({ name, size = 16, className = '' }) => {
+  const paths = {
+    check: <polyline points="20 6 9 17 4 12" />,
+    arrowLeft: <><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></>,
+    arrowRight: <><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></>,
+    image: <><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></>,
+    video: <><polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" /></>,
+    upload: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></>,
+    link: <><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></>,
+    trash: <><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" /></>,
+    save: <><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></>,
+    plus: <><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></>,
+    spinner: <><line x1="12" y1="2" x2="12" y2="6" /><line x1="12" y1="18" x2="12" y2="22" /><line x1="4.93" y1="4.93" x2="7.76" y2="7.76" /><line x1="16.24" y1="16.24" x2="19.07" y2="19.07" /><line x1="2" y1="12" x2="6" y2="12" /><line x1="18" y1="12" x2="22" y2="12" /><line x1="4.93" y1="19.07" x2="7.76" y2="16.24" /><line x1="16.24" y1="7.76" x2="19.07" y2="4.93" /></>,
+    paw: <><circle cx="11" cy="4" r="2" /><circle cx="18" cy="8" r="2" /><circle cx="4" cy="8" r="2" /><path d="M11 13c-3 0-6.5 2.2-6.5 5.4 0 1.5 1.2 2.6 2.7 2.6.9 0 1.6-.4 2.4-.7.6-.3 1.2-.5 1.9-.5.7 0 1.3.2 1.9.5.8.3 1.5.7 2.4.7 1.5 0 2.7-1.1 2.7-2.6C18.5 15.2 14.4 13 11 13z" /></>,
+    tag: <><path d="M20.59 13.41 11 4H4v7l9.41 9.41a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.83z" /><circle cx="7.5" cy="7.5" r="1" /></>,
+  };
+  return (
+    <svg className={`aa-icon ${className}`} width={size} height={size} viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+      aria-hidden="true">
+      {paths[name]}
+    </svg>
+  );
+};
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// Helper: Format Price for UI
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-const formatPrice = (val) => {
-  if (!val) return ''
-  return new Intl.NumberFormat('en-PK').format(val)
-}
+/* ============================================================
+   Reusable field primitives
+   ============================================================ */
+const Field = ({ label, required, hint, children, className = '' }) => (
+  <div className={`aa-field ${className}`}>
+    <label className="aa-field__label">
+      {label}{required && <span className="aa-required">*</span>}
+    </label>
+    {children}
+    {hint && <p className="aa-field__hint">{hint}</p>}
+  </div>
+);
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// Helper: Parse age string back to number
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-const parseAge = (animal) => {
-  if (!animal) return { age: '', ageUnit: 'months' }
-  return {
-    age: animal.age !== undefined && animal.age !== null ? animal.age : '',
-    ageUnit: animal.ageUnit || 'months'
-  }
-}
+const TextInput = (props) => <input className="aa-input" {...props} />;
+const TextArea = (props) => <textarea className="aa-textarea" {...props} />;
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// Helper: Parse weight string back to number
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-const parseWeight = (weightValue) => {
-  if (weightValue === null || weightValue === undefined || weightValue === '') return ''
-  return String(weightValue).replace(/[^0-9.]/g, '').trim()
-}
+const Select = ({ options, ...props }) => (
+  <div className="aa-select-wrap">
+    <select className="aa-select" {...props}>
+      {options.map((opt) =>
+        typeof opt === 'string'
+          ? <option key={opt} value={opt}>{opt}</option>
+          : <option key={opt.value} value={opt.value}>{opt.label}</option>
+      )}
+    </select>
+    <svg className="aa-select-caret" width="12" height="12" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  </div>
+);
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// Component
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-const AddAnimal = () => {
-  const navigate = useNavigate()
-  const { id } = useParams()
-  const { token, role, loading: authLoading } = useAuth()
+const SegmentedToggle = ({ value, onChange, options, name }) => (
+  <div className="aa-segmented" role="radiogroup">
+    {options.map((opt) => (
+      <button
+        type="button"
+        key={opt.value}
+        className={`aa-segmented__btn${value === opt.value ? ' aa-segmented__btn--active' : ''}`}
+        onClick={() => onChange(opt.value)}
+        role="radio"
+        aria-checked={value === opt.value}
+      >
+        {opt.label}
+      </button>
+    ))}
+  </div>
+);
 
-  // Detect mode: if URL has :id param → edit mode
-  const isEditMode = Boolean(id)
+const SwitchRow = ({ label, hint, checked, onChange }) => (
+  <label className="aa-switch-row">
+    <div>
+      <p className="aa-switch-row__label">{label}</p>
+      {hint && <p className="aa-switch-row__hint">{hint}</p>}
+    </div>
+    <span className={`aa-switch${checked ? ' aa-switch--on' : ''}`}>
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <span className="aa-switch__thumb" />
+    </span>
+  </label>
+);
 
-  // ── Form data state ──
-  const [animalData, setAnimalData] = useState({ ...defaultFormState })
+/* ============================================================
+   Main Component
+   ============================================================ */
+export default function AddAnimal() {
+  const navigate = useNavigate();
+  const { id } = useParams(); // present when editing
+  const isEdit = Boolean(id);
 
-  // ── Media state ──
-  const [existingImages, setExistingImages] = useState([])
-  const [newImages, setNewImages] = useState([])
-  const [newImagePreviews, setNewImagePreviews] = useState([])
-  const [removedImages, setRemovedImages] = useState([])
+  const [form, setForm] = useState(emptyForm);
+  const [activeStep, setActiveStep] = useState(0);
+  const [completedSteps, setCompletedSteps] = useState([]);
+  const [errors, setErrors] = useState({});
+  const [loadingExisting, setLoadingExisting] = useState(isEdit);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [urlDraft, setUrlDraft] = useState({ image: '', video: '' });
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const fileInputRef = useRef(null);
 
-  const [existingVideos, setExistingVideos] = useState([])
-  const [newVideos, setNewVideos] = useState([])
-  const [newVideoPreviews, setNewVideoPreviews] = useState([])
-  const [removedVideos, setRemovedVideos] = useState([])
-
-  // ── URL-based media state ──
-  const [imageUrlInput, setImageUrlInput] = useState('')
-  const [videoUrlInput, setVideoUrlInput] = useState('')
-  const [urlImages, setUrlImages] = useState([])
-  const [urlVideos, setUrlVideos] = useState([])
-
-  const imageInputRef = useRef(null)
-  const videoInputRef = useRef(null)
-
-  // ── Drag state ──
-  const [isDraggingImage, setIsDraggingImage] = useState(false)
-  const [isDraggingVideo, setIsDraggingVideo] = useState(false)
-
-  // ── UI state ──
-  const [loading, setLoading] = useState(false)
-  const [fetchLoading, setFetchLoading] = useState(false)
-  const [fetchError, setFetchError] = useState('')
-  const [successMsg, setSuccessMsg] = useState('')
-  const [errorMsg, setErrorMsg] = useState('')
-
-  // ════════════════════════════════════════════
-  // Fetch animal data when in edit mode
-  // ════════════════════════════════════════════
-
-  const fetchAnimalData = useCallback(async () => {
-    setFetchLoading(true)
-    setFetchError('')
-
-    try {
-      const response = await api.get(`/api/animals/${id}`)
-      const result = response.data
-
-      if (result.success && result.data) {
-        const animal = result.data
-
-        const { age, ageUnit } = parseAge(animal)
-        const weight = parseWeight(animal.weight)
-
-        setAnimalData({
-          name: animal.name || '',
-          type: 'livestock',
-          category: animal.category || '',
-          breed: animal.breed || '',
-          gender: animal.gender || 'male',
-          age,
-          ageUnit,
-          weight,
-          purchasePrice: animal.purchasePrice || '',
-          price: animal.price || '',
-          discountPrice: animal.discountPrice || '',
-          status: animal.status || 'available',
-          visibility: animal.visibility !== false,
-          color: animal.color || '',
-          teeth: animal.teeth || '',
-          healthStatus: animal.healthStatus || 'good',
-          farmLocation: animal.farmLocation || '',
-          city: animal.city || '',
-          shortDescription: animal.shortDescription || '',
-          fullDescription: animal.fullDescription || '',
-          specialNotes: animal.specialNotes || '',
-          deliveryAvailable: animal.deliveryAvailable === true,
-          negotiable: animal.negotiable === true,
-          // Meat Integration
-          isForMeat: animal.isForMeat === true,
-          slaughterWeight: animal.slaughterWeight || '',
-          meatYieldEstimate: animal.meatYieldEstimate || ''
-        })
-
-        setExistingImages(animal.images || [])
-        setExistingVideos(animal.videos || [])
-      } else {
-        setFetchError('Animal not found. It may have been deleted.')
-      }
-    } catch (err) {
-      console.error('Fetch error:', err)
-      setFetchError('Cannot connect to server. Make sure backend is running.')
-    } finally {
-      setFetchLoading(false)
-    }
-  }, [id])
-
+  /* ── Load existing animal when editing ── */
   useEffect(() => {
-    if (authLoading) return
-
-    if (!token || role !== 'admin') {
-      navigate('/login', {
-        state: {
-          from: isEditMode ? `/admin/edit-animal/${id}` : '/admin/add-animal',
-          message: !token ? 'Please login to continue.' : 'Admin access required.'
+    if (!isEdit) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        setLoadingExisting(true);
+        const res = await api.get(`/api/animals/${id}`);
+        const data = res.data?.data || res.data;
+        if (!cancelled && data) {
+          setForm((prev) => ({ ...prev, ...data }));
         }
-      })
-      return
+      } catch (err) {
+        console.error('Failed to load animal:', err);
+        if (!cancelled) setSubmitError('Could not load this listing. Try again.');
+      } finally {
+        if (!cancelled) setLoadingExisting(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [id, isEdit]);
+
+  const update = useCallback((key, value) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+    setErrors((prev) => (prev[key] ? { ...prev, [key]: undefined } : prev));
+  }, []);
+
+  /* ════════════════════════════════════════════
+     Step validation
+     ════════════════════════════════════════════ */
+  const validateStep = useCallback((stepIndex) => {
+    const e = {};
+    if (stepIndex === 0) {
+      if (!form.name.trim()) e.name = 'Animal name is required';
+      if (!form.category) e.category = 'Category is required';
+      if (!form.breed.trim()) e.breed = 'Breed is required';
+      if (!form.age) e.age = 'Age is required';
+      if (!form.weight.trim()) e.weight = 'Weight is required';
+      if (!form.farmLocation.trim()) e.farmLocation = 'Farm location is required';
+      if (!form.city.trim()) e.city = 'City is required';
     }
-
-    if (isEditMode && id) {
-      fetchAnimalData()
+    if (stepIndex === 1) {
+      if (!form.price) e.price = 'Sale price is required';
     }
-  }, [id, navigate, isEditMode, token, role, authLoading, fetchAnimalData])
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  }, [form]);
 
-  // ════════════════════════════════════════════
-  // Form Input Handlers
-  // ════════════════════════════════════════════
+  const goToStep = (index) => {
+    if (index === activeStep) return;
+    if (index > activeStep && !validateStep(activeStep)) return;
+    setActiveStep(index);
+  };
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target
-    setAnimalData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }))
-  }
+  const handleNext = () => {
+    if (!validateStep(activeStep)) return;
+    setCompletedSteps((prev) => Array.from(new Set([...prev, activeStep])));
+    setActiveStep((s) => Math.min(s + 1, STEPS.length - 1));
+  };
 
-  const handleToggle = (field) => {
-    setAnimalData(prev => ({ ...prev, [field]: !prev[field] }))
-  }
+  const handleBack = () => setActiveStep((s) => Math.max(s - 1, 0));
 
-  // ════════════════════════════════════════════
-  // URL Media Handlers
-  // ════════════════════════════════════════════
+  /* ════════════════════════════════════════════
+     Media handlers
+     ════════════════════════════════════════════ */
+  const handleFileSelect = async (fileList) => {
+    const files = Array.from(fileList || []);
+    if (!files.length) return;
+    setUploadingImages(true);
+    try {
+      // Just add File objects to form.images array to be uploaded with FormData later
+      update('images', [...form.images, ...files]);
+    } catch (err) {
+      console.error('Upload failed:', err);
+      setSubmitError('Image upload failed. You can add an image URL instead.');
+    } finally {
+      setUploadingImages(false);
+    }
+  };
 
   const addImageUrl = () => {
-    const val = String(imageUrlInput || '')
-    if (!val.trim()) return
-
-    try {
-      new URL(val)
-    } catch {
-      setErrorMsg('Please enter a valid image URL.')
-      return
-    }
-
-    if (urlImages.includes(val)) {
-      setErrorMsg('This image URL is already added.')
-      return
-    }
-
-    setUrlImages(prev => [...prev, val])
-    setImageUrlInput('')
-    setErrorMsg('')
-  }
+    const url = urlDraft.image.trim();
+    if (!url) return;
+    update('images', [...form.images, url]);
+    setUrlDraft((p) => ({ ...p, image: '' }));
+  };
 
   const addVideoUrl = () => {
-    const val = String(videoUrlInput || '')
-    if (!val.trim()) return
+    const url = urlDraft.video.trim();
+    if (!url) return;
+    update('videos', [...form.videos, url]);
+    setUrlDraft((p) => ({ ...p, video: '' }));
+  };
 
-    try {
-      new URL(val)
-    } catch {
-      setErrorMsg('Please enter a valid video URL.')
-      return
-    }
+  const removeImage = (idx) => update('images', form.images.filter((_, i) => i !== idx));
+  const removeVideo = (idx) => update('videos', form.videos.filter((_, i) => i !== idx));
 
-    if (urlVideos.includes(val)) {
-      setErrorMsg('This video URL is already added.')
-      return
-    }
-
-    setUrlVideos(prev => [...prev, val])
-    setVideoUrlInput('')
-    setErrorMsg('')
-  }
-
-  const removeUrlImage = (index) => {
-    setUrlImages(prev => prev.filter((_, i) => i !== index))
-  }
-
-  const removeUrlVideo = (index) => {
-    setUrlVideos(prev => prev.filter((_, i) => i !== index))
-  }
-
-  // ════════════════════════════════════════════
-  // Image Handlers
-  // ════════════════════════════════════════════
-
-  const addImages = (fileList) => {
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
-    const maxSize = 5 * 1024 * 1024
-    const maxImagesAllowed = 8
-
-    if (newImages.length + existingImages.length + urlImages.length >= maxImagesAllowed) {
-      setErrorMsg(`Max ${maxImagesAllowed} images allowed.`)
-      return
-    }
-
-    const validFiles = Array.from(fileList).filter(file => {
-      if (!validTypes.includes(file.type)) return false
-      if (file.size > maxSize) return false
-      return true
-    })
-
-    if (validFiles.length === 0 && fileList.length > 0) {
-      setErrorMsg('Invalid files. Only JPEG, PNG, WebP under 5MB allowed.')
-      return
-    }
-
-    setErrorMsg('')
-    const spaceLeft = maxImagesAllowed - (newImages.length + existingImages.length + urlImages.length)
-    const filesToAdd = validFiles.slice(0, spaceLeft)
-
-    setNewImages(prev => [...prev, ...filesToAdd])
-    const previews = filesToAdd.map(f => URL.createObjectURL(f))
-    setNewImagePreviews(prev => [...prev, ...previews])
-  }
-
-  const removeExistingImage = (index) => {
-    const imageToRemove = existingImages[index]
-    setRemovedImages(prev => [...prev, imageToRemove])
-    setExistingImages(prev => prev.filter((_, i) => i !== index))
-  }
-
-  const removeNewImage = (index) => {
-    URL.revokeObjectURL(newImagePreviews[index])
-    setNewImages(prev => prev.filter((_, i) => i !== index))
-    setNewImagePreviews(prev => prev.filter((_, i) => i !== index))
-  }
-
-  // ════════════════════════════════════════════
-  // Video Handlers
-  // ════════════════════════════════════════════
-
-  const addVideos = (fileList) => {
-    const validTypes = ['video/mp4', 'video/webm', 'video/quicktime']
-    const maxSize = 50 * 1024 * 1024
-    const maxVideosAllowed = 1
-
-    if (newVideos.length + existingVideos.length + urlVideos.length >= maxVideosAllowed) {
-      setErrorMsg(`Max ${maxVideosAllowed} video allowed.`)
-      return
-    }
-
-    const validFiles = Array.from(fileList).filter(file => {
-      if (!validTypes.includes(file.type)) return false
-      if (file.size > maxSize) return false
-      return true
-    })
-
-    if (validFiles.length === 0 && fileList.length > 0) {
-      setErrorMsg('Invalid files. Only MP4, WebM under 50MB allowed.')
-      return
-    }
-
-    setErrorMsg('')
-    const spaceLeft = maxVideosAllowed - (newVideos.length + existingVideos.length + urlVideos.length)
-    const filesToAdd = validFiles.slice(0, spaceLeft)
-
-    setNewVideos(prev => [...prev, ...filesToAdd])
-    const previews = filesToAdd.map(f => URL.createObjectURL(f))
-    setNewVideoPreviews(prev => [...prev, ...previews])
-  }
-
-  const removeExistingVideo = (index) => {
-    const videoToRemove = existingVideos[index]
-    setRemovedVideos(prev => [...prev, videoToRemove])
-    setExistingVideos(prev => prev.filter((_, i) => i !== index))
-  }
-
-  const removeNewVideo = (index) => {
-    URL.revokeObjectURL(newVideoPreviews[index])
-    setNewVideos(prev => prev.filter((_, i) => i !== index))
-    setNewVideoPreviews(prev => prev.filter((_, i) => i !== index))
-  }
-
-  // ── Drag & Drop ──
-  const handleImageDragOver = (e) => { e.preventDefault(); setIsDraggingImage(true) }
-  const handleImageDragLeave = (e) => { e.preventDefault(); setIsDraggingImage(false) }
-  const handleImageDrop = (e) => {
-    e.preventDefault(); setIsDraggingImage(false)
-    addImages(e.dataTransfer.files)
-  }
-
-  const handleVideoDragOver = (e) => { e.preventDefault(); setIsDraggingVideo(true) }
-  const handleVideoDragLeave = (e) => { e.preventDefault(); setIsDraggingVideo(false) }
-  const handleVideoDrop = (e) => {
-    e.preventDefault(); setIsDraggingVideo(false)
-    addVideos(e.dataTransfer.files)
-  }
-
-  // ════════════════════════════════════════════
-  // Validation
-  // ════════════════════════════════════════════
-
-  const validate = () => {
-    if (!String(animalData.name || '').trim()) return 'Animal name is required'
-    if (!animalData.category) return 'Please select a category'
-    if (!String(animalData.breed || '').trim()) return 'Breed is required'
-    if (animalData.age === '' || animalData.age === null) return 'Age is required'
-    if (animalData.weight === '' || animalData.weight === null) return 'Weight (Zinda) is required'
-    if (!String(animalData.price || '').trim() || cleanPrice(animalData.price) <= 0) return 'Valid price is required'
-    if (!String(animalData.farmLocation || '').trim()) return 'Farm location is required'
-    if (!String(animalData.city || '').trim()) return 'City is required'
-
-    if (animalData.isForMeat) {
-      if (animalData.slaughterWeight === '' || animalData.slaughterWeight === null) {
-        return 'Slaughter weight is required when available for meat'
-      }
-      if (parseFloat(animalData.slaughterWeight) <= 0) {
-        return 'Slaughter weight must be greater than 0'
-      }
-    }
-
-    const totalImages = existingImages.length + newImages.length + urlImages.length
-    if (totalImages === 0) return 'Please upload at least one image'
-
-    return null
-  }
-
-  // ════════════════════════════════════════════
-  // Reset Form (for add mode after success)
-  // ════════════════════════════════════════════
-
-  const resetForm = () => {
-    setAnimalData({ ...defaultFormState })
-    newImagePreviews.forEach(url => URL.revokeObjectURL(url))
-    newVideoPreviews.forEach(url => URL.revokeObjectURL(url))
-    setExistingImages([])
-    setNewImages([])
-    setNewImagePreviews([])
-    setRemovedImages([])
-    setExistingVideos([])
-    setNewVideos([])
-    setNewVideoPreviews([])
-    setRemovedVideos([])
-    setUrlImages([])
-    setUrlVideos([])
-    setImageUrlInput('')
-    setVideoUrlInput('')
-  }
-
-  // ════════════════════════════════════════════
-  // Submit — Handles both Add and Edit
-  // ════════════════════════════════════════════
-
+  /* ════════════════════════════════════════════
+     Submit
+     ════════════════════════════════════════════ */
   const handleSubmit = async (e) => {
-    e.preventDefault()
-
-    const error = validate()
-    if (error) {
-      setErrorMsg(error)
-      setSuccessMsg('')
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-      return
+    e.preventDefault();
+    for (let i = 0; i < STEPS.length; i++) {
+      if (!validateStep(i)) { setActiveStep(i); return; }
     }
 
-    setLoading(true)
-    setErrorMsg('')
-    setSuccessMsg('')
-
+    setSubmitting(true);
+    setSubmitError('');
     try {
-      const formData = new FormData()
+      const formData = new FormData();
 
-      // Append all text/boolean fields
-      Object.entries(animalData).forEach(([key, value]) => {
-        if (key === 'fullDescription') {
-          formData.append(key, DOMPurify.sanitize(value))
-        } else if (key === 'price' || key === 'purchasePrice' || key === 'discountPrice') {
-          formData.append(key, cleanPrice(value))
-        } else if (key === 'age' || key === 'weight' || key === 'teeth' || key === 'slaughterWeight') {
-          // Ensure numbers are sent correctly
-          formData.append(key, value === '' || value === null ? '' : Number(value))
-        } else {
-          formData.append(key, value)
+      // Add all text fields
+      Object.entries(form).forEach(([key, value]) => {
+        if (key === 'images' || key === 'videos') return;
+        if (typeof value === 'boolean') {
+          formData.append(key, value.toString());
+        } else if (value !== null && value !== undefined) {
+          formData.append(key, value);
         }
-      })
+      });
 
-      // Append new image files
-      newImages.forEach(file => {
-        if (file instanceof File) {
-          formData.append('images', file)
-        }
-      })
+      // Separate file images from URL images
+      const fileImages = form.images.filter(img => img instanceof File);
+      const urlImages = form.images.filter(img => typeof img === 'string' && img.startsWith('http'));
 
-      // Append new video files
-      newVideos.forEach(file => {
-        if (file instanceof File) {
-          formData.append('video', file)
-        }
-      })
+      // Add file images
+      fileImages.forEach(file => {
+        formData.append('images', file);
+      });
 
-      // Append URL-based media
-      formData.append('urlImages', JSON.stringify(urlImages))
-      formData.append('urlVideos', JSON.stringify(urlVideos))
-
-      // In edit mode, send which existing files to keep and remove
-      if (isEditMode) {
-        formData.append('keepImages', JSON.stringify(existingImages))
-        formData.append('removedImages', JSON.stringify(removedImages))
-        formData.append('keepVideos', JSON.stringify(existingVideos))
-        formData.append('removedVideos', JSON.stringify(removedVideos))
+      // Add URL images as JSON string
+      if (urlImages.length > 0) {
+        formData.append('urlImages', JSON.stringify(urlImages));
       }
 
-      const url = isEditMode ? `/api/animals/${id}` : '/api/animals'
-      const method = isEditMode ? 'put' : 'post'
+      // Add URL videos as JSON string
+      const urlVideos = form.videos.filter(vid => typeof vid === 'string' && vid.startsWith('http'));
+      if (urlVideos.length > 0) {
+        formData.append('urlVideos', JSON.stringify(urlVideos));
+      }
 
-      const response = await api({
-        method,
-        url,
-        data: formData,
-        headers: { 'Content-Type': 'multipart/form-data' }
-      })
-      const result = response.data
-
-      if (result.success) {
-        const msg = isEditMode
-          ? 'Animal updated successfully! Redirecting...'
-          : 'Animal added successfully! Redirecting...'
-        setSuccessMsg(msg)
-
-        if (!isEditMode) resetForm()
-
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-        setTimeout(() => navigate('/shop'), 2500)
+      if (isEdit) {
+        await api.put(`/api/animals/${id}`, formData);
       } else {
-        setErrorMsg(result.message || 'Something went wrong.')
+        await api.post('/api/animals', formData);
       }
+      setSubmitted(true);
+      setTimeout(() => navigate('/admin/animals'), 1100);
     } catch (err) {
-      console.error('Submit error:', err)
-      const msg = err.response?.data?.message || 'Cannot connect to server. Make sure backend is running.'
-      setErrorMsg(msg)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      console.error('Save failed:', err);
+      setSubmitError(err.response?.data?.message || 'Something went wrong while saving. Please try again.');
     } finally {
-      setLoading(false)
+      setSubmitting(false);
     }
-  }
+  };
 
-  // ════════════════════════════════════════════
-  // Counts for display
-  // ════════════════════════════════════════════
+  /* ── Derived preview data ── */
+  const previewPrice = useMemo(() => {
+    const p = Number(form.discountPrice) || Number(form.price) || 0;
+    return p ? `Rs. ${p.toLocaleString('en-PK')}` : 'Rs. —';
+  }, [form.price, form.discountPrice]);
 
-  const totalImageCount = existingImages.length + newImages.length + urlImages.length
-  const totalVideoCount = existingVideos.length + newVideos.length + urlVideos.length
-  const isFirstImageExisting = existingImages.length > 0
+  // Helper to get image source from either URL or File object
+  const getImageSrc = (img) => {
+    if (img instanceof File) {
+      return URL.createObjectURL(img);
+    }
+    return img;
+  };
 
-  // ════════════════════════════════════════════
-  // Loading State (Edit Mode)
-  // ════════════════════════════════════════════
+  const heroImage = getImageSrc(form.images?.[0]) || form.imageUrl || '';
+  const progressPct = Math.round(((activeStep) / (STEPS.length - 1)) * 100);
 
-  if (fetchLoading) {
+  if (loadingExisting) {
     return (
       <div className="aa-page">
-        <div className="container">
-          <div className="row justify-content-center">
-            <div className="col-12 col-xl-10">
-              <div className="aa-fetch-state">
-                <FaSpinner className="aa-fetch-spinner" />
-                <p>Loading animal data...</p>
-              </div>
-            </div>
-          </div>
+        <div className="aa-loading-state">
+          <Icon name="spinner" size={26} className="aa-spin" />
+          <span>Loading listing…</span>
         </div>
       </div>
-    )
+    );
   }
-
-  // ════════════════════════════════════════════
-  // Error State — Animal Not Found
-  // ════════════════════════════════════════════
-
-  if (fetchError) {
-    return (
-      <div className="aa-page">
-        <div className="container">
-          <div className="row justify-content-center">
-            <div className="col-12 col-xl-10">
-              <div className="aa-fetch-state aa-fetch-state--error">
-                <FaExclamationCircle className="aa-fetch-error-icon" />
-                <h3>Could Not Load Animal</h3>
-                <p>{fetchError}</p>
-                <button
-                  className="aa-btn aa-btn--primary"
-                  onClick={() => navigate(-1)}
-                >
-                  <FaArrowLeft />
-                  <span>Go Back</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // ════════════════════════════════════════════
-  // Main Render
-  // ════════════════════════════════════════════
 
   return (
     <div className="aa-page">
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-12 col-xl-10">
+      <form className="aa-shell" onSubmit={handleSubmit}>
 
-            {/* ── Breadcrumb ── */}
-            <nav className="aa-breadcrumb">
-              <a href="/">Home</a>
-              <span className="aa-breadcrumb-sep">/</span>
-              <a href="/shop">Shop</a>
-              <span className="aa-breadcrumb-sep">/</span>
-              <span className="aa-breadcrumb-current">
-                {isEditMode ? 'Edit Animal' : 'Add Animal'}
-              </span>
-            </nav>
+        {/* ════════ Left rail ════════ */}
+        <aside className="aa-rail">
+          <div className="aa-rail__header">
+            <span className="aa-rail__eyebrow">{isEdit ? 'Edit listing' : 'New listing'}</span>
+            <h1 className="aa-rail__title">
+              {isEdit ? 'Update Animal Record' : 'Add Livestock Record'}
+            </h1>
+          </div>
 
-            {/* ── Page Header ── */}
-            <div className="aa-page-header">
-              <button
-                className="aa-back-btn"
-                onClick={() => navigate(isEditMode ? -1 : '/shop')}
-              >
-                <FaArrowLeft />
-                <span>{isEditMode ? 'Back to Inventory' : 'Back to Shop'}</span>
-              </button>
-              <div className="aa-page-header-content">
-                <div className={`aa-page-header-icon ${isEditMode ? 'aa-page-header-icon--edit' : ''}`}>
-                  {isEditMode ? <FaSave /> : <FaPlusCircle />}
-                </div>
-                <div>
-                  <h1 className="aa-page-title">
-                    {isEditMode ? 'Edit Animal' : 'Add New Animal'}
-                  </h1>
-                  <p className="aa-page-subtitle">
-                    {isEditMode
-                      ? 'Update the details below. Changes will reflect on the shop immediately.'
-                      : 'Fill in the details below to create a new livestock listing.'}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* ── Alerts ── */}
-            {successMsg && (
-              <div className="aa-alert aa-alert--success">
-                <FaCheckCircle className="aa-alert-icon" />
-                <span>{successMsg}</span>
-              </div>
-            )}
-            {errorMsg && (
-              <div className="aa-alert aa-alert--error">
-                <FaExclamationCircle className="aa-alert-icon" />
-                <span>{errorMsg}</span>
-              </div>
-            )}
-
-            {/* ══════════ FORM START ══════════ */}
-            <form className="aa-form" onSubmit={handleSubmit}>
-
-              {/* ┌─────────────────────────────────────┐ */}
-              {/* │  SECTION 1: Basic Information        │ */}
-              {/* └─────────────────────────────────────┘ */}
-              <div className="aa-section">
-                <div className="aa-section-header">
-                  <div className="aa-section-icon"><FaInfoCircle /></div>
-                  <div>
-                    <h2 className="aa-section-title">Basic Information</h2>
-                    <p className="aa-section-desc">Enter the primary details of the animal.</p>
-                  </div>
-                </div>
-
-                <div className="aa-section-body">
-                  {/* Name */}
-                  <div className="aa-grid">
-                    <div className="aa-field">
-                      <label className="aa-label">
-                        Animal Name <span className="aa-required">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        className="aa-input"
-                        placeholder="e.g. Healthy Bakra – 38kg"
-                        value={animalData.name}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Category + Breed */}
-                  <div className="aa-grid aa-grid--2">
-                    <div className="aa-field">
-                      <label className="aa-label">
-                        Category <span className="aa-required">*</span>
-                      </label>
-                      <select
-                        name="category"
-                        className="aa-input aa-select"
-                        value={animalData.category}
-                        onChange={handleChange}
-                      >
-                        {categoryOptions.map(opt => (
-                          <option key={opt.value} value={opt.value}>{opt.label}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="aa-field">
-                      <label className="aa-label">
-                        Breed <span className="aa-required">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="breed"
-                        className="aa-input"
-                        placeholder="e.g. Pure Beetal"
-                        value={animalData.breed}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Gender */}
-                  <div className="aa-field">
-                    <label className="aa-label">
-                      Gender <span className="aa-required">*</span>
-                    </label>
-                    <div className="aa-radio-group">
-                      <label className={`aa-radio-card ${animalData.gender === 'male' ? 'aa-radio-card--active' : ''}`}>
-                        <input
-                          type="radio"
-                          name="gender"
-                          value="male"
-                          checked={animalData.gender === 'male'}
-                          onChange={handleChange}
-                          hidden
-                        />
-                        <span>Male</span>
-                      </label>
-                      <label className={`aa-radio-card ${animalData.gender === 'female' ? 'aa-radio-card--active' : ''}`}>
-                        <input
-                          type="radio"
-                          name="gender"
-                          value="female"
-                          checked={animalData.gender === 'female'}
-                          onChange={handleChange}
-                          hidden
-                        />
-                        <span>Female</span>
-                      </label>
-                    </div>
-                  </div>
-
-                  {/* Age + Weight */}
-                  <div className="aa-grid aa-grid--2">
-                    <div className="aa-field">
-                      <label className="aa-label">
-                        Age <span className="aa-required">*</span>
-                      </label>
-                      <div className="aa-input-combo">
-                        <input
-                          type="number"
-                          name="age"
-                          className="aa-input aa-input-combo-main"
-                          placeholder="e.g. 18"
-                          min="0"
-                          value={animalData.age}
-                          onChange={handleChange}
-                        />
-                        <select
-                          name="ageUnit"
-                          className="aa-input aa-input-combo-unit"
-                          value={animalData.ageUnit}
-                          onChange={handleChange}
-                        >
-                          <option value="months">Months</option>
-                          <option value="years">Years</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div className="aa-field">
-                      <label className="aa-label">
-                        Weight (Zinda) <span className="aa-required">*</span>
-                      </label>
-                      <div className="aa-input-adorned">
-                        <input
-                          type="number"
-                          name="weight"
-                          className="aa-input"
-                          placeholder="e.g. 38"
-                          min="0"
-                          value={animalData.weight}
-                          onChange={handleChange}
-                        />
-                        <span className="aa-input-suffix">KG</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* ┌─────────────────────────────────────┐ */}
-              {/* │  SECTION 2: Pricing & Status         │ */}
-              {/* └─────────────────────────────────────┘ */}
-              <div className="aa-section">
-                <div className="aa-section-header">
-                  <div className="aa-section-icon"><FaMoneyBillWave /></div>
-                  <div>
-                    <h2 className="aa-section-title">Pricing & Status</h2>
-                    <p className="aa-section-desc">Set the pricing and availability.</p>
-                  </div>
-                </div>
-
-                <div className="aa-section-body">
-                  {/* Purchase Price + Price */}
-                  <div className="aa-grid aa-grid--2">
-                    <div className="aa-field">
-                      <label className="aa-label">Purchase Price</label>
-                      <div className="aa-input-adorned">
-                        <span className="aa-input-prefix">Rs.</span>
-                        <input
-                          type="text"
-                          name="purchasePrice"
-                          className="aa-input aa-input--with-prefix"
-                          placeholder="Optional"
-                          value={animalData.purchasePrice}
-                          onChange={handleChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="aa-field">
-                      <label className="aa-label">
-                        Price <span className="aa-required">*</span>
-                      </label>
-                      <div className="aa-input-adorned">
-                        <span className="aa-input-prefix">Rs.</span>
-                        <input
-                          type="text"
-                          name="price"
-                          className="aa-input aa-input--with-prefix"
-                          placeholder="e.g. 58,000"
-                          value={animalData.price}
-                          onChange={handleChange}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Discount + Status */}
-                  <div className="aa-grid aa-grid--2">
-                    <div className="aa-field">
-                      <label className="aa-label">Discount Price</label>
-                      <div className="aa-input-adorned">
-                        <span className="aa-input-prefix">Rs.</span>
-                        <input
-                          type="text"
-                          name="discountPrice"
-                          className="aa-input aa-input--with-prefix"
-                          placeholder="Optional"
-                          value={animalData.discountPrice}
-                          onChange={handleChange}
-                        />
-                      </div>
-                      <span className="aa-helper">Leave empty if no discount.</span>
-                    </div>
-                    <div className="aa-field">
-                      <label className="aa-label">Availability Status</label>
-                      <select
-                        name="status"
-                        className="aa-input aa-select"
-                        value={animalData.status}
-                        onChange={handleChange}
-                      >
-                        {statusOptions.map(opt => (
-                          <option key={opt.value} value={opt.value}>{opt.label}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Visibility */}
-                  <div className="aa-field">
-                    <label className="aa-label">Visibility</label>
-                    <div className="aa-toggle-wrap" onClick={() => handleToggle('visibility')}>
-                      <div className={`aa-toggle-track ${animalData.visibility ? 'aa-toggle-track--on' : ''}`}>
-                        <div className="aa-toggle-thumb"></div>
-                      </div>
-                      <div className="aa-toggle-info">
-                        {animalData.visibility ? (
-                          <>
-                            <FaEye className="aa-toggle-status-icon" />
-                            <span>Active — Visible on shop</span>
-                          </>
-                        ) : (
-                          <>
-                            <FaEyeSlash className="aa-toggle-status-icon" />
-                            <span>Hidden — Not visible on shop</span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Payment Preview */}
-                  {cleanPrice(animalData.price) > 0 && (
-                    <div className="aa-payment-preview">
-                      <div className="aa-payment-preview-header">
-                        <FaMoneyBillWave />
-                        <span>Payment Breakdown (USP Preview)</span>
-                      </div>
-                      <div className="aa-payment-preview-body">
-                        <div className="aa-payment-row">
-                          <span>Total Price</span>
-                          <span>Rs. {formatPrice(cleanPrice(animalData.price))}</span>
-                        </div>
-                        <div className="aa-payment-row aa-payment-row--highlight">
-                          <span>20% Advance Required</span>
-                          <span>Rs. {formatPrice(Math.round(cleanPrice(animalData.price) * 0.2))}</span>
-                        </div>
-                        <div className="aa-payment-row">
-                          <span>80% Remaining Balance</span>
-                          <span>Rs. {formatPrice(cleanPrice(animalData.price) - Math.round(cleanPrice(animalData.price) * 0.2))}</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* ┌─────────────────────────────────────┐ */}
-              {/* │  SECTION 3: Physical Details          │ */}
-              {/* └─────────────────────────────────────┘ */}
-              <div className="aa-section">
-                <div className="aa-section-header">
-                  <div className="aa-section-icon"><FaHeartbeat /></div>
-                  <div>
-                    <h2 className="aa-section-title">Physical Details</h2>
-                    <p className="aa-section-desc">Describe the animal's physical characteristics.</p>
-                  </div>
-                </div>
-
-                <div className="aa-section-body">
-                  {/* Color + Teeth */}
-                  <div className="aa-grid aa-grid--2">
-                    <div className="aa-field">
-                      <label className="aa-label">Color</label>
-                      <input
-                        type="text"
-                        name="color"
-                        className="aa-input"
-                        placeholder="e.g. White, Brown"
-                        value={animalData.color}
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div className="aa-field">
-                      <label className="aa-label">Teeth Count</label>
-                      <input
-                        type="number"
-                        name="teeth"
-                        className="aa-input"
-                        placeholder="e.g. 2, 4, 6"
-                        min="0"
-                        max="8"
-                        value={animalData.teeth}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Health */}
-                  <div className="aa-grid">
-                    <div className="aa-field">
-                      <label className="aa-label">Health Status</label>
-                      <select
-                        name="healthStatus"
-                        className="aa-input aa-select"
-                        value={animalData.healthStatus}
-                        onChange={handleChange}
-                      >
-                        {healthOptions.map(opt => (
-                          <option key={opt.value} value={opt.value}>{opt.label}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Location + City */}
-                  <div className="aa-grid aa-grid--2">
-                    <div className="aa-field">
-                      <label className="aa-label">
-                        Farm Location <span className="aa-required">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="farmLocation"
-                        className="aa-input"
-                        placeholder="e.g. Rahim Yar Khan Mandi"
-                        value={animalData.farmLocation}
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div className="aa-field">
-                      <label className="aa-label">
-                        City <span className="aa-required">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="city"
-                        className="aa-input"
-                        placeholder="e.g. Rahim Yar Khan"
-                        value={animalData.city}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Meat Integration */}
-                  <div className="aa-meat-integration">
-                    <div className="aa-field">
-                      <label className="aa-label">Meat & Qurbani Status</label>
-                      <div className="aa-toggle-wrap" onClick={() => handleToggle('isForMeat')}>
-                        <div className={`aa-toggle-track ${animalData.isForMeat ? 'aa-toggle-track--on' : ''}`}>
-                          <div className="aa-toggle-thumb"></div>
-                        </div>
-                        <div className="aa-toggle-info">
-                          {animalData.isForMeat ? (
-                            <span>Available for Qurbani / Meat processing</span>
-                          ) : (
-                            <span>Selling as Live Animal only</span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {animalData.isForMeat && (
-                      <div className="aa-grid aa-grid--2 aa-animate-fade-in">
-                        <div className="aa-field">
-                          <label className="aa-label">Slaughter Weight (Estimated)</label>
-                          <div className="aa-input-adorned">
-                            <input
-                              type="number"
-                              name="slaughterWeight"
-                              className="aa-input"
-                              placeholder="e.g. 20"
-                              value={animalData.slaughterWeight}
-                              onChange={handleChange}
-                            />
-                            <span className="aa-input-suffix">KG</span>
-                          </div>
-                        </div>
-                        <div className="aa-field">
-                          <label className="aa-label">Meat Yield Estimate</label>
-                          <input
-                            type="text"
-                            name="meatYieldEstimate"
-                            className="aa-input"
-                            placeholder="e.g. 55-60%"
-                            value={animalData.meatYieldEstimate}
-                            onChange={handleChange}
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* ┌─────────────────────────────────────┐ */}
-              {/* │  SECTION 4: Media Upload              │ */}
-              {/* └─────────────────────────────────────┘ */}
-              <div className="aa-section">
-                <div className="aa-section-header">
-                  <div className="aa-section-icon"><FaCamera /></div>
-                  <div>
-                    <h2 className="aa-section-title">Media Upload</h2>
-                    <p className="aa-section-desc">Upload photos and videos of the animal.</p>
-                  </div>
-                </div>
-
-                <div className="aa-section-body">
-
-                  {/* ── Image Upload ── */}
-                  <div className="aa-field">
-                    <label className="aa-label">
-                      Photos <span className="aa-required">*</span>
-                      {totalImageCount > 0 && (
-                        <span className="aa-media-count">({totalImageCount} / 8 photos)</span>
-                      )}
-                    </label>
-                    <div className="aa-media-limit-note">
-                      Max 8 images allowed. Each file should be under 5MB.
-                    </div>
-
-                    {/* Existing Images */}
-                    {existingImages.length > 0 && (
-                      <div className="aa-preview-grid aa-preview-grid--existing">
-                        <div className="aa-existing-label">Current Photos</div>
-                        <div className="aa-preview-items">
-                          {existingImages.map((imgPath, i) => (
-                            <div key={`existing-${i}`} className="aa-preview-item">
-                              <img
-                                src={buildMediaUrl(imgPath)}
-                                alt={`Existing ${i + 1}`}
-                                className="aa-preview-img"
-                              />
-                              {i === 0 && isFirstImageExisting && (
-                                <span className="aa-preview-badge">
-                                  <FaStar /> THUMBNAIL
-                                </span>
-                              )}
-                              <button
-                                type="button"
-                                className="aa-preview-remove"
-                                onClick={() => removeExistingImage(i)}
-                                title="Remove this photo"
-                              >
-                                <FaTimes />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Upload Zone */}
-                    <div
-                      className={`aa-upload-zone ${isDraggingImage ? 'aa-upload-zone--active' : ''}`}
-                      onDragOver={handleImageDragOver}
-                      onDragLeave={handleImageDragLeave}
-                      onDrop={handleImageDrop}
-                      onClick={() => imageInputRef.current?.click()}
-                    >
-                      <FaCloudUploadAlt className="aa-upload-zone-icon" />
-                      <p className="aa-upload-zone-text">
-                        <strong>Drag & Drop</strong> images here or <strong>click to browse</strong>
-                      </p>
-                      <p className="aa-upload-zone-hint">
-                        JPEG, PNG, WebP • Max 5MB each •
-                        {existingImages.length === 0
-                          ? ' First image = Thumbnail'
-                          : ' New photos will be added to gallery'}
-                      </p>
-                      <input
-                        type="file"
-                        ref={imageInputRef}
-                        onChange={(e) => { addImages(e.target.files); e.target.value = '' }}
-                        accept="image/jpeg,image/jpg,image/png,image/webp"
-                        multiple
-                        hidden
-                      />
-                    </div>
-
-                    {/* New Image Previews */}
-                    {newImagePreviews.length > 0 && (
-                      <div className="aa-preview-grid">
-                        <div className="aa-existing-label">New Photos to Upload</div>
-                        <div className="aa-preview-items">
-                          {newImagePreviews.map((src, i) => (
-                            <div key={`new-img-${i}`} className="aa-preview-item">
-                              <img src={src} alt={`New ${i + 1}`} className="aa-preview-img" />
-                              {existingImages.length === 0 && i === 0 && (
-                                <span className="aa-preview-badge">
-                                  <FaStar /> THUMBNAIL
-                                </span>
-                              )}
-                              <button
-                                type="button"
-                                className="aa-preview-remove"
-                                onClick={(e) => { e.stopPropagation(); removeNewImage(i) }}
-                              >
-                                <FaTimes />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* ── Video Upload ── */}
-                  <div className="aa-field">
-                    <label className="aa-label">
-                      Videos
-                      {totalVideoCount > 0 && (
-                        <span className="aa-media-count">({totalVideoCount} / 1 video)</span>
-                      )}
-                    </label>
-                    <div className="aa-media-limit-note">
-                      Max 1 video allowed. File should be under 50MB.
-                    </div>
-
-                    {/* Existing Videos */}
-                    {existingVideos.length > 0 && (
-                      <div className="aa-preview-grid aa-preview-grid--existing aa-preview-grid--videos">
-                        <div className="aa-existing-label">Current Videos</div>
-                        <div className="aa-preview-items aa-preview-items--videos">
-                          {existingVideos.map((vidPath, i) => (
-                            <div key={`existing-vid-${i}`} className="aa-preview-item aa-preview-item--video">
-                              <video src={buildMediaUrl(vidPath)} className="aa-preview-video" controls />
-                              <button
-                                type="button"
-                                className="aa-preview-remove"
-                                onClick={() => removeExistingVideo(i)}
-                                title="Remove this video"
-                              >
-                                <FaTimes />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Upload Zone */}
-                    <div
-                      className={`aa-upload-zone aa-upload-zone--video ${isDraggingVideo ? 'aa-upload-zone--active' : ''}`}
-                      onDragOver={handleVideoDragOver}
-                      onDragLeave={handleVideoDragLeave}
-                      onDrop={handleVideoDrop}
-                      onClick={() => videoInputRef.current?.click()}
-                    >
-                      <FaPlay className="aa-upload-zone-icon" />
-                      <p className="aa-upload-zone-text">
-                        <strong>Drag & Drop</strong> videos here or <strong>click to browse</strong>
-                      </p>
-                      <p className="aa-upload-zone-hint">MP4, WebM • Max 50MB each</p>
-                      <input
-                        type="file"
-                        ref={videoInputRef}
-                        onChange={(e) => { addVideos(e.target.files); e.target.value = '' }}
-                        accept="video/mp4,video/webm,video/quicktime"
-                        multiple
-                        hidden
-                      />
-                    </div>
-
-                    {/* New Video Previews */}
-                    {newVideoPreviews.length > 0 && (
-                      <div className="aa-preview-grid aa-preview-grid--videos">
-                        <div className="aa-existing-label">New Videos to Upload</div>
-                        <div className="aa-preview-items aa-preview-items--videos">
-                          {newVideoPreviews.map((src, i) => (
-                            <div key={`new-vid-${i}`} className="aa-preview-item aa-preview-item--video">
-                              <video src={src} className="aa-preview-video" controls />
-                              <button
-                                type="button"
-                                className="aa-preview-remove"
-                                onClick={(e) => { e.stopPropagation(); removeNewVideo(i) }}
-                              >
-                                <FaTimes />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* ── URL-based Media ── */}
-                  <div className="aa-url-media-section">
-                    <div className="aa-existing-label">External Media Links (Optional)</div>
-                    <p className="aa-section-desc mb-3">
-                      Instead of uploading, you can provide direct links to images or videos.
-                    </p>
-
-                    <div className="aa-grid aa-grid--2">
-                      <div className="aa-field">
-                        <label className="aa-label">Image URL</label>
-                        <div className="aa-input-adorned">
-                          <input
-                            type="text"
-                            className="aa-input"
-                            placeholder="https://example.com/image.jpg"
-                            value={imageUrlInput}
-                            onChange={(e) => setImageUrlInput(e.target.value)}
-                          />
-                          <button type="button" className="aa-url-add-btn" onClick={addImageUrl}>
-                            Add
-                          </button>
-                        </div>
-                      </div>
-                      <div className="aa-field">
-                        <label className="aa-label">Video URL</label>
-                        <div className="aa-input-adorned">
-                          <input
-                            type="text"
-                            className="aa-input"
-                            placeholder="https://example.com/video.mp4"
-                            value={videoUrlInput}
-                            onChange={(e) => setVideoUrlInput(e.target.value)}
-                          />
-                          <button type="button" className="aa-url-add-btn" onClick={addVideoUrl}>
-                            Add
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {(urlImages.length > 0 || urlVideos.length > 0) && (
-                      <div className="aa-url-previews mt-3">
-                        {urlImages.length > 0 && (
-                          <div className="aa-preview-grid mb-3">
-                            <div className="aa-existing-label">Linked Images</div>
-                            <div className="aa-preview-items">
-                              {urlImages.map((url, i) => (
-                                <div key={`url-img-${i}`} className="aa-preview-item">
-                                  <img
-                                    src={url}
-                                    alt={`URL ${i + 1}`}
-                                    className="aa-preview-img"
-                                    onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder.jpg' }}
-                                  />
-                                  <button type="button" className="aa-preview-remove" onClick={() => removeUrlImage(i)}>
-                                    <FaTimes />
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {urlVideos.length > 0 && (
-                          <div className="aa-preview-grid aa-preview-grid--videos">
-                            <div className="aa-existing-label">Linked Videos</div>
-                            <div className="aa-preview-items aa-preview-items--videos">
-                              {urlVideos.map((url, i) => (
-                                <div key={`url-vid-${i}`} className="aa-preview-item aa-preview-item--video">
-                                  <video
-                                    src={url}
-                                    className="aa-preview-video"
-                                    controls
-                                    onError={() => console.error('Video URL failed to load:', url)}
-                                  />
-                                  <button type="button" className="aa-preview-remove" onClick={() => removeUrlVideo(i)}>
-                                    <FaTimes />
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* ┌─────────────────────────────────────┐ */}
-              {/* │  SECTION 5: Description & Extras      │ */}
-              {/* └─────────────────────────────────────┘ */}
-              <div className="aa-section">
-                <div className="aa-section-header">
-                  <div className="aa-section-icon"><FaFileAlt /></div>
-                  <div>
-                    <h2 className="aa-section-title">Description & Extra Details</h2>
-                    <p className="aa-section-desc">Add descriptions and additional preferences.</p>
-                  </div>
-                </div>
-
-                <div className="aa-section-body">
-                  <div className="aa-field">
-                    <label className="aa-label">Short Description</label>
-                    <textarea
-                      name="shortDescription"
-                      className="aa-input aa-textarea aa-textarea--sm"
-                      placeholder="Brief summary (2-3 lines)..."
-                      value={animalData.shortDescription}
-                      onChange={handleChange}
-                      rows={3}
-                    />
-                  </div>
-
-                  <div className="aa-field">
-                    <label className="aa-label">Full Description</label>
-                    <ReactQuill
-                      theme="snow"
-                      value={animalData.fullDescription}
-                      onChange={(content) => setAnimalData(prev => ({ ...prev, fullDescription: content }))}
-                      placeholder="Detailed description with formatting..."
-                      className="aa-quill-editor"
-                      modules={{
-                        toolbar: [
-                          [{ header: [1, 2, 3, false] }],
-                          ['bold', 'italic', 'underline', 'strike'],
-                          [{ list: 'ordered' }, { list: 'bullet' }],
-                          ['clean']
-                        ]
-                      }}
-                    />
-                  </div>
-
-                  <div className="aa-field">
-                    <label className="aa-label">Special Notes</label>
-                    <textarea
-                      name="specialNotes"
-                      className="aa-input aa-textarea aa-textarea--sm"
-                      placeholder="Any special notes (optional)..."
-                      value={animalData.specialNotes}
-                      onChange={handleChange}
-                      rows={3}
-                    />
-                  </div>
-
-                  {/* Delivery + Negotiable */}
-                  <div className="aa-grid aa-grid--2">
-                    <div className="aa-field">
-                      <label className="aa-label">Delivery Available</label>
-                      <div className="aa-toggle-wrap" onClick={() => handleToggle('deliveryAvailable')}>
-                        <div className={`aa-toggle-track ${animalData.deliveryAvailable ? 'aa-toggle-track--on' : ''}`}>
-                          <div className="aa-toggle-thumb"></div>
-                        </div>
-                        <div className="aa-toggle-info">
-                          <FaTruck className="aa-toggle-status-icon" />
-                          <span>{animalData.deliveryAvailable ? 'Yes' : 'No'}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="aa-field">
-                      <label className="aa-label">Negotiable</label>
-                      <label className="aa-checkbox-wrap">
-                        <input
-                          type="checkbox"
-                          name="negotiable"
-                          checked={animalData.negotiable}
-                          onChange={handleChange}
-                        />
-                        <span className="aa-checkbox-custom">
-                          {animalData.negotiable && <FaCheckCircle />}
-                        </span>
-                        <span className="aa-checkbox-label">
-                          <FaHandshake className="aa-checkbox-icon" />
-                          Price is negotiable
-                        </span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* ┌─────────────────────────────────────┐ */}
-              {/* │  ACTION BUTTONS                      │ */}
-              {/* └─────────────────────────────────────┘ */}
-              <div className="aa-actions">
+          <nav className="aa-steps" aria-label="Form sections">
+            {STEPS.map((step, idx) => {
+              const state =
+                idx === activeStep ? 'active' :
+                completedSteps.includes(idx) ? 'done' : 'pending';
+              return (
                 <button
                   type="button"
-                  className="aa-btn aa-btn--secondary"
-                  onClick={() => navigate(isEditMode ? -1 : '/shop')}
-                  disabled={loading}
+                  key={step.id}
+                  className={`aa-step aa-step--${state}`}
+                  onClick={() => goToStep(idx)}
                 >
-                  Cancel
+                  <span className="aa-step__indicator">
+                    {state === 'done' ? <Icon name="check" size={12} /> : idx + 1}
+                  </span>
+                  {idx < STEPS.length - 1 && <span className="aa-step__line" />}
+                  <span className="aa-step__text">
+                    <span className="aa-step__label">{step.label}</span>
+                    <span className="aa-step__note">{step.note}</span>
+                  </span>
                 </button>
-                <button
-                  type="submit"
-                  className="aa-btn aa-btn--primary"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <FaSpinner className="aa-btn-spinner" />
-                      <span>{isEditMode ? 'Updating...' : 'Adding...'}</span>
-                    </>
-                  ) : (
-                    <>
-                      {isEditMode ? <FaSave /> : <FaPlusCircle />}
-                      <span>{isEditMode ? 'Update Animal' : 'Add Animal'}</span>
-                    </>
-                  )}
+              );
+            })}
+          </nav>
+
+          {/* Live preview card */}
+          <div className="aa-preview-card">
+            <div className="aa-preview-card__media">
+              {heroImage
+                ? <img src={heroImage} alt="" onError={(e) => { e.target.style.display = 'none'; }} />
+                : <Icon name="paw" size={22} className="aa-preview-card__placeholder" />}
+            </div>
+            <div className="aa-preview-card__body">
+              <p className="aa-preview-card__name">{form.name || 'Unnamed animal'}</p>
+              <p className="aa-preview-card__meta">
+                {form.breed || 'Breed'} · {form.category}
+              </p>
+              <p className="aa-preview-card__price">{previewPrice}</p>
+            </div>
+          </div>
+
+          <div className="aa-rail__progress">
+            <div className="aa-rail__progress-track">
+              <div className="aa-rail__progress-fill" style={{ width: `${progressPct}%` }} />
+            </div>
+            <span>{activeStep + 1} of {STEPS.length}</span>
+          </div>
+        </aside>
+
+        {/* ════════ Right content ════════ */}
+        <main className="aa-content">
+
+          {submitError && (
+            <div className="aa-banner aa-banner--error">
+              <span>{submitError}</span>
+              <button type="button" onClick={() => setSubmitError('')} aria-label="Dismiss">×</button>
+            </div>
+          )}
+
+          {/* ── Step 0: Basic Information ── */}
+          {activeStep === 0 && (
+            <section className="aa-panel">
+              <header className="aa-panel__header">
+                <p className="aa-eyebrow">Section 01</p>
+                <h2>Basic Information</h2>
+                <p className="aa-panel__sub">Identity, breed, and the physical details buyers see first.</p>
+              </header>
+
+              <div className="aa-grid aa-grid--2">
+                <Field label="Animal name" required className="aa-span-2">
+                  <TextInput
+                    placeholder="e.g. Sultan — Premium Beetal Bakra"
+                    value={form.name}
+                    onChange={(e) => update('name', e.target.value)}
+                  />
+                  {errors.name && <p className="aa-error">{errors.name}</p>}
+                </Field>
+
+                <Field label="Category" required>
+                  <Select options={CATEGORIES} value={form.category}
+                    onChange={(e) => update('category', e.target.value)} />
+                  {errors.category && <p className="aa-error">{errors.category}</p>}
+                </Field>
+
+                <Field label="Breed" required>
+                  <TextInput
+                    placeholder="e.g. Beetal, Teddy, Dera Din Panah"
+                    value={form.breed}
+                    onChange={(e) => update('breed', e.target.value)}
+                  />
+                  {errors.breed && <p className="aa-error">{errors.breed}</p>}
+                </Field>
+
+                <Field label="Gender">
+                  <SegmentedToggle
+                    value={form.gender}
+                    onChange={(v) => update('gender', v)}
+                    options={[{ value: 'male', label: 'Male' }, { value: 'female', label: 'Female' }]}
+                  />
+                </Field>
+
+                <Field label="Listing type">
+                  <SegmentedToggle
+                    value={form.listingType}
+                    onChange={(v) => update('listingType', v)}
+                    options={[{ value: 'normal', label: 'Normal' }, { value: 'featured', label: 'Featured' }]}
+                  />
+                </Field>
+
+                <Field label="Age" required>
+                  <div className="aa-input-group">
+                    <input
+                      className="aa-input aa-input--mono"
+                      type="number" min="0" placeholder="0"
+                      value={form.age}
+                      onChange={(e) => update('age', e.target.value)}
+                    />
+                    <Select
+                      options={[{ value: 'months', label: 'Months' }, { value: 'years', label: 'Years' }]}
+                      value={form.ageUnit}
+                      onChange={(e) => update('ageUnit', e.target.value)}
+                    />
+                  </div>
+                  {errors.age && <p className="aa-error">{errors.age}</p>}
+                </Field>
+
+                <Field label="Weight" required hint="Include unit, e.g. 45 kg">
+                  <TextInput
+                    className="aa-input--mono"
+                    placeholder="45 kg"
+                    value={form.weight}
+                    onChange={(e) => update('weight', e.target.value)}
+                  />
+                  {errors.weight && <p className="aa-error">{errors.weight}</p>}
+                </Field>
+
+                <Field label="Color">
+                  <TextInput
+                    placeholder="e.g. White & brown"
+                    value={form.color}
+                    onChange={(e) => update('color', e.target.value)}
+                  />
+                </Field>
+
+                <Field label="Teeth count" hint="Used to estimate age for buyers">
+                  <input
+                    className="aa-input aa-input--mono"
+                    type="number" min="0" placeholder="—"
+                    value={form.teeth}
+                    onChange={(e) => update('teeth', e.target.value)}
+                  />
+                </Field>
+
+                <Field label="Health status">
+                  <Select options={HEALTH_STATUSES} value={form.healthStatus}
+                    onChange={(e) => update('healthStatus', e.target.value)} />
+                </Field>
+
+                <Field label="Farm location" required>
+                  <TextInput
+                    placeholder="e.g. Green Valley Farm, Sadiqabad Road"
+                    value={form.farmLocation}
+                    onChange={(e) => update('farmLocation', e.target.value)}
+                  />
+                  {errors.farmLocation && <p className="aa-error">{errors.farmLocation}</p>}
+                </Field>
+
+                <Field label="City" required>
+                  <TextInput
+                    placeholder="e.g. Rahim Yar Khan"
+                    value={form.city}
+                    onChange={(e) => update('city', e.target.value)}
+                  />
+                  {errors.city && <p className="aa-error">{errors.city}</p>}
+                </Field>
+              </div>
+            </section>
+          )}
+
+          {/* ── Step 1: Pricing & Status ── */}
+          {activeStep === 1 && (
+            <section className="aa-panel">
+              <header className="aa-panel__header">
+                <p className="aa-eyebrow">Section 02</p>
+                <h2>Pricing &amp; Status</h2>
+                <p className="aa-panel__sub">What this animal cost, what it sells for, and its current state.</p>
+              </header>
+
+              <div className="aa-grid aa-grid--3">
+                <Field label="Purchase price" hint="Internal — not shown to buyers">
+                  <div className="aa-input-prefix">
+                    <span>Rs.</span>
+                    <input
+                      className="aa-input aa-input--mono"
+                      type="number" min="0" placeholder="0"
+                      value={form.purchasePrice}
+                      onChange={(e) => update('purchasePrice', e.target.value)}
+                    />
+                  </div>
+                </Field>
+
+                <Field label="Sale price" required>
+                  <div className="aa-input-prefix">
+                    <span>Rs.</span>
+                    <input
+                      className="aa-input aa-input--mono"
+                      type="number" min="0" placeholder="0"
+                      value={form.price}
+                      onChange={(e) => update('price', e.target.value)}
+                    />
+                  </div>
+                  {errors.price && <p className="aa-error">{errors.price}</p>}
+                </Field>
+
+                <Field label="Discount price" hint="Optional — shown as the listed price">
+                  <div className="aa-input-prefix">
+                    <span>Rs.</span>
+                    <input
+                      className="aa-input aa-input--mono"
+                      type="number" min="0" placeholder="0"
+                      value={form.discountPrice}
+                      onChange={(e) => update('discountPrice', e.target.value)}
+                    />
+                  </div>
+                </Field>
+              </div>
+
+              <div className="aa-divider" />
+
+              <div className="aa-grid aa-grid--2">
+                <Field label="Listing status">
+                  <Select options={STATUSES} value={form.status}
+                    onChange={(e) => update('status', e.target.value)} />
+                </Field>
+
+                <Field label="Visibility">
+                  <SegmentedToggle
+                    value={form.visibility ? 'visible' : 'hidden'}
+                    onChange={(v) => update('visibility', v === 'visible')}
+                    options={[{ value: 'visible', label: 'Visible' }, { value: 'hidden', label: 'Hidden' }]}
+                  />
+                </Field>
+              </div>
+
+              <div className="aa-switch-stack">
+                <SwitchRow
+                  label="Delivery available"
+                  hint="Show a delivery badge on this listing"
+                  checked={form.deliveryAvailable}
+                  onChange={(v) => update('deliveryAvailable', v)}
+                />
+                <SwitchRow
+                  label="Price negotiable"
+                  hint="Buyers will see a 'negotiable' tag"
+                  checked={form.negotiable}
+                  onChange={(v) => update('negotiable', v)}
+                />
+                <SwitchRow
+                  label="Available for meat"
+                  hint="Enables slaughter weight & yield fields below"
+                  checked={form.isForMeat}
+                  onChange={(v) => update('isForMeat', v)}
+                />
+              </div>
+
+              {form.isForMeat && (
+                <div className="aa-subpanel">
+                  <p className="aa-subpanel__title">
+                    <Icon name="tag" size={13} /> Meat integration details
+                  </p>
+                  <div className="aa-grid aa-grid--2">
+                    <Field label="Slaughter weight" hint="Estimated post-slaughter weight in kg">
+                      <input
+                        className="aa-input aa-input--mono"
+                        type="number" min="0" placeholder="0"
+                        value={form.slaughterWeight}
+                        onChange={(e) => update('slaughterWeight', e.target.value)}
+                      />
+                    </Field>
+                    <Field label="Meat yield estimate">
+                      <TextInput
+                        placeholder="e.g. ~18-20 kg usable meat"
+                        value={form.meatYieldEstimate}
+                        onChange={(e) => update('meatYieldEstimate', e.target.value)}
+                      />
+                    </Field>
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* ── Step 2: Media ── */}
+          {activeStep === 2 && (
+            <section className="aa-panel">
+              <header className="aa-panel__header">
+                <p className="aa-eyebrow">Section 03</p>
+                <h2>Media</h2>
+                <p className="aa-panel__sub">Photos sell livestock. Add clear, well-lit images first.</p>
+              </header>
+
+              {/* Upload dropzone */}
+              <div
+                className="aa-dropzone"
+                onClick={() => fileInputRef.current?.click()}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => { e.preventDefault(); handleFileSelect(e.dataTransfer.files); }}
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  hidden
+                  onChange={(e) => handleFileSelect(e.target.files)}
+                />
+                <Icon name={uploadingImages ? 'spinner' : 'upload'} size={22}
+                  className={uploadingImages ? 'aa-spin' : ''} />
+                <p className="aa-dropzone__title">
+                  {uploadingImages ? 'Uploading…' : 'Drag images here, or click to browse'}
+                </p>
+                <p className="aa-dropzone__hint">JPG, PNG or WEBP — up to 10MB each</p>
+              </div>
+
+              {/* URL fallback */}
+              <div className="aa-url-row">
+                <div className="aa-input-icon">
+                  <Icon name="link" size={14} />
+                  <input
+                    className="aa-input"
+                    placeholder="Or paste an image URL"
+                    value={urlDraft.image}
+                    onChange={(e) => setUrlDraft((p) => ({ ...p, image: e.target.value }))}
+                    onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addImageUrl())}
+                  />
+                </div>
+                <button type="button" className="aa-btn-secondary" onClick={addImageUrl}>
+                  <Icon name="plus" size={13} /> Add
                 </button>
               </div>
 
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+              {/* Image grid */}
+              {form.images.length > 0 && (
+                <div className="aa-media-grid">
+                  {form.images.map((src, idx) => (
+                    <div className="aa-media-thumb" key={idx}>
+                      <img src={getImageSrc(src)} alt="" onError={(e) => { e.target.style.opacity = 0.15; }} />
+                      {idx === 0 && <span className="aa-media-thumb__badge">Cover</span>}
+                      <button
+                        type="button"
+                        className="aa-media-thumb__remove"
+                        onClick={() => removeImage(idx)}
+                        aria-label="Remove image"
+                      >
+                        <Icon name="trash" size={12} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
 
-export default AddAnimal
+              <div className="aa-divider" />
+
+              {/* Videos */}
+              <Field label="Video links" hint="YouTube, Facebook, or direct video URLs">
+                <div className="aa-url-row">
+                  <div className="aa-input-icon">
+                    <Icon name="video" size={14} />
+                    <input
+                      className="aa-input"
+                      placeholder="Paste a video URL"
+                      value={urlDraft.video}
+                      onChange={(e) => setUrlDraft((p) => ({ ...p, video: e.target.value }))}
+                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addVideoUrl())}
+                    />
+                  </div>
+                  <button type="button" className="aa-btn-secondary" onClick={addVideoUrl}>
+                    <Icon name="plus" size={13} /> Add
+                  </button>
+                </div>
+              </Field>
+
+              {form.videos.length > 0 && (
+                <ul className="aa-link-list">
+                  {form.videos.map((v, idx) => (
+                    <li key={`${v}-${idx}`}>
+                      <Icon name="video" size={13} />
+                      <span className="aa-link-list__url">{v}</span>
+                      <button type="button" onClick={() => removeVideo(idx)} aria-label="Remove video">
+                        <Icon name="trash" size={12} />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          )}
+
+          {/* ── Step 3: SEO & Description ── */}
+          {activeStep === 3 && (
+            <section className="aa-panel">
+              <header className="aa-panel__header">
+                <p className="aa-eyebrow">Section 04</p>
+                <h2>SEO &amp; Description</h2>
+                <p className="aa-panel__sub">How this listing reads to buyers and to search engines.</p>
+              </header>
+
+              <Field label="Short description" hint="Shown on listing cards — keep it to one line">
+                <TextInput
+                  placeholder="e.g. Healthy, well-fed Beetal bakra ready for Qurbani"
+                  value={form.shortDescription}
+                  onChange={(e) => update('shortDescription', e.target.value)}
+                />
+              </Field>
+
+              <Field label="Full description">
+                <TextArea
+                  rows={5}
+                  placeholder="Describe diet, temperament, vaccination history, and anything a buyer should know…"
+                  value={form.fullDescription}
+                  onChange={(e) => update('fullDescription', e.target.value)}
+                />
+              </Field>
+
+              <Field label="Special notes" hint="Internal notes or buyer-facing caveats">
+                <TextArea
+                  rows={3}
+                  placeholder="e.g. Slight limp on left leg, otherwise in excellent health"
+                  value={form.specialNotes}
+                  onChange={(e) => update('specialNotes', e.target.value)}
+                />
+              </Field>
+
+              <div className="aa-divider" />
+
+              <p className="aa-subpanel__title"><Icon name="tag" size={13} /> Search appearance</p>
+
+              <Field label="SEO title" hint={`${form.seoTitle.length}/60 characters`}>
+                <TextInput
+                  maxLength={70}
+                  placeholder={form.name ? `${form.name} for sale in ${form.city || 'your city'}` : 'SEO title'}
+                  value={form.seoTitle}
+                  onChange={(e) => update('seoTitle', e.target.value)}
+                />
+              </Field>
+
+              <Field label="SEO description" hint={`${form.seoDescription.length}/160 characters`}>
+                <TextArea
+                  rows={3}
+                  maxLength={180}
+                  placeholder="A short, search-friendly summary of this listing…"
+                  value={form.seoDescription}
+                  onChange={(e) => update('seoDescription', e.target.value)}
+                />
+              </Field>
+
+              {/* Search result preview */}
+              <div className="aa-serp-preview">
+                <p className="aa-serp-preview__label">Preview</p>
+                <p className="aa-serp-preview__title">
+                  {form.seoTitle || form.name || 'Animal listing title'}
+                </p>
+                <p className="aa-serp-preview__url">meatbyalvi.com › animals › {form.name ? form.name.toLowerCase().replace(/\s+/g, '-') : 'slug'}</p>
+                <p className="aa-serp-preview__desc">
+                  {form.seoDescription || form.shortDescription || 'Your animal description will appear here once added.'}
+                </p>
+              </div>
+            </section>
+          )}
+
+          {/* ── Footer nav ── */}
+          <footer className="aa-footer">
+            <button
+              type="button"
+              className="aa-btn-ghost"
+              onClick={handleBack}
+              disabled={activeStep === 0}
+            >
+              <Icon name="arrowLeft" size={14} /> Back
+            </button>
+
+            {activeStep < STEPS.length - 1 ? (
+              <button type="button" className="aa-btn-primary" onClick={handleNext}>
+                Continue <Icon name="arrowRight" size={14} />
+              </button>
+            ) : (
+              <button type="submit" className="aa-btn-primary" disabled={submitting}>
+                {submitting
+                  ? <><Icon name="spinner" size={14} className="aa-spin" /> Saving…</>
+                  : submitted
+                  ? <><Icon name="check" size={14} /> Saved</>
+                  : <><Icon name="save" size={14} /> {isEdit ? 'Save changes' : 'Publish listing'}</>}
+              </button>
+            )}
+          </footer>
+        </main>
+      </form>
+    </div>
+  );
+}

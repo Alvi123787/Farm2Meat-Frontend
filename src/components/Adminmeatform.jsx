@@ -70,7 +70,7 @@ export default function Adminmeatform() {
     toastTimer.current = setTimeout(() => setToast(null), 3500)
   }
 
-  const handleFileChange = async (file) => {
+  const handleFileChange = (file) => {
     if (!file || !file.type.startsWith('image/')) return
 
     // Revoke previous blob if exists to prevent memory leaks
@@ -78,31 +78,11 @@ export default function Adminmeatform() {
       URL.revokeObjectURL(imagePreview)
     }
 
-    // Show local preview immediately
+    // Show local preview only (no upload to server, use image URL field)
     const localUrl = URL.createObjectURL(file)
     setImagePreview(localUrl)
-    setSubmitting(true)
-
-    try {
-      const formData = new FormData()
-      formData.append('image', file)
-
-      const response = await api.post('/api/upload/single', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      })
-
-      if (response.data.success) {
-        set('imageUrl', response.data.url)
-        showToast('success', 'Image uploaded successfully!')
-      }
-    } catch (err) {
-      console.error('Upload error:', err)
-      showToast('error', 'Failed to upload image. Please try again.')
-      setImagePreview(null)
-      set('imageUrl', '')
-    } finally {
-      setSubmitting(false)
-    }
+    // For now, just show preview, user can use image URL field
+    showToast('info', 'Preview shown. Please use image URL field for now.')
   }
 
   const removeImage = () => {
