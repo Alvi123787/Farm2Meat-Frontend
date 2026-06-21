@@ -69,6 +69,19 @@ export const useMeatItems = () => {
     }
   }, [])
 
+  const getItemById = useCallback(async (id) => {
+    setLoading(true)
+    try {
+      const response = await api.get(`/api/meat-items/${id}`)
+      return response.data
+    } catch (err) {
+      setError(err.response?.data?.message || err.message)
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
   const getByCategory = useCallback(async () => {
     setLoading(true)
     try {
@@ -95,7 +108,7 @@ export const useMeatItems = () => {
     }
   }, [])
 
-  return { loading, error, getAllItems, getByCategory, getBestsellers }
+  return { loading, error, getAllItems, getByCategory, getBestsellers, getItemById }
 }
 
 export const useAdminItems = () => {

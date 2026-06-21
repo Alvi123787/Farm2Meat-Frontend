@@ -51,7 +51,6 @@ const INITIAL_FORM = {
   category: 'mutton',
   price: '',
   unit: 'kg',
-  stock: 0,
   expirationDate: '',
   description: '',
   imageUrl: '',
@@ -178,7 +177,6 @@ export default function AdminMeatItemsPage() {
     // Validation
     if (!form.name.trim()) return toast.error('Name is required')
     if (!form.price || form.price <= 0) return toast.error('Valid price is required')
-    if (form.stock < 0) return toast.error('Stock cannot be negative')
 
     setSubmitting(true)
     try {
@@ -286,7 +284,6 @@ export default function AdminMeatItemsPage() {
                 <th>Product</th>
                 <th>Category</th>
                 <th>Price & Unit</th>
-                <th>Stock</th>
                 <th>Expiry</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -320,11 +317,6 @@ export default function AdminMeatItemsPage() {
                     </div>
                   </td>
                   <td>
-                    <div className={`amip-stock-badge ${item.stock < 5 ? 'low' : ''}`}>
-                      {item.stock} {item.unit}
-                    </div>
-                  </td>
-                  <td>
                     <div className="amip-expiry">
                       <FontAwesomeIcon icon={faCalendarAlt} />
                       {item.expirationDate ? new Date(item.expirationDate).toLocaleDateString() : 'N/A'}
@@ -336,7 +328,7 @@ export default function AdminMeatItemsPage() {
                       onClick={() => handleToggleAvail(item._id)}
                     >
                       <FontAwesomeIcon icon={item.isAvailable ? faCheckCircle : faTimesCircle} />
-                      {item.isAvailable ? 'Available' : 'Out of Stock'}
+                      {item.isAvailable ? 'Available' : 'Unavailable'}
                     </button>
                   </td>
                   <td>
@@ -412,16 +404,6 @@ export default function AdminMeatItemsPage() {
                       <option key={u.value} value={u.value}>{u.label}</option>
                     ))}
                   </select>
-                </div>
-
-                <div className="amip-form-group">
-                  <label>Stock Quantity</label>
-                  <input
-                    type="number"
-                    name="stock"
-                    value={form.stock}
-                    onChange={handleInputChange}
-                  />
                 </div>
 
                 <div className="amip-form-group">

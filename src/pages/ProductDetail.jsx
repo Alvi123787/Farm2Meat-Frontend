@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import ShopHeader from '../components/ShopHeader'
 import {
   FaShareAlt,
@@ -13,7 +13,6 @@ import {
   FaWeightHanging,
   FaDna,
   FaClock,
-  FaSyringe,
   FaHeartbeat,
   FaTruck,
   FaVideo,
@@ -30,22 +29,15 @@ import {
   FaClipboardList,
   FaChevronDown,
   FaChevronUp,
-  FaSpinner,
   FaExclamationTriangle,
   FaPalette,
   FaMars,
   FaVenus,
   FaHandshake,
-  FaBoxOpen,
-  FaStar,
   FaMedal,
   FaUserShield,
-  FaPhoneAlt,
-  FaHome,
-  FaStore,
   FaRegHeart,
   FaHeart,
-  FaCheck,
   FaUndoAlt,
   FaHeadset
 } from 'react-icons/fa'
@@ -101,12 +93,12 @@ const buildLocation = (animal) => {
 const buildDetails = (animal) => {
   const details = []
   if (animal.breed) details.push({ icon: <FaDna />, label: 'Breed', value: animal.breed })
-  
+
   if (animal.age) {
     const ageUnit = animal.ageUnit === 'years' ? (animal.age > 1 ? 'years' : 'year') : (animal.age > 1 ? 'months' : 'month')
     details.push({ icon: <FaClock />, label: 'Age', value: `${animal.age} ${ageUnit}` })
   }
-  
+
   if (animal.weight) {
     const weightValue = animal.weight.toString().toLowerCase().includes('kg') ? animal.weight : `${animal.weight} KG`
     details.push({ icon: <FaWeightHanging />, label: 'Weight (Live)', value: weightValue })
@@ -191,9 +183,9 @@ const ProductDetail = () => {
           const isReserved = status === 'reserved' || status === 'Reserved'
 
           if (isSold || isReserved) {
-            navigate('/unavailable-item', { 
+            navigate('/unavailable-item', {
               replace: true,
-              state: { productName: animal.name } 
+              state: { productName: animal.name }
             })
             return
           }
@@ -228,29 +220,25 @@ const ProductDetail = () => {
 
   if (loading) {
     return (
-      <div className="product-loading">
-        <div className="loading-spinner-wrapper">
-          <div className="loading-spinner"></div>
-        </div>
-        <p>Loading animal details...</p>
+      <div className="pd-loading">
+        <div className="pd-spinner" />
+        <p>Loading animal details…</p>
       </div>
     )
   }
 
   if (error || !productData) {
     return (
-      <div className="product-error">
-        <div className="error-container">
-          <div className="error-icon">
-            <FaExclamationTriangle />
-          </div>
+      <div className="pd-error">
+        <div className="pd-error__card">
+          <div className="pd-error__icon"><FaExclamationTriangle /></div>
           <h2>{error || 'Animal Not Found'}</h2>
           <p>The animal you're looking for might have been removed or doesn't exist.</p>
-          <div className="error-actions">
-            <button className="btn-primary" onClick={() => navigate('/shop')}>
+          <div className="pd-error__actions">
+            <button className="pd-btn pd-btn--primary" onClick={() => navigate('/shop')}>
               <FaArrowLeft /> Back to Shop
             </button>
-            <button className="btn-outline" onClick={() => window.location.reload()}>
+            <button className="pd-btn pd-btn--outline" onClick={() => window.location.reload()}>
               Try Again
             </button>
           </div>
@@ -293,7 +281,6 @@ const ProductDetail = () => {
 
   const handleBuyNow = async () => {
     if (!productData) return
-
     try {
       setLoading(true)
       const response = await api.get(`/api/animals/${id}`)
@@ -302,9 +289,9 @@ const ProductDetail = () => {
       const isStillAvailable = status === 'available' || status === 'new' || status === 'Available'
 
       if (!isStillAvailable) {
-        navigate('/unavailable-item', { 
+        navigate('/unavailable-item', {
           replace: true,
-          state: { productName: productData.name } 
+          state: { productName: productData.name }
         })
         return
       }
@@ -340,97 +327,84 @@ const ProductDetail = () => {
   }
 
   return (
-    <div className="product-detail-page">
-      {/* Header — consistent with shop/cart/checkout */}
-      <div className="shp-header-wrapper">
-        <ShopHeader 
-          activeCategory={productData?.category} 
+    <div className="pd-page">
+      <div className="pd-header-wrapper">
+        <ShopHeader
+          activeCategory={productData?.category}
           productName={productData?.name}
           pageTitle="Product Details"
         />
       </div>
 
-      <div className="container">
-        <div className="product-main">
-          {/* Gallery Section */}
-          <div className="gallery-section">
-            <div className="gallery-card">
-              {/* Main Image Container */}
-              <div className="main-image-wrapper">
+      <div className="pd-container">
+        <div className="pd-main">
+
+          {/* ── Gallery ── */}
+          <div className="pd-gallery">
+            <div className="pd-gallery__card">
+              <div className="pd-gallery__main">
                 <img
                   src={images[activeImage]}
                   alt={productData.name}
-                  className="main-image"
+                  className="pd-gallery__img"
                   onClick={() => setIsLightboxOpen(true)}
                 />
 
-                {/* Status Badges */}
-                <div className="image-badges">
-                  {hasDiscount && (
-                    <span className="badge discount">-{discount}% OFF</span>
-                  )}
-                  <span className={`badge status ${stockStatus}`}>
-                    <span className="status-dot" />
+                <div className="pd-badges">
+                  {hasDiscount && <span className="pd-badge pd-badge--discount">-{discount}% OFF</span>}
+                  <span className={`pd-badge pd-badge--status pd-badge--${stockStatus}`}>
+                    <span className="pd-badge__dot" />
                     {isSold ? 'Sold Out' : isReserved ? 'Reserved' : 'Available'}
                   </span>
                 </div>
 
-                {/* Image Actions */}
-                <div className="image-actions">
-                  <button 
-                    className={`action-btn wishlist ${isWishlisted ? 'active' : ''}`}
+                <div className="pd-quick-actions">
+                  <button
+                    className={`pd-icon-btn ${isWishlisted ? 'pd-icon-btn--active' : ''}`}
                     onClick={() => setIsWishlisted(!isWishlisted)}
                     title="Add to Wishlist"
                   >
                     {isWishlisted ? <FaHeart /> : <FaRegHeart />}
                   </button>
-                  <button className="action-btn" onClick={() => setIsLightboxOpen(true)} title="View Fullscreen">
+                  <button className="pd-icon-btn" onClick={() => setIsLightboxOpen(true)} title="View Fullscreen">
                     <FaExpand />
                   </button>
-                  <div className="share-wrapper">
-                    <button className="action-btn" onClick={handleShare} title="Share">
+                  <div className="pd-share">
+                    <button className="pd-icon-btn" onClick={handleShare} title="Share">
                       <FaShareAlt />
                     </button>
-                    {showShareTooltip && (
-                      <span className="share-tooltip">Link Copied!</span>
-                    )}
+                    {showShareTooltip && <span className="pd-share__tip">Link Copied!</span>}
                   </div>
                 </div>
 
-                {/* Navigation Arrows */}
                 {images.length > 1 && (
                   <>
-                    <button className="nav-arrow prev" onClick={handlePrevImage}>
+                    <button className="pd-nav pd-nav--prev" onClick={handlePrevImage} aria-label="Previous image">
                       <FaChevronLeft />
                     </button>
-                    <button className="nav-arrow next" onClick={handleNextImage}>
+                    <button className="pd-nav pd-nav--next" onClick={handleNextImage} aria-label="Next image">
                       <FaChevronRight />
                     </button>
                   </>
                 )}
 
-                {/* Image Counter */}
                 {images.length > 1 && (
-                  <div className="image-counter">
-                    {activeImage + 1} / {images.length}
-                  </div>
+                  <div className="pd-counter">{activeImage + 1} / {images.length}</div>
                 )}
 
-                {/* Unavailable Overlay */}
                 {(isSold || isReserved) && (
-                  <div className="unavailable-overlay">
-                    <span className="unavailable-stamp">{isSold ? 'SOLD' : 'RESERVED'}</span>
+                  <div className="pd-unavailable">
+                    <span className="pd-unavailable__stamp">{isSold ? 'SOLD' : 'RESERVED'}</span>
                   </div>
                 )}
               </div>
 
-              {/* Thumbnail Strip */}
               {images.length > 1 && (
-                <div className="thumbnail-strip">
+                <div className="pd-thumbs">
                   {images.map((img, index) => (
                     <button
                       key={index}
-                      className={`thumbnail ${activeImage === index ? 'active' : ''}`}
+                      className={`pd-thumb ${activeImage === index ? 'pd-thumb--active' : ''}`}
                       onClick={() => setActiveImage(index)}
                     >
                       <img src={img} alt={`View ${index + 1}`} />
@@ -439,15 +413,12 @@ const ProductDetail = () => {
                 </div>
               )}
 
-              {/* Video Gallery */}
               {videos.length > 0 && (
-                <div className="video-section">
-                  <h4 className="section-title">
-                    <FaVideo /> Product Videos
-                  </h4>
-                  <div className="video-grid">
+                <div className="pd-videos">
+                  <h4 className="pd-section-title"><FaVideo /> Product Videos</h4>
+                  <div className="pd-videos__grid">
                     {videos.map((vid, index) => (
-                      <video key={index} src={vid} className="product-video" controls preload="metadata" />
+                      <video key={index} src={vid} className="pd-video" controls preload="metadata" />
                     ))}
                   </div>
                 </div>
@@ -455,196 +426,133 @@ const ProductDetail = () => {
             </div>
           </div>
 
-          {/* Product Info Section */}
-          <div className="info-section">
-            <div className="info-card">
-              {/* Seller Info */}
-              <div className="seller-info">
-                <div className="seller-badge">
-                  <FaMedal />
-                  <span>Verified Seller</span>
-                </div>
-                <div className="seller-name">
-                  <FaUserShield />
-                  <span>MeatByAlvi Official</span>
-                </div>
+          {/* ── Info ── */}
+          <div className="pd-info">
+            <div className="pd-info__card">
+              <div className="pd-seller">
+                <div className="pd-pill pd-pill--gold"><FaMedal /><span>Verified Seller</span></div>
+                <div className="pd-pill pd-pill--neutral"><FaUserShield /><span>MeatByAlvi Official</span></div>
               </div>
 
-              {/* Product Title */}
-              <h1 className="product-title">{productData.name}</h1>
+              <h1 className="pd-title">{productData.name}</h1>
 
-              {/* Meta Information */}
-              <div className="meta-tags">
-                {productData.breed && (
-                  <span className="meta-tag">
-                    <FaDna /> {productData.breed}
-                  </span>
-                )}
-                {productData.category && (
-                  <span className="meta-tag">
-                    <FaCertificate /> {productData.category}
-                  </span>
-                )}
+              <div className="pd-tags">
+                {productData.breed && <span className="pd-tag"><FaDna /> {productData.breed}</span>}
+                {productData.category && <span className="pd-tag"><FaCertificate /> {productData.category}</span>}
               </div>
 
-              {/* Price Section */}
-              <div className="price-section">
-                <div className="price-main">
-                  <span className="price-label">Price</span>
-                  <div className="price-values">
-                    <span className="current-price">{formatPrice(productData.price)}</span>
-                    {hasDiscount && (
-                      <span className="old-price">{formatPrice(oldPrice)}</span>
-                    )}
+              <div className="pd-price">
+                <div className="pd-price__top">
+                  <span className="pd-price__label">Price</span>
+                  <div className="pd-price__row">
+                    <span className="pd-price__current">{formatPrice(productData.price)}</span>
+                    {hasDiscount && <span className="pd-price__old">{formatPrice(oldPrice)}</span>}
                   </div>
                 </div>
                 {hasDiscount && (
-                  <div className="savings-badge">
-                    <FaTag />
-                    <span>Save {formatPrice(savings)} ({discount}% OFF)</span>
+                  <div className="pd-price__savings">
+                    <FaTag /><span>Save {formatPrice(savings)} ({discount}% OFF)</span>
                   </div>
                 )}
               </div>
 
-              {/* Quick Info Cards */}
-              <div className="quick-info-grid">
+              <div className="pd-quick-grid">
                 {productData.weight && (
-                  <div className="quick-info-card">
+                  <div className="pd-quick-card">
                     <FaWeightHanging />
                     <div>
-                      <span className="label">Weight</span>
-                      <span className="value">
-                        {productData.weight.toString().toLowerCase().includes('kg') 
-                          ? productData.weight 
+                      <span className="pd-quick-card__label">Weight</span>
+                      <span className="pd-quick-card__value">
+                        {productData.weight.toString().toLowerCase().includes('kg')
+                          ? productData.weight
                           : `${productData.weight} KG`}
                       </span>
                     </div>
                   </div>
                 )}
                 {productData.age && (
-                  <div className="quick-info-card">
+                  <div className="pd-quick-card">
                     <FaClock />
                     <div>
-                      <span className="label">Age</span>
-                      <span className="value">
-                        {productData.age} {productData.ageUnit === 'years' 
-                          ? (productData.age > 1 ? 'years' : 'year') 
+                      <span className="pd-quick-card__label">Age</span>
+                      <span className="pd-quick-card__value">
+                        {productData.age} {productData.ageUnit === 'years'
+                          ? (productData.age > 1 ? 'years' : 'year')
                           : (productData.age > 1 ? 'months' : 'month')}
                       </span>
                     </div>
                   </div>
                 )}
-                <div className="quick-info-card">
+                <div className="pd-quick-card">
                   <FaMapMarkerAlt />
                   <div>
-                    <span className="label">Location</span>
-                    <span className="value">{buildLocation(productData)}</span>
+                    <span className="pd-quick-card__label">Location</span>
+                    <span className="pd-quick-card__value">{buildLocation(productData)}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Delivery Options */}
-              <div className="delivery-options">
-                <div className="delivery-option">
-                  <FaTruck />
-                  <span>Free Delivery in RYK</span>
-                </div>
-                <div className="delivery-option">
-                  <FaMoneyBillWave />
-                  <span>Cash on Delivery</span>
-                </div>
+              <div className="pd-delivery">
+                <div className="pd-delivery__item"><FaTruck /><span>Free Delivery in RYK</span></div>
+                <div className="pd-delivery__item"><FaMoneyBillWave /><span>Cash on Delivery</span></div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="action-buttons">
+              <div className="pd-actions">
                 <button
-                  className={`btn-add-to-cart ${addedToCart ? 'added' : ''}`}
+                  className={`pd-btn pd-btn--cart ${addedToCart ? 'pd-btn--added' : ''}`}
                   onClick={handleAddToCart}
                   disabled={!isAvailable}
                 >
-                  {addedToCart ? (
-                    <><FaCheckCircle /> Added to Cart</>
-                  ) : (
-                    <><FaShoppingCart /> Add to Cart</>
-                  )}
+                  {addedToCart ? <><FaCheckCircle /> Added to Cart</> : <><FaShoppingCart /> Add to Cart</>}
                 </button>
-                <button
-                  className="btn-buy-now"
-                  onClick={handleBuyNow}
-                  disabled={!isAvailable}
-                >
+                <button className="pd-btn pd-btn--buy" onClick={handleBuyNow} disabled={!isAvailable}>
                   Buy Now <FaArrowRight />
                 </button>
               </div>
 
-              {/* WhatsApp Button */}
-              <button
-                className="btn-whatsapp"
-                onClick={handleWhatsApp}
-                disabled={isSold}
-              >
+              <button className="pd-btn pd-btn--whatsapp" onClick={handleWhatsApp} disabled={isSold}>
                 <FaWhatsapp />
                 <span>{isSold ? 'Currently Unavailable' : 'Chat on WhatsApp'}</span>
               </button>
 
               {productData.negotiable && (
-                <div className="negotiable-notice">
-                  <FaHandshake />
-                  <span>Price negotiable — contact seller to discuss</span>
+                <div className="pd-negotiable">
+                  <FaHandshake /><span>Price negotiable — contact seller to discuss</span>
                 </div>
               )}
 
-              {/* Product Features */}
-              <div className="product-features">
-                <div className="feature">
-                  <FaUndoAlt />
-                  <span>7 Day Return Policy</span>
-                </div>
-                <div className="feature">
-                  <FaHeadset />
-                  <span>24/7 Support</span>
-                </div>
-                <div className="feature">
-                  <FaShieldAlt />
-                  <span>Secure Payment</span>
-                </div>
+              <div className="pd-features">
+                <div className="pd-features__item"><FaUndoAlt /><span>7 Day Return Policy</span></div>
+                <div className="pd-features__item"><FaHeadset /><span>24/7 Support</span></div>
+                <div className="pd-features__item"><FaShieldAlt /><span>Secure Payment</span></div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Tabs Section */}
-        <div className="product-tabs">
-          <div className="tabs-header">
-            <button
-              className={`tab ${activeTab === 'details' ? 'active' : ''}`}
-              onClick={() => setActiveTab('details')}
-            >
+        {/* ── Tabs ── */}
+        <div className="pd-tabs">
+          <div className="pd-tabs__header">
+            <button className={`pd-tab ${activeTab === 'details' ? 'pd-tab--active' : ''}`} onClick={() => setActiveTab('details')}>
               <FaClipboardList /> Specifications
             </button>
-            <button
-              className={`tab ${activeTab === 'description' ? 'active' : ''}`}
-              onClick={() => setActiveTab('description')}
-            >
+            <button className={`pd-tab ${activeTab === 'description' ? 'pd-tab--active' : ''}`} onClick={() => setActiveTab('description')}>
               <FaInfoCircle /> Description
             </button>
-            <button
-              className={`tab ${activeTab === 'trust' ? 'active' : ''}`}
-              onClick={() => setActiveTab('trust')}
-            >
+            <button className={`pd-tab ${activeTab === 'trust' ? 'pd-tab--active' : ''}`} onClick={() => setActiveTab('trust')}>
               <FaShieldAlt /> Why Trust Us
             </button>
           </div>
 
-          <div className="tabs-content">
+          <div className="pd-tabs__content">
             {activeTab === 'details' && (
-              <div className="specifications-grid">
+              <div className="pd-specs">
                 {details.map((detail, index) => (
-                  <div key={index} className="spec-card">
-                    <div className="spec-icon">{detail.icon}</div>
-                    <div className="spec-content">
-                      <span className="spec-label">{detail.label}</span>
-                      <span className="spec-value">{detail.value}</span>
+                  <div key={index} className="pd-spec">
+                    <div className="pd-spec__icon">{detail.icon}</div>
+                    <div className="pd-spec__body">
+                      <span className="pd-spec__label">{detail.label}</span>
+                      <span className="pd-spec__value">{detail.value}</span>
                     </div>
                   </div>
                 ))}
@@ -652,22 +560,18 @@ const ProductDetail = () => {
             )}
 
             {activeTab === 'description' && (
-              <div className="description-content">
-                <div 
-                  className={`description-text ${showFullDesc ? 'expanded' : ''}`}
+              <div className="pd-desc">
+                <div
+                  className={`pd-desc__text ${showFullDesc ? 'pd-desc__text--expanded' : ''}`}
                   dangerouslySetInnerHTML={{ __html: description }}
                 />
                 {description.length > 200 && (
-                  <button className="read-more-btn" onClick={() => setShowFullDesc(!showFullDesc)}>
-                    {showFullDesc ? (
-                      <>Show Less <FaChevronUp /></>
-                    ) : (
-                      <>Read More <FaChevronDown /></>
-                    )}
+                  <button className="pd-read-more" onClick={() => setShowFullDesc(!showFullDesc)}>
+                    {showFullDesc ? <>Show Less <FaChevronUp /></> : <>Read More <FaChevronDown /></>}
                   </button>
                 )}
                 {productData.specialNotes && (
-                  <div className="special-notes">
+                  <div className="pd-notes">
                     <FaInfoCircle />
                     <p>{productData.specialNotes}</p>
                   </div>
@@ -676,11 +580,11 @@ const ProductDetail = () => {
             )}
 
             {activeTab === 'trust' && (
-              <div className="trust-grid">
+              <div className="pd-trust">
                 {trustElements.map((item, index) => (
-                  <div key={index} className="trust-card">
-                    <div className="trust-icon">{item.icon}</div>
-                    <div className="trust-content">
+                  <div key={index} className="pd-trust__card">
+                    <div className="pd-trust__icon">{item.icon}</div>
+                    <div>
                       <h4>{item.title}</h4>
                       <p>{item.desc}</p>
                     </div>
@@ -691,74 +595,59 @@ const ProductDetail = () => {
           </div>
         </div>
 
-        {/* Live Video Request Banner */}
-        <div className="live-video-banner">
-          <div className="banner-content">
-            <div className="banner-icon">
-              <FaVideo />
-            </div>
-            <div className="banner-text">
-              <h3>Want to see this animal live?</h3>
-              <p>Request a video call with our team to inspect the animal in real-time</p>
-            </div>
-            <button className="banner-btn" onClick={handleWhatsApp}>
-              Request Live Video <FaArrowRight />
-            </button>
+        {/* ── Live video banner ── */}
+        <div className="pd-banner">
+          <div className="pd-banner__icon"><FaVideo /></div>
+          <div className="pd-banner__text">
+            <h3>Want to see this animal live?</h3>
+            <p>Request a video call with our team to inspect the animal in real-time</p>
           </div>
+          <button className="pd-banner__btn" onClick={handleWhatsApp}>
+            Request Live Video <FaArrowRight />
+          </button>
         </div>
 
-        {/* Reviews Section */}
         <CustomerReviewSection />
       </div>
 
-      {/* Mobile Bottom Bar */}
-      <div className="mobile-bottom-bar">
-        <div className="price-info">
-          <span className="label">Price</span>
-          <span className="value">{formatPrice(productData.price)}</span>
+      {/* ── Mobile sticky bar ── */}
+      <div className="pd-mobile-bar">
+        <div className="pd-mobile-bar__price">
+          <span className="pd-mobile-bar__label">Price</span>
+          <span className="pd-mobile-bar__value">{formatPrice(productData.price)}</span>
         </div>
-        <div className="actions">
-          <button
-            className="mobile-cart-btn"
-            onClick={handleAddToCart}
-            disabled={!isAvailable}
-          >
+        <div className="pd-mobile-bar__actions">
+          <button className="pd-mobile-bar__cart" onClick={handleAddToCart} disabled={!isAvailable}>
             <FaShoppingCart />
           </button>
-          <button
-            className="mobile-buy-btn"
-            onClick={handleBuyNow}
-            disabled={!isAvailable}
-          >
+          <button className="pd-mobile-bar__buy" onClick={handleBuyNow} disabled={!isAvailable}>
             {isSold ? 'Sold Out' : isReserved ? 'Reserved' : 'Buy Now'}
           </button>
-          <button className="mobile-wa-btn" onClick={handleWhatsApp}>
+          <button className="pd-mobile-bar__wa" onClick={handleWhatsApp}>
             <FaWhatsapp />
           </button>
         </div>
       </div>
 
-      {/* Lightbox */}
+      {/* ── Lightbox ── */}
       {isLightboxOpen && (
-        <div className="lightbox" onClick={() => setIsLightboxOpen(false)}>
-          <button className="lightbox-close" onClick={() => setIsLightboxOpen(false)}>
+        <div className="pd-lightbox" onClick={() => setIsLightboxOpen(false)}>
+          <button className="pd-lightbox__close" onClick={() => setIsLightboxOpen(false)} aria-label="Close">
             <FaTimes />
           </button>
-          <button className="lightbox-nav prev" onClick={(e) => { e.stopPropagation(); handlePrevImage() }}>
+          <button className="pd-lightbox__nav pd-lightbox__nav--prev" onClick={(e) => { e.stopPropagation(); handlePrevImage() }}>
             <FaChevronLeft />
           </button>
-          <img 
-            src={images[activeImage]} 
-            alt={productData.name} 
-            className="lightbox-image" 
-            onClick={(e) => e.stopPropagation()} 
+          <img
+            src={images[activeImage]}
+            alt={productData.name}
+            className="pd-lightbox__img"
+            onClick={(e) => e.stopPropagation()}
           />
-          <button className="lightbox-nav next" onClick={(e) => { e.stopPropagation(); handleNextImage() }}>
+          <button className="pd-lightbox__nav pd-lightbox__nav--next" onClick={(e) => { e.stopPropagation(); handleNextImage() }}>
             <FaChevronRight />
           </button>
-          <div className="lightbox-counter">
-            {activeImage + 1} / {images.length}
-          </div>
+          <div className="pd-lightbox__counter">{activeImage + 1} / {images.length}</div>
         </div>
       )}
     </div>

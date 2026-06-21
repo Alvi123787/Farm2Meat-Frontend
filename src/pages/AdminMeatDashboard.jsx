@@ -538,7 +538,7 @@ function MeatItemsManager({
                         onClick={() => onToggleAvailability(item._id)}
                       >
                         <FontAwesomeIcon icon={item.isAvailable ? faCheckCircle : faTimesCircle} />
-                        {item.isAvailable ? ' In Stock' : ' Out of Stock'}
+                        {item.isAvailable ? ' Available' : ' Unavailable'}
                       </button>
                     </td>
                     <td>

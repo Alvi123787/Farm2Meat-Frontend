@@ -38,62 +38,73 @@ const SkeletonCard = () => (
 )
 
 /* ── Product Card ──────────────────────────────── */
-const MenuCard = ({ item, index, onOrder }) => (
-  <article
-    className="mc"
-    style={{ '--i': index }}
-    onClick={() => onOrder(item)}
-    tabIndex={0}
-    role="button"
-    onKeyDown={e => e.key === 'Enter' && onOrder(item)}
-    aria-label={`Order ${item.name}`}
-  >
-    <div className="mc__media">
-      <img
-        src={item.imageUrl}
-        alt={item.name}
-        className="mc__img"
-        loading="lazy"
-      />
-      <div className="mc__media-overlay" />
-      {item.badge && <span className="mc__badge">{item.badge}</span>}
-      <button
-        className="mc__wishlist"
-        onClick={e => { e.stopPropagation(); onOrder(item) }}
-        aria-label={`Save ${item.name}`}
-        tabIndex={-1}
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-        </svg>
-      </button>
-    </div>
+const MenuCard = ({ item, index, onOrder }) => {
+  const isAvailable = item.isAvailable !== false;
 
-    <div className="mc__body">
-      <span className="mc__tag">
-        {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
-      </span>
-      <h3 className="mc__name">{item.name}</h3>
-      <p className="mc__desc">{item.description}</p>
-
-      <footer className="mc__foot">
-        <div className="mc__pricing">
-          <span className="mc__price">Rs. {item.price.toLocaleString('en-PK')}</span>
-          <span className="mc__unit">/ {item.unit}</span>
-        </div>
+  return (
+    <article
+      className={`mc ${!isAvailable ? 'mc--unavailable' : ''}`}
+      style={{ '--i': index }}
+      onClick={() => isAvailable && onOrder(item)}
+      tabIndex={isAvailable ? 0 : -1}
+      role="button"
+      onKeyDown={e => e.key === 'Enter' && isAvailable && onOrder(item)}
+      aria-label={isAvailable ? `Order ${item.name}` : `${item.name} is currently unavailable`}
+    >
+      <div className="mc__media">
+        <img
+          src={item.imageUrl}
+          alt={item.name}
+          className="mc__img"
+          loading="lazy"
+        />
+        <div className="mc__media-overlay" />
+        {item.badge && <span className="mc__badge">{item.badge}</span>}
+        {!isAvailable && (
+          <div className="mc__unavailable-badge">
+            Currently Unavailable
+          </div>
+        )}
         <button
-          className="mc__cta"
-          onClick={e => { e.stopPropagation(); onOrder(item) }}
+          className="mc__wishlist"
+          onClick={e => { e.stopPropagation(); if (isAvailable) onOrder(item); }}
+          aria-label={isAvailable ? `Order ${item.name}` : `${item.name} is unavailable`}
+          tabIndex={-1}
+          disabled={!isAvailable}
         >
-          Order
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M5 12h14m0 0-6-6m6 6-6 6"/>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
           </svg>
         </button>
-      </footer>
-    </div>
-  </article>
-)
+      </div>
+
+      <div className="mc__body">
+        <span className="mc__tag">
+          {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
+        </span>
+        <h3 className="mc__name">{item.name}</h3>
+        <p className="mc__desc">{item.description}</p>
+
+        <footer className="mc__foot">
+          <div className="mc__pricing">
+            <span className="mc__price">Rs. {item.price.toLocaleString('en-PK')}</span>
+            <span className="mc__unit">/ {item.unit}</span>
+          </div>
+          <button
+            className={`mc__cta ${!isAvailable ? 'mc__cta--disabled' : ''}`}
+            onClick={e => { e.stopPropagation(); if (isAvailable) onOrder(item); }}
+            disabled={!isAvailable}
+          >
+            {isAvailable ? 'Order' : 'Unavailable'}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M5 12h14m0 0-6-6m6 6-6 6"/>
+            </svg>
+          </button>
+        </footer>
+      </div>
+    </article>
+  );
+}
 
 /* ── Page ──────────────────────────────────────── */
 export default function MenuPage() {

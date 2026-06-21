@@ -74,7 +74,9 @@ export const CartProvider = ({ children }) => {
       city: product.city || '',
       itemType: product.type || (isMeat ? 'meat' : 'livestock'),
       purchaseMode: product.purchaseMode || (isMeat ? 'multi' : 'single'),
-      quantity: 1
+      quantity: 1,
+      unit: product.unit || '',
+      isAvailable: product.isAvailable !== undefined ? product.isAvailable : true
     };
 
     const existingIndex = cart.findIndex((item) => item._id === newItem._id);
@@ -83,13 +85,12 @@ export const CartProvider = ({ children }) => {
     if (existingIndex >= 0) {
       // If already in cart
       if (isMeat) {
-        // Increment quantity for meat items, respecting available stock
+        // For meat items, no stock limit
         const existingItem = newCart[existingIndex];
-        const maxQty = typeof newItem.availableStock === 'number' ? newItem.availableStock : 20;
+        const maxQty = 99;
         newCart[existingIndex] = { 
           ...existingItem, 
-          quantity: Math.min(maxQty, (existingItem.quantity || 1) + 1),
-          availableStock: newItem.availableStock
+          quantity: Math.min(maxQty, (existingItem.quantity || 1) + 1)
         };
       } else {
         // Just ensure it's there for single purchase livestock
@@ -112,7 +113,7 @@ export const CartProvider = ({ children }) => {
     const newCart = cart.map(item => {
       if (item._id === itemId) {
         const isMeat = item.itemType === 'meat' || item.purchaseMode === 'multi';
-        const maxQty = isMeat ? (typeof item.availableStock === 'number' ? item.availableStock : 20) : 1;
+        const maxQty = isMeat ? 99 : 1;
         const newQty = Math.max(1, Math.min(maxQty, (item.quantity || 1) + delta));
         return { ...item, quantity: newQty };
       }

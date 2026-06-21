@@ -1,17 +1,17 @@
 import React, { useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faPaw, 
-  faTimes, 
-  faShieldAlt, 
-  faHome, 
-  faHeart, 
-  faEye, 
-  faTag, 
-  faCalendarCheck, 
-  faInfoCircle, 
-  faTimesCircle, 
-  faCheckCircle 
+import {
+  faPaw,
+  faTimes,
+  faShieldAlt,
+  faHome,
+  faHeart,
+  faEye,
+  faTag,
+  faCalendarCheck,
+  faInfoCircle,
+  faTimesCircle,
+  faCheckCircle
 } from '@fortawesome/free-solid-svg-icons';
 import '../css/AnimalCareModal.css';
 
@@ -43,124 +43,112 @@ const AnimalCareModal = ({ isOpen, onClose, onProceed, animalName = "your animal
   if (!isOpen) return null;
 
   return (
-    <div 
-      className={`modal-overlay ${isOpen ? 'active' : ''}`} 
+    <div
+      className={`acm-overlay ${isOpen ? 'acm-overlay--active' : ''}`}
       onClick={handleClose}
       role="dialog"
       aria-modal="true"
     >
-      <div 
-        className="modal-container" 
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="acm-container" onClick={(e) => e.stopPropagation()}>
+
         {/* Header */}
-        <div className="modal-header">
-          <div className="header-icon-wrapper">
+        <div className="acm-header">
+          <div className="acm-header__icon">
             <FontAwesomeIcon icon={faPaw} />
           </div>
-          <h2>Need Space for {animalName}?</h2>
-          <button 
-            className="close-button" 
-            onClick={handleClose}
-            aria-label="Close modal"
-          >
+          <h2 className="acm-header__title">Need Space for {animalName}?</h2>
+          <p className="acm-header__sub">We'll keep your animal safe until you're ready</p>
+          <button className="acm-close" onClick={handleClose} aria-label="Close modal">
             <FontAwesomeIcon icon={faTimes} />
           </button>
         </div>
 
         {/* Content */}
-        <div className="modal-content">
-          
-          {/* Trust Badge */}
-          <div className="trust-badge">
+        <div className="acm-content">
+
+          <div className="acm-trust">
             <FontAwesomeIcon icon={faShieldAlt} />
             <span>Trusted Animal Care Service</span>
           </div>
 
-          {/* Message */}
-          <p className="main-message">
-            If you don’t have space to keep your animal, we provide a safe, clean, 
+          <p className="acm-message">
+            If you don't have space to keep your animal, we provide a safe, clean,
             and well-managed facility where your animal will be properly cared for.
           </p>
 
-          {/* Features */}
-          <div className="features-grid">
-            <div className="feature-item">
-              <div className="feature-icon">
+          <div className="acm-features">
+            <div className="acm-feature">
+              <div className="acm-feature__icon">
                 <FontAwesomeIcon icon={faHome} />
               </div>
-              <div className="feature-text">
-                <h3>Safe & Secure Facility</h3>
+              <div className="acm-feature__text">
+                <h3>Safe &amp; Secure Facility</h3>
                 <p>Clean, managed, and comfortable environment</p>
               </div>
             </div>
 
-            <div className="feature-item">
-              <div className="feature-icon">
+            <div className="acm-feature">
+              <div className="acm-feature__icon">
                 <FontAwesomeIcon icon={faHeart} />
               </div>
-              <div className="feature-text">
+              <div className="acm-feature__text">
                 <h3>Full Responsibility</h3>
                 <p>Feeding, safety, and proper care handled by us</p>
               </div>
             </div>
 
-            <div className="feature-item">
-              <div className="feature-icon">
+            <div className="acm-feature">
+              <div className="acm-feature__icon">
                 <FontAwesomeIcon icon={faEye} />
               </div>
-              <div className="feature-text">
+              <div className="acm-feature__text">
                 <h3>Visit Anytime</h3>
                 <p>You can visit anytime to check your animal</p>
               </div>
             </div>
           </div>
 
-          {/* Pricing */}
-          <div className="pricing-section">
-            <div className="pricing-card">
-              <div className="price-header">
+          <div className="acm-pricing">
+            <div className="acm-pricing__card">
+              <div className="acm-pricing__head">
                 <FontAwesomeIcon icon={faTag} />
                 <span>Daily Rate</span>
               </div>
-              <div className="price-amount">
-                <span className="currency">Rs.</span>
-                <span className="amount">100</span>
-                <span className="period">/ day</span>
+              <div className="acm-pricing__amount">
+                <span className="acm-pricing__currency">Rs.</span>
+                <span className="acm-pricing__number">100</span>
+                <span className="acm-pricing__period">/ day</span>
               </div>
-              <p className="price-note">Simple and affordable pricing</p>
+              <p className="acm-pricing__note">Simple and affordable pricing</p>
             </div>
 
-            <div className="advance-payment-card">
-              <div className="advance-header">
+            <div className="acm-pricing__card acm-pricing__card--accent">
+              <div className="acm-pricing__head">
                 <FontAwesomeIcon icon={faCalendarCheck} />
                 <span>Advance Payment</span>
               </div>
-              <div className="advance-amount">
-                <span className="percentage">20%</span>
-                <span className="label">required to confirm booking</span>
+              <div className="acm-pricing__amount">
+                <span className="acm-pricing__number">20%</span>
+                <span className="acm-pricing__period">required to confirm</span>
               </div>
-              <p className="advance-note">Advance ensures your booking is secured</p>
+              <p className="acm-pricing__note">Advance ensures your booking is secured</p>
             </div>
           </div>
 
-          {/* Info */}
-          <div className="info-note">
+          <div className="acm-info">
             <FontAwesomeIcon icon={faInfoCircle} />
-            <p>
-              Your animal will be kept in a secure environment with proper attention and care.
-            </p>
+            <p>Your animal will be kept in a secure environment with proper attention and care.</p>
           </div>
 
         </div>
 
         {/* Footer */}
-        <div className="modal-footer">
-          <button className="btn-cancel" onClick={handleClose}>
+        <div className="acm-footer">
+          <button className="acm-btn acm-btn--cancel" onClick={handleClose}>
             <FontAwesomeIcon icon={faTimesCircle} />
             Cancel
           </button>
-          <button className="btn-proceed" onClick={handleProceed}>
+          <button className="acm-btn acm-btn--proceed" onClick={handleProceed}>
             <FontAwesomeIcon icon={faCheckCircle} />
             Proceed with Service
           </button>

@@ -95,6 +95,15 @@ const normalizeCartItem = (item) => {
   return base
 }
 
+const isItemAvailable = (item) => {
+  const isMeat = isMultiQuantityItem(item)
+  if (isMeat) {
+    return item.isAvailable !== false
+  } else {
+    return true // Livestock availability is checked in pruneUnavailable
+  }
+}
+
 const getEffectiveQuantity = (item) => (isMultiQuantityItem(item) ? (item.quantity || 1) : 1)
 
 const availabilityMessage = (name) =>
@@ -177,54 +186,91 @@ const Cart = () => {
       if (checkingRef.current) return
       checkingRef.current = true
 
-      const ids = (items || [])
+      const meatItemIds = (items || [])
+        .filter((it) => isMultiQuantityItem(it))
+        .map((it) => String(it._id || it.id || '').trim())
+        .filter(Boolean)
+      
+      const meatItemMap = new Map()
+      if (meatItemIds.length > 0) {
+        try {
+          const response = await api.get('/api/meat-items', { params: { limit: 1000 } })
+          if (response.data && response.data.success) {
+            const allMeatItems = response.data.data
+            allMeatItems.forEach(item => meatItemMap.set(String(item._id), item))
+          }
+        } catch (e) {
+          console.warn('Could not fetch meat items for availability check:', e)
+        }
+      }
+
+      const livestockIds = (items || [])
         .filter((it) => !isMultiQuantityItem(it))
         .map((it) => String(it._id || it.id || '').trim())
         .filter(Boolean)
-      if (ids.length === 0) {
-        checkingRef.current = false
-        return
-      }
-
-      try {
-        const result = await animalsService.checkAvailability({ ids })
-        const unavailable = Array.isArray(result?.unavailable) ? result.unavailable : []
-        if (unavailable.length === 0) return
-
-        const setIds = new Set(unavailable.map((u) => String(u.id)))
-        const removed = items.filter((it) => setIds.has(String(it._id || it.id)))
-        const kept = items
-          .filter((it) => !setIds.has(String(it._id || it.id)))
-          .map(normalizeCartItem)
-
-        if (removed.length > 0) {
-          const names = removed.map((it) => it.name).filter(Boolean)
-          let message = ''
-
-          if (names.length === 1) {
-            message = `“${names[0]}” has already been purchased by another customer.`
-          } else if (names.length <= 3) {
-            message = `Some items are no longer available: ${names.join(', ')}`
-          } else {
-            message = `Few of your selected items are no longer available (already purchased by another customer).`
-          }
-
-          setNotices((prev) => [
-            { type: 'warning', text: message },
-            ...prev
-          ].slice(0, 3))
-
-          if (kept.length === 0) {
-            navigate('/unavailable-item', { replace: true })
-            return
-          }
-          await updateCart(kept)
+      
+      let unavailableAnimalIds = []
+      if (livestockIds.length > 0) {
+        try {
+          const result = await animalsService.checkAvailability({ ids: livestockIds })
+          unavailableAnimalIds = Array.isArray(result?.unavailable) 
+            ? result.unavailable.map(u => String(u.id || u)) 
+            : []
+        } catch (e) {
+          void e
         }
-      } catch (e) {
-        void e
-      } finally {
-        checkingRef.current = false
       }
+
+      const setUnavailableAnimalIds = new Set(unavailableAnimalIds)
+      const removed = items.filter((it) => {
+        const isMeat = isMultiQuantityItem(it)
+        if (isMeat) {
+          const id = String(it._id || it.id)
+          const freshItem = meatItemMap.get(id)
+          // If we have fresh data, use it; else fall back to cart data
+          return freshItem ? !freshItem.isAvailable : !isItemAvailable(it)
+        } else {
+          return setUnavailableAnimalIds.has(String(it._id || it.id))
+        }
+      })
+      const kept = items
+        .filter((it) => {
+          const isMeat = isMultiQuantityItem(it)
+          if (isMeat) {
+            const id = String(it._id || it.id)
+            const freshItem = meatItemMap.get(id)
+            return freshItem ? freshItem.isAvailable : isItemAvailable(it)
+          } else {
+            return !setUnavailableAnimalIds.has(String(it._id || it.id))
+          }
+        })
+        .map(normalizeCartItem)
+
+      if (removed.length > 0) {
+        const names = removed.map((it) => it.name).filter(Boolean)
+        let message = ''
+
+        if (names.length === 1) {
+          message = `“${names[0]}” has been removed from your cart because it's no longer available.`
+        } else if (names.length <= 3) {
+          message = `Some items have been removed from your cart: ${names.join(', ')}`
+        } else {
+          message = `Several items have been removed from your cart because they're no longer available.`
+        }
+
+        setNotices((prev) => [
+          { type: 'warning', text: message },
+          ...prev
+        ].slice(0, 3))
+
+        if (kept.length === 0) {
+          navigate('/unavailable-item', { replace: true })
+          return
+        }
+        await updateCart(kept)
+      }
+
+      checkingRef.current = false
     },
     [updateCart, navigate]
   )
@@ -500,7 +546,7 @@ const Cart = () => {
                                   <button
                                     className="cart-qty-btn"
                                     onClick={() => handleUpdateQuantity(item._id, 1)}
-                                    disabled={(item.quantity || 1) >= (item.availableStock || 20)}
+                                    disabled={(item.quantity || 1) >= 99}
                                     aria-label="Increase quantity"
                                   >
                                     <FaPlus />
@@ -509,16 +555,6 @@ const Cart = () => {
                               ) : (
                                 <div className="cart-item-qty cart-item-qty--fixed">
                                   <span className="cart-qty-value">Qty: 1</span>
-                                </div>
-                              )}
-
-                              {isMultiQuantityItem(item) && (item.availableStock !== undefined && item.availableStock !== 20) && (
-                                <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '4px' }}>
-                                  {item.availableStock > 0 ? (
-                                    <>Only {item.availableStock} in stock</>
-                                  ) : (
-                                    <>Out of stock</>
-                                  )}
                                 </div>
                               )}
 
