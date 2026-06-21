@@ -38,7 +38,7 @@ const AdminButchers = () => {
     return () => clearTimeout(t);
   }, [fetchButchers]);
 
-  useAdminLiveRefresh(fetchButchers, { intervalMs: 10000, enabled: true })
+  useAdminLiveRefresh(fetchButchers, { intervalMs: 10000, enabled: false })
 
   const handleAddButcher = async (e) => {
     e.preventDefault();

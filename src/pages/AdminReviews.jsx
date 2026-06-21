@@ -86,10 +86,10 @@ export default function AdminReviews() {
     return () => controller.abort()
   }, [load, authLoading])
 
-  // ✅ Step 3: Live refresh ko bhi control karo
+  // ✅ Step 3: Live refresh disabled (only manual refresh)
   useAdminLiveRefresh(() => load({}), { 
     intervalMs: 8000, 
-    enabled: !authLoading // ⛔ jab tak auth ready nahi, run nahi karega
+    enabled: false
   })
 
   const sorted = useMemo(() => {

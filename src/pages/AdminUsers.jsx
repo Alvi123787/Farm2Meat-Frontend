@@ -99,12 +99,12 @@ export default function AdminUsers() {
     return () => controller.abort()
   }, [debouncedSearch, roleFilter, page, load])
 
-  // ✅ B. Pause refresh during actions
+  // ✅ B. Live refresh disabled (only manual refresh)
   const isBusy = Boolean(rowBusyId)
   
   useAdminLiveRefresh(() => {
     if (!isBusy) load({})
-  }, { intervalMs: 10000, enabled: !isBusy })
+  }, { intervalMs: 10000, enabled: false })
 
   const filteredSummary = useMemo(() => {
     if (total === 0) return 'No users match your filters'

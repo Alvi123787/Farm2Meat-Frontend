@@ -168,10 +168,10 @@ const Orders = () => {
     return () => controller.abort();
   }, [fetchOrders]);
 
-  // ✅ Step 3: Live refresh ko bhi guard karo
+  // ✅ Step 3: Live refresh disabled (only manual refresh)
   useAdminLiveRefresh(() => fetchOrders(), { 
     intervalMs: role === 'admin' ? 8000 : 12000, 
-    enabled: !!role && !authLoading  // ⛔ jab tak role nahi aata, run nahi karega
+    enabled: false
   })
 
   const initialFilters = {

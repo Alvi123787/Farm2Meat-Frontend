@@ -4,6 +4,12 @@ import '../css/RecentInquiriesTable.css'
 import { useAdminLiveRefresh } from '../hooks/useAdminLiveRefresh'
 import { formatPrice } from '../utils/priceUtils'
 import { useAdminDomain } from '../contexts/AdminDomainContext'
+import {
+  FaTimes, FaReceipt, FaUser, FaPhone, FaEnvelope, FaMapMarkerAlt,
+  FaCity, FaStickyNote, FaFileInvoiceDollar, FaImage, FaExternalLinkAlt,
+  FaBoxOpen, FaEdit
+} from 'react-icons/fa'
+import { orderService } from '../services/orderService'
 
 /* ========================
    StatusBadge Component
@@ -32,22 +38,127 @@ const StatusBadge = ({ status }) => {
 }
 
 /* ========================
+   Helper Constants & Functions
+   ======================== */
+const ORDER_STATUSES = {
+  pending: { label: 'Pending' },
+  confirmed: { label: 'Contacted' },
+  delivered: { label: 'Completed' },
+  cancelled: { label: 'Cancelled' },
+}
+const PAYMENT_STATUSES = {
+  unpaid: { label: 'Unpaid' },
+  advance_paid: { label: 'Advance Paid' },
+  fully_paid: { label: 'Fully Paid' },
+}
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return 'Not scheduled yet'
+  const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return 'Not scheduled yet'
+  return date.toLocaleDateString('en-PK', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+/* ========================
    Main Component
    ======================== */
 export default function RecentInquiriesTable() {
   const { domain } = useAdminDomain()
-  // ── Dynamic data state ──
+  // ─── Dynamic data state ───
   const [inquiries, setInquiries] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  // ── Table state ──
+  // ─── Table state ───
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedRows, setSelectedRows] = useState([])
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' })
   const [filterStatus, setFilterStatus] = useState('All')
   const [searchQuery, setSearchQuery] = useState('')
   const [statusUpdating, setStatusUpdating] = useState(null)
+
+  // ─── Modal state ───
+  const [selectedOrder, setSelectedOrder] = useState(null)
+  const [showDetailModal, setShowDetailModal] = useState(false)
+
+  // Helper: Map Grouped Order to Order format
+  const mapGroupedOrderToOrder = useCallback((orderGroup) => {
+    // Map backend status to frontend status keys
+    const orderStatusMap = {
+      'Pending': 'pending',
+      'Contacted': 'confirmed',
+      'Completed': 'delivered',
+      'Cancelled': 'cancelled'
+    }
+
+    const orderStatus = orderStatusMap[orderGroup.status] || 'pending'
+    
+    // Determine payment status based on status and payment method
+    let paymentStatus = 'unpaid'
+    if (orderGroup.status === 'Completed') paymentStatus = 'fully_paid'
+
+    return {
+      id: orderGroup.orderId,
+      orderGroupId: orderGroup.orderId,
+      customer: {
+        name: orderGroup.customerName,
+        phone: orderGroup.phone,
+        email: orderGroup.email,
+        address: orderGroup.deliveryAddress,
+        city: orderGroup.city,
+        specialInstructions: orderGroup.items.map(i => i.notes).filter(Boolean).join(', '),
+      },
+      animal: {
+        name: orderGroup.items.map(i => i.animalName).join(', '),
+        category: orderGroup.items.map(i => i.category || 'Item').filter(Boolean).join(', '),
+        breed: orderGroup.items.map(i => i.breed).filter(Boolean).join(', '),
+        weight: orderGroup.items.map(i => i.weight).filter(Boolean).join(', '),
+      },
+      pricing: {
+        animalPrice: orderGroup.items.reduce((sum, i) => sum + i.price, 0),
+        deliveryCharges: 49,
+        totalAmount: orderGroup.totalAmount + 49, // Add delivery charge
+        advancePaid: orderGroup.items.reduce((sum, i) => sum + (i.animalCarePrice || 0), 0),
+        remainingBalance: (orderGroup.totalAmount + 49) - orderGroup.items.reduce((sum, i) => sum + (i.animalCarePrice || 0), 0),
+      },
+      paymentStatus: paymentStatus,
+      paymentScreenshot: null,
+      orderStatus: orderStatus,
+      orderDate: orderGroup.createdAt ? orderGroup.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
+      deliveryDate: orderGroup.deliveryDate || '',
+      timeline: [
+        { status: 'pending', date: orderGroup.createdAt, note: 'Order placed' },
+      ],
+      items: orderGroup.items.map(item => ({
+        ...item,
+        unit: item.unit || '',
+        price: Number(item.price || 0),
+        totalAmount: Number(item.totalAmount || 0),
+        quantity: Number(item.quantity || 0)
+      })),
+    }
+  }, [])
+
+  // View Order Handler
+  const handleViewOrder = useCallback(async (inquiry) => {
+    try {
+      const orderGroupId = inquiry.orderGroupId || inquiry.inquiryId
+      const result = await orderService.getOrderGroup(orderGroupId, { domain })
+      if (result.success && result.data) {
+        const detailedOrder = mapGroupedOrderToOrder(result.data)
+        setSelectedOrder(detailedOrder)
+        setShowDetailModal(true)
+      }
+    } catch (err) {
+      console.error('Failed to fetch order details:', err)
+    }
+  }, [mapGroupedOrderToOrder, domain])
 
   const rowsPerPage = 5
 
@@ -81,7 +192,44 @@ export default function RecentInquiriesTable() {
     fetchInquiries()
   }, [fetchInquiries])
 
-  useAdminLiveRefresh(fetchInquiries, { intervalMs: 8000, enabled: true })
+  useAdminLiveRefresh(fetchInquiries, { intervalMs: 8000, enabled: false })
+
+  // ════════════════════════════════════════════
+  // CSV Export Handler
+  // ════════════════════════════════════════════
+
+  const exportToCSV = useCallback(() => {
+    if (filteredData.length === 0) {
+      alert('No inquiries to export');
+      return;
+    }
+
+    const headers = ['Inquiry ID', 'Customer', 'Phone', 'Animal/Item', 'Price', 'Date', 'Status'];
+    const rows = filteredData.map(inquiry => [
+      inquiry.inquiryId,
+      inquiry.customerName,
+      inquiry.phone,
+      inquiry.animalName,
+      formatPrice(inquiry.price),
+      formatDate(inquiry.date),
+      inquiry.status
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `inquiries-${domain === 'meat' ? 'meat' : 'livestock'}-${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }, [filteredData, domain]);
 
   // ════════════════════════════════════════════
   // Status Update Handler
@@ -279,6 +427,15 @@ export default function RecentInquiriesTable() {
     return pages
   }
 
+  const getInitials = (name) => {
+    if (!name) return '?'
+    const parts = name.trim().split(/\s+/)
+    let initials = ''
+    if (parts.length >= 1) initials += parts[0][0]?.toUpperCase() || ''
+    if (parts.length >= 2) initials += parts[1][0]?.toUpperCase() || ''
+    return initials || '?'
+  }
+
   // ── Dynamic status counts ──
   const statusCounts = useMemo(() => {
     const counts = { All: inquiries.length }
@@ -325,7 +482,7 @@ export default function RecentInquiriesTable() {
             <i className="fa-solid fa-rotate" />
             <span>Refresh</span>
           </button>
-          <button className="export-btn">
+          <button className="export-btn" onClick={exportToCSV}>
             <i className="fa-solid fa-download" />
             <span>Export</span>
           </button>
@@ -504,7 +661,7 @@ export default function RecentInquiriesTable() {
                       <td>
                         <div className="customer-cell">
                           <div className="customer-avatar">
-                            {inquiry.avatar}
+                            {getInitials(inquiry.customerName)}
                           </div>
                           <span className="customer-name">
                             {inquiry.customerName}
@@ -560,15 +717,16 @@ export default function RecentInquiriesTable() {
                           <button
                             className="action-btn view-btn"
                             title="View Details"
+                            onClick={() => handleViewOrder(inquiry)}
                           >
-                            <i className="fa-solid fa-eye" />
+                            <i className="fa-solid fa-eye"></i>
                           </button>
                           <button
                             className="action-btn delete-btn"
                             title="Delete"
                             onClick={() => handleDelete(inquiry._id)}
                           >
-                            <i className="fa-solid fa-trash-can" />
+                            <i className="fa-solid fa-trash-can"></i>
                           </button>
                         </div>
                       </td>
@@ -615,7 +773,7 @@ export default function RecentInquiriesTable() {
                         />
                         <span className="checkmark" />
                       </label>
-                      <div className="customer-avatar">{inquiry.avatar}</div>
+                      <div className="customer-avatar">{getInitials(inquiry.customerName)}</div>
                       <div>
                         <span className="customer-name">
                           {inquiry.customerName}
@@ -695,7 +853,7 @@ export default function RecentInquiriesTable() {
                   </div>
 
                   <div className="mobile-card-footer">
-                    <button className="action-btn view-btn">
+                    <button className="action-btn view-btn" onClick={() => handleViewOrder(inquiry)}>
                       <i className="fa-solid fa-eye" /> View
                     </button>
                     <button
@@ -765,6 +923,136 @@ export default function RecentInquiriesTable() {
                   <span>Next</span>
                   <i className="fa-solid fa-chevron-right" />
                 </button>
+              </div>
+            </div>
+          )}
+
+          {/* Order Detail Modal */}
+          {showDetailModal && selectedOrder && (
+            <div className="om-overlay" onClick={() => setShowDetailModal(false)}>
+              <div className="om-modal om-modal--detail" onClick={(e) => e.stopPropagation()}>
+                <div className="om-modal__head">
+                  <h2><FaReceipt /> Order Details</h2>
+                  <button className="om-modal__x" onClick={() => setShowDetailModal(false)}><FaTimes /></button>
+                </div>
+
+                <div className="om-modal__body">
+                  {/* Top Bar */}
+                  <div className="om-detail-top">
+                    <div className="om-detail-top__left">
+                      <span className="om-detail-oid">{selectedOrder.id}</span>
+                      <span className="om-detail-odate">Placed on {formatDate(selectedOrder.orderDate)}</span>
+                    </div>
+                  </div>
+
+                  {/* Two-Column Info */}
+                  <div className="om-detail-cols">
+                    {/* Customer Information */}
+                    <div className="om-detail-box">
+                      <h3><FaUser /> Customer Information</h3>
+                      <div className="om-detail-list">
+                        <div className="om-detail-item"><FaUser /><strong>{selectedOrder.customer.name}</strong></div>
+                        <div className="om-detail-item"><FaPhone />{selectedOrder.customer.phone}</div>
+                        <div className="om-detail-item"><FaEnvelope />{selectedOrder.customer.email || 'N/A'}</div>
+                        <div className="om-detail-item"><FaMapMarkerAlt />{selectedOrder.customer.address || 'N/A'}</div>
+                        <div className="om-detail-item"><FaCity />{selectedOrder.customer.city || 'N/A'}</div>
+                      </div>
+                      {selectedOrder.customer.specialInstructions && (
+                        <div className="om-detail-special">
+                          <FaStickyNote /> <strong>Special Instructions:</strong>
+                          <p>{selectedOrder.customer.specialInstructions}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Payment & Pricing */}
+                    <div className="om-detail-box">
+                      <h3><FaFileInvoiceDollar /> Payment &amp; Pricing</h3>
+                      <div className="om-detail-pricing">
+                        <div className="om-price-row">
+                          <span>Animal/Item Price</span>
+                          <span>Rs. {selectedOrder.pricing.animalPrice.toLocaleString()}</span>
+                        </div>
+                        <div className="om-price-row">
+                          <span>Delivery Charges</span>
+                          <span>Rs. 49</span>
+                        </div>
+                        <div className="om-price-row om-price-row--total">
+                          <span>Total Amount</span>
+                          <strong>Rs. {selectedOrder.pricing.totalAmount.toLocaleString()}</strong>
+                        </div>
+                        <div className="om-price-row om-price-row--advance">
+                          <span>Advance Paid</span>
+                          <span>Rs. {selectedOrder.pricing.advancePaid.toLocaleString()}</span>
+                        </div>
+                        <div className="om-price-row om-price-row--remaining">
+                          <span>Remaining Balance</span>
+                          <strong>Rs. {selectedOrder.pricing.remainingBalance.toLocaleString()}</strong>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Items Details */}
+                  <div className="om-detail-box om-detail-box--full">
+                    <h3><FaBoxOpen /> Order Items</h3>
+                    {selectedOrder.items.map((item, idx) => (
+                      <div key={idx} style={{ marginBottom: idx === selectedOrder.items.length - 1 ? 0 : '20px', paddingBottom: idx === selectedOrder.items.length - 1 ? 0 : '20px', borderBottom: idx === selectedOrder.items.length - 1 ? 'none' : '1px dashed var(--border-light)' }}>
+                        <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', fontWeight: '700', color: 'var(--primary)' }}>Item {idx + 1}: {item.animalName}</h4>
+                        <div className="om-detail-animal-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}>
+                          <div className="om-animal-detail-item">
+                            <span className="om-animal-detail-label">{item.itemType === 'meat' ? 'Item ID' : 'Animal ID'}</span>
+                            <span className="om-animal-detail-val">{item.inquiryId || item.animalId || 'N/A'}</span>
+                          </div>
+                          <div className="om-animal-detail-item">
+                            <span className="om-animal-detail-label">Type</span>
+                            <span className="om-animal-detail-val">{item.itemType === 'meat' ? 'Meat' : 'Livestock'}</span>
+                          </div>
+                          <div className="om-animal-detail-item">
+                            <span className="om-animal-detail-label">Category</span>
+                            <span className="om-animal-detail-val">{item.category || 'N/A'}</span>
+                          </div>
+                          {item.breed && item.itemType !== 'meat' && (
+                            <div className="om-animal-detail-item">
+                              <span className="om-animal-detail-label">Breed</span>
+                              <span className="om-animal-detail-val">{item.breed}</span>
+                            </div>
+                          )}
+                          {item.weight && item.itemType !== 'meat' && (
+                            <div className="om-animal-detail-item">
+                              <span className="om-animal-detail-label">Weight (Zinda)</span>
+                              <span className="om-animal-detail-val om-animal-detail-val--weight">{item.weight} kg</span>
+                            </div>
+                          )}
+                          {item.quantity && (
+                            <div className="om-animal-detail-item">
+                              <span className="om-animal-detail-label">Quantity</span>
+                              <span className="om-animal-detail-val">{item.quantity} {item.unit || (item.itemType === 'meat' ? 'units' : '')}</span>
+                            </div>
+                          )}
+                          <div className="om-animal-detail-item">
+                            <span className="om-animal-detail-label">Price per Unit</span>
+                            <span className="om-animal-detail-val">Rs. {item.price?.toLocaleString() || '0'}</span>
+                          </div>
+                          <div className="om-animal-detail-item">
+                            <span className="om-animal-detail-label">Item Total</span>
+                            <span className="om-animal-detail-val" style={{ fontWeight: '700', color: 'var(--primary)' }}>Rs. {item.totalAmount?.toLocaleString() || '0'}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--border-light)' }}>
+                      <div className="om-animal-detail-item" style={{ justifyContent: 'flex-end' }}>
+                        <span className="om-animal-detail-label">Delivery Date</span>
+                        <span className="om-animal-detail-val">{formatDate(selectedOrder.deliveryDate)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="om-modal__foot">
+                  <button className="om-btn om-btn--secondary" onClick={() => setShowDetailModal(false)}>Close</button>
+                </div>
               </div>
             </div>
           )}

@@ -113,14 +113,8 @@ export default function AdminMeatDashboard() {
     }
     loadData()
 
-    // Auto refresh every 5 minutes
-    const interval = setInterval(() => {
-      if (isMounted) refreshAll()
-    }, 5 * 60 * 1000)
-
     return () => {
       isMounted = false
-      clearInterval(interval)
     }
   }, [refreshAll])
 

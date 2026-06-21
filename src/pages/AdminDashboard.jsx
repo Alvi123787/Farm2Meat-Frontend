@@ -287,20 +287,7 @@ const AdminDashboard = () => {
     return () => controller.abort();
   }, [refreshAll, token, role, authLoading]);
 
-  useEffect(() => {
-    if (authLoading) return;
-    if (!token || role !== "admin") return;
-
-    const controller = new AbortController();
-    const id = setInterval(() => {
-      refreshAll({ signal: controller.signal });
-    }, 60000);
-
-    return () => {
-      clearInterval(id);
-      controller.abort();
-    };
-  }, [refreshAll, token, role, authLoading]);
+  // Auto-refresh disabled (only manual refresh)
 
   useEffect(() => {
     if (!notifOpen) return;

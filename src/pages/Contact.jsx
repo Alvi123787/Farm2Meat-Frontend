@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import {
   FaFacebookF,
+  FaInstagram,
   FaPhoneAlt,
   FaMapMarkerAlt,
   FaClock,
@@ -17,6 +18,7 @@ import {
 import '../css/Contact.css'      // CSS unchanged
 import {
   FACEBOOK_URL,
+  INSTAGRAM_URL,
   PHONE_DISPLAY,
   PHONE_LINK,
 } from '../constants/contact'
@@ -396,6 +398,22 @@ const FeedbackPage = () => {
                   <div className="cp-social-card-info">
                     <strong>Facebook</strong>
                     <span>Read Reviews</span>
+                  </div>
+                </a>
+
+                {/* Instagram */}
+                <a
+                  href={INSTAGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="cp-social-card cp-social-card--ig"
+                >
+                  <div className="cp-social-card-icon">
+                    <FaInstagram />
+                  </div>
+                  <div className="cp-social-card-info">
+                    <strong>Instagram</strong>
+                    <span>See Latest Updates</span>
                   </div>
                 </a>
 

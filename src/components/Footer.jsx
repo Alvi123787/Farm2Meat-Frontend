@@ -1,6 +1,7 @@
 import React from 'react'
 import {
   FaFacebookF,
+  FaInstagram,
   FaWhatsapp,
   FaPhoneAlt,
   FaMapMarkerAlt,
@@ -12,6 +13,7 @@ import {
 import '../css/Footer.css'
 import {
   FACEBOOK_URL,
+  INSTAGRAM_URL,
   PHONE_DISPLAY,
   PHONE_LINK,
   WHATSAPP_DISPLAY,
@@ -27,6 +29,7 @@ const quickLinks = [
 
 const socialLinks = [
   { icon: <FaFacebookF />, href: FACEBOOK_URL, label: 'Facebook' },
+  { icon: <FaInstagram />, href: INSTAGRAM_URL, label: 'Instagram' },
   { icon: <FaWhatsapp />, href: WHATSAPP_LINK, label: 'WhatsApp' },
 ]
 

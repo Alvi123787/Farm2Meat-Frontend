@@ -65,8 +65,8 @@ export default function DashboardLayout() {
     return () => controller.abort()
   }, [loadTotalAnimals])
 
-  // Increase refresh interval from 10s to 60s to reduce re-renders!
-  useAdminLiveRefresh(() => loadTotalAnimals({}), { intervalMs: 60000, enabled: true })
+  // Auto-refresh disabled (only manual refresh)
+  useAdminLiveRefresh(() => loadTotalAnimals({}), { intervalMs: 60000, enabled: false })
 
   return (
     <div className="admin-layout">

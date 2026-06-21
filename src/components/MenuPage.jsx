@@ -7,6 +7,7 @@ import { useMenuItems } from '../hooks/useMeatItems'
 import { useCart } from '../contexts/cartContextCore'
 import CustomerReviewSection from './CustomerReviewSection'
 import ButcherSection from './ButcherSection'
+import { WHATSAPP_NUMBER } from '../constants/contact'
 import '../css/MenuPage.css'
 
 const FILTERS = [
@@ -264,7 +265,7 @@ export default function MenuPage() {
           </p>
           <button
             className="mp-foot__wa"
-            onClick={() => window.open(`https://wa.me/${import.meta.env.VITE_WA_NUMBER || '923001234567'}`, '_blank')}
+            onClick={() => window.open(`https://wa.me/${WHATSAPP_NUMBER}`, '_blank')}
             aria-label="Order via WhatsApp"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
