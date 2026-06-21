@@ -335,7 +335,7 @@ const Confirmation = () => {
               </div>
             </div>
 
-            {orderData.advanceAmount > 0 && (
+            {orderData.animalCare && (
               <div className="conf-advance">
                 <p className="conf-eyebrow conf-advance__eyebrow">Payment breakdown</p>
                 <div className="conf-advance__row conf-advance__row--first">

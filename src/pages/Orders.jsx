@@ -88,9 +88,17 @@ const Orders = () => {
 
     const orderStatus = orderStatusMap[orderGroup.status] || 'pending';
     
-    // Determine payment status based on status and payment method
+    const totalAmountWithDelivery = orderGroup.totalAmount + 49; // Add delivery charge
+    const advancePaid = orderGroup.items.reduce((sum, i) => sum + (i.animalCarePrice || 0), 0);
+    const remainingBalance = Math.max(0, totalAmountWithDelivery - advancePaid);
+    
+    // Determine payment status
     let paymentStatus = 'unpaid';
-    if (orderGroup.status === 'Completed') paymentStatus = 'fully_paid';
+    if (advancePaid > 0 && remainingBalance > 0) {
+      paymentStatus = 'advance_paid';
+    } else if (remainingBalance === 0 || orderGroup.status === 'Completed') {
+      paymentStatus = 'fully_paid';
+    }
 
     return {
       id: orderGroup.orderId,
@@ -112,9 +120,9 @@ const Orders = () => {
       pricing: {
         animalPrice: orderGroup.items.reduce((sum, i) => sum + i.price, 0),
         deliveryCharges: 49,
-        totalAmount: orderGroup.totalAmount + 49, // Add delivery charge
-        advancePaid: orderGroup.items.reduce((sum, i) => sum + (i.animalCarePrice || 0), 0),
-        remainingBalance: (orderGroup.totalAmount + 49) - orderGroup.items.reduce((sum, i) => sum + (i.animalCarePrice || 0), 0),
+        totalAmount: totalAmountWithDelivery,
+        advancePaid: advancePaid,
+        remainingBalance: remainingBalance,
       },
       paymentStatus: paymentStatus,
       paymentScreenshot: null,
@@ -566,7 +574,12 @@ const Orders = () => {
   /* ═══════════════════════════════════════
      HELPERS
      ═══════════════════════════════════════ */
-  const formatDate = (d) => new Date(d).toLocaleDateString('en-PK', { year: 'numeric', month: 'short', day: 'numeric' });
+  const formatDate = (d) => {
+    if (!d) return 'TBD';
+    const date = new Date(d);
+    if (isNaN(date.getTime())) return 'TBD';
+    return date.toLocaleDateString('en-PK', { year: 'numeric', month: 'short', day: 'numeric' });
+  };
   const formatDateTime = (d) => new Date(d).toLocaleString('en-PK', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
   const getPageNumbers = () => {
@@ -934,7 +947,7 @@ const Orders = () => {
                           ? `Rs. ${order.pricing.advancePaid.toLocaleString()}`
                           : 'None'}
                       </span>
-                      {order.pricing.remainingBalance > 0 && order.orderStatus !== 'cancelled' && (
+                      {order.pricing.remainingBalance > 0 && order.orderStatus !== 'cancelled' && order.paymentStatus !== 'fully_paid' && (
                         <span className="om-td-sub om-td-sub--remaining">
                           Due: Rs. {order.pricing.remainingBalance.toLocaleString()}
                         </span>

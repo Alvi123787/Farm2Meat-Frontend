@@ -65,6 +65,17 @@ const formatDate = (dateStr) => {
   })
 }
 
+const formatDateWithoutTime = (dateStr) => {
+  if (!dateStr) return 'Not scheduled yet'
+  const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return 'Not scheduled yet'
+  return date.toLocaleDateString('en-PK', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  })
+}
+
 /* ========================
    Main Component
    ======================== */
@@ -98,7 +109,7 @@ export default function RecentInquiriesTable() {
     }
 
     const orderStatus = orderStatusMap[orderGroup.status] || 'pending'
-    
+
     // Determine payment status based on status and payment method
     let paymentStatus = 'unpaid'
     if (orderGroup.status === 'Completed') paymentStatus = 'fully_paid'
@@ -193,43 +204,6 @@ export default function RecentInquiriesTable() {
   }, [fetchInquiries])
 
   useAdminLiveRefresh(fetchInquiries, { intervalMs: 8000, enabled: false })
-
-  // ════════════════════════════════════════════
-  // CSV Export Handler
-  // ════════════════════════════════════════════
-
-  const exportToCSV = useCallback(() => {
-    if (filteredData.length === 0) {
-      alert('No inquiries to export');
-      return;
-    }
-
-    const headers = ['Inquiry ID', 'Customer', 'Phone', 'Animal/Item', 'Price', 'Date', 'Status'];
-    const rows = filteredData.map(inquiry => [
-      inquiry.inquiryId,
-      inquiry.customerName,
-      inquiry.phone,
-      inquiry.animalName,
-      formatPrice(inquiry.price),
-      formatDate(inquiry.date),
-      inquiry.status
-    ]);
-
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `inquiries-${domain === 'meat' ? 'meat' : 'livestock'}-${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }, [filteredData, domain]);
 
   // ════════════════════════════════════════════
   // Status Update Handler
@@ -349,6 +323,46 @@ export default function RecentInquiriesTable() {
   }, [filteredData, sortConfig])
 
   // ════════════════════════════════════════════
+  // CSV Export Handler
+  // ════════════════════════════════════════════
+  // NOTE: moved below filteredData/sortedData declarations — previously this was
+  // declared earlier in the file and referenced `filteredData` before it existed,
+  // throwing "Cannot access 'filteredData' before initialization" on every render.
+
+  const exportToCSV = useCallback(() => {
+    if (filteredData.length === 0) {
+      alert('No inquiries to export')
+      return
+    }
+
+    const headers = ['Inquiry ID', 'Customer', 'Phone', 'Animal/Item', 'Price', 'Date', 'Status']
+    const rows = filteredData.map((inquiry) => [
+      inquiry.inquiryId,
+      inquiry.customerName,
+      inquiry.phone,
+      inquiry.animalName,
+      formatPrice(inquiry.price),
+      formatDate(inquiry.date),
+      inquiry.status
+    ])
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    ].join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', `inquiries-${domain === 'meat' ? 'meat' : 'livestock'}-${new Date().toISOString().split('T')[0]}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }, [filteredData, domain])
+
+  // ════════════════════════════════════════════
   // Pagination
   // ════════════════════════════════════════════
 
@@ -393,15 +407,6 @@ export default function RecentInquiriesTable() {
   // ════════════════════════════════════════════
   // Helper Functions
   // ════════════════════════════════════════════
-
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr)
-    return date.toLocaleDateString('en-PK', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    })
-  }
 
   const getSortIcon = (key) => {
     if (sortConfig.key !== key) return 'fa-sort'
@@ -471,8 +476,8 @@ export default function RecentInquiriesTable() {
             </div>
           </div>
           <p className="inquiries-subtitle">
-            {domain === 'meat' 
-              ? 'Manage and track customer inquiries for your meat products' 
+            {domain === 'meat'
+              ? 'Manage and track customer inquiries for your meat products'
               : 'Manage and track customer inquiries for your livestock'}
           </p>
         </div>
@@ -685,7 +690,7 @@ export default function RecentInquiriesTable() {
                       </td>
                       <td>
                         <span className="date-text">
-                          {formatDate(inquiry.date)}
+                          {formatDateWithoutTime(inquiry.date)}
                         </span>
                       </td>
                       <td>

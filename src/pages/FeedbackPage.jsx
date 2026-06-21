@@ -13,12 +13,16 @@ import {
   FaShieldAlt,
   FaHeart,          // new icon
   FaSmile,          // new icon
+  FaInstagram,       // Instagram icon
+  FaWhatsapp,        // WhatsApp icon
 } from 'react-icons/fa'
 import '../css/Contact.css'      // CSS unchanged
 import {
   FACEBOOK_URL,
   PHONE_DISPLAY,
   PHONE_LINK,
+  WHATSAPP_LINK,
+  INSTAGRAM_URL,
 } from '../constants/contact'
 import feedbackService from '../services/feedbackService'
 
@@ -396,6 +400,38 @@ const FeedbackPage = () => {
                   <div className="cp-social-card-info">
                     <strong>Facebook</strong>
                     <span>Read Reviews</span>
+                  </div>
+                </a>
+
+                {/* Instagram */}
+                <a
+                  href={INSTAGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="cp-social-card cp-social-card--ig"
+                >
+                  <div className="cp-social-card-icon">
+                    <FaInstagram />
+                  </div>
+                  <div className="cp-social-card-info">
+                    <strong>Instagram</strong>
+                    <span>Follow Us</span>
+                  </div>
+                </a>
+
+                {/* WhatsApp */}
+                <a
+                  href={WHATSAPP_LINK}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="cp-social-card cp-social-card--wa"
+                >
+                  <div className="cp-social-card-icon">
+                    <FaWhatsapp />
+                  </div>
+                  <div className="cp-social-card-info">
+                    <strong>WhatsApp</strong>
+                    <span>Chat with Us</span>
                   </div>
                 </a>
 
