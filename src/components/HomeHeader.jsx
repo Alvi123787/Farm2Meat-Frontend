@@ -13,7 +13,8 @@ const HERO_IMAGES = [
   {
     src: "https://res.cloudinary.com/dqclqmuhi/image/upload/v1780448757/140922_ffcmmu.jpg",
     alt: "Premium quality meat on cutting board",
-    badge: null,
+    // FIX 3: changed null → '' so currentSlide.badge is always a safe string
+    badge: "",
     titleTop: "Enjoy the Highest",
     titleBottom: "Quality Meat",
   },
@@ -37,15 +38,26 @@ const HomeHeader = () => {
   const [installFeedback, setInstallFeedback] = useState("");
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  // FIX 5: initialise with HERO_IMAGES so there is never a flash of an empty
+  // slides array between mount and the first API response
   const [slides, setSlides] = useState(HERO_IMAGES);
   const { canInstall, isInstalled, needsManualInstall, promptInstall } = usePwaInstall();
 
+  // FIX 4: use a cancelled flag so setState is never called on an unmounted
+  // component when the fetch resolves after unmount
   useEffect(() => {
+    let cancelled = false;
+
     const fetchHeaderItems = async () => {
       try {
         const response = await api.get('/api/meat-items?showInHeader=true&isAvailable=true');
-        if (response.data.success && Array.isArray(response.data.data) && response.data.data.length > 0) {
-          const dynamicSlides = response.data.data.map(item => ({
+        if (cancelled) return;
+        if (
+          response.data.success &&
+          Array.isArray(response.data.data) &&
+          response.data.data.length > 0
+        ) {
+          const dynamicSlides = response.data.data.map((item) => ({
             src: item.imageUrl || HERO_IMAGES[0].src,
             alt: item.name || 'Featured meat item',
             badge: item.badge || 'Featured',
@@ -56,18 +68,29 @@ const HomeHeader = () => {
           setSlides(dynamicSlides);
           setActiveSlide(0);
         }
+        // If the response is empty/unsuccessful we keep the HERO_IMAGES default
+        // that was already set at initialisation — no extra work needed
       } catch (error) {
+        // On network error also keep the default slides already in state
         console.error('Error fetching header items:', error);
       }
     };
+
     fetchHeaderItems();
+    return () => { cancelled = true; };
   }, []);
 
+  // FIX 1: the original effect had [activeSlide, slides.length] as deps, which
+  // made it fire on EVERY slide change — competing with (and duplicating) the
+  // `% slides.length` wrapping already done inside the interval.  We only need
+  // this guard when the slides *array itself* changes length (e.g. after the API
+  // fetch comes back), so activeSlide is removed from the dep array.
   useEffect(() => {
     if (activeSlide >= slides.length) {
       setActiveSlide(0);
     }
-  }, [activeSlide, slides.length]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slides.length]);
 
   useEffect(() => {
     const timer = setTimeout(() => setLoaded(true), 100);
@@ -96,14 +119,19 @@ const HomeHeader = () => {
     if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
 
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
     const handlePreferenceChange = (event) => {
       if (event.matches) setActiveSlide(0);
-      setIsPaused((prev) => prev);
+      // FIX 2: original code was `setIsPaused((prev) => prev)` which is a no-op
+      // (sets state to itself). The intent is to pause the slider when the user
+      // has requested reduced motion, and unpause when they haven't.
+      setIsPaused(event.matches);
     };
 
     if (mediaQuery.addEventListener) {
       mediaQuery.addEventListener("change", handlePreferenceChange);
     } else if (mediaQuery.addListener) {
+      // Legacy Safari fallback
       mediaQuery.addListener(handlePreferenceChange);
     }
 
@@ -137,7 +165,10 @@ const HomeHeader = () => {
       ? "Add to Home Screen"
       : "Install App";
 
-  const currentSlide = slides[activeSlide] || slides[0] || HERO_IMAGES[0];
+  // FIX 5 (cont.): because slides now initialises with HERO_IMAGES, the fallback
+  // chain here is simpler — slides[activeSlide] will always be defined on first
+  // render. The extra fallbacks are kept as a defensive belt-and-braces guard.
+  const currentSlide = slides[activeSlide] ?? slides[0] ?? HERO_IMAGES[0];
 
   return (
     <section
