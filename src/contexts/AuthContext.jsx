@@ -9,7 +9,7 @@ const readStoredAuth = () => {
   const lastVisit = localStorage.getItem('lastVisit')
   const now = Date.now()
 
-  if (!token) return { auth: { token: null, role: 'guest' }, shouldLogout: false }
+  if (!token) return { auth: { token: null, role: 'guest', user: null }, shouldLogout: false }
 
   try {
     const decoded = jwtDecode(token)
@@ -20,16 +20,16 @@ const readStoredAuth = () => {
       localStorage.removeItem('authToken')
       localStorage.removeItem('userRole')
       localStorage.removeItem('lastVisit')
-      return { auth: { token: null, role: 'guest' }, shouldLogout: true }
+      return { auth: { token: null, role: 'guest', user: null }, shouldLogout: true }
     }
 
-    return { auth: { token, role: decoded.role || storedRole }, shouldLogout: false }
+    return { auth: { token, role: decoded.role || storedRole, user: decoded }, shouldLogout: false }
   } catch (err) {
     console.error('Invalid token', err)
     localStorage.removeItem('authToken')
     localStorage.removeItem('userRole')
     localStorage.removeItem('lastVisit')
-    return { auth: { token: null, role: 'guest' }, shouldLogout: true }
+    return { auth: { token: null, role: 'guest', user: null }, shouldLogout: true }
   }
 }
 
@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
   const [loading] = useState(false);
 
   const logout = useCallback(() => {
-    setAuth({ token: null, role: 'guest' });
+    setAuth({ token: null, role: 'guest', user: null });
     localStorage.removeItem('authToken');
     localStorage.removeItem('userRole');
     localStorage.removeItem('lastVisit');
@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const decoded = jwtDecode(token);
       const role = decoded.role || 'user';
-      setAuth({ token, role });
+      setAuth({ token, role, user: decoded });
       localStorage.setItem('authToken', token);
       localStorage.setItem('userRole', role);
       localStorage.setItem('lastVisit', String(Date.now()));

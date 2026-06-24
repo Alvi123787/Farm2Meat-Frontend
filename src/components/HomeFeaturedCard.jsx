@@ -3,11 +3,14 @@ import { useNavigate } from "react-router-dom";
 import "../css/HomeFeaturedCard.css";
 import { formatPrice } from "../utils/priceUtils";
 import { useSmartNavigation } from "../hooks/useSmartNavigation";
+import api from "../services/api";
 
 const HomeFeaturedCard = () => {
     const navigate = useNavigate();
     const { smartNavigate } = useSmartNavigation();
     const [isVisible, setIsVisible] = useState(false);
+    const [featuredGoats, setFeaturedGoats] = useState([]);
+    const [loading, setLoading] = useState(true);
     const sectionRef = useRef(null);
 
     useEffect(() => {
@@ -24,55 +27,52 @@ const HomeFeaturedCard = () => {
         return () => observer.disconnect();
     }, []);
 
-    const featuredGoats = [
-        {
-            id: 1,
-            name: "Chand 2026",
-            weight: "85 KG",
-            age: "2 Years",
-            location: "Rahim Yar Khan",
-            price: "145,000",
-            oldPrice: "160,000",
-            img: "../uploads/card1.jpg",
-            badge: "Featured",
-            badgeIcon: "🔥",
-            breed: "Pure Beetal",
-            color: "128, 0, 0",
-            type: "livestock",
-            enableRedirection: true,
-            category: "Bakra",
-        },
-        {
-            id: 2,
-            name: "Sultan",
-            weight: "92 KG",
-            age: "2.5 Years",
-            location: "Multan Farm",
-            price: "180,000",
-            oldPrice: "210,000",
-            img: "../uploads/card2.jpg",
-            badge: "Premium",
-            badgeIcon: "⭐",
-            breed: "Rajanpuri",
-            color: "163, 130, 35",
-            // item_type_id: 1, // Redirection NOT enabled for this item
-            // enableRedirection: false,
-        },
-        {
-            id: 3,
-            name: "Heera",
-            weight: "78 KG",
-            age: "1.8 Years",
-            location: "Faisalabad",
-            price: "125,000",
-            oldPrice: "140,000",
-            img: "../uploads/card3.jpg",
-            badge: "Qurbani Special",
-            badgeIcon: "🕌",
-            breed: "Gulabi Pather",
-            color: "45, 100, 60",
-        },
-    ];
+    useEffect(() => {
+        const fetchFeaturedAnimals = async () => {
+            try {
+                const res = await api.get('/api/animals', {
+                    params: {
+                        listingType: 'featured',
+                        limit: 6
+                    }
+                });
+                setFeaturedGoats(res.data.data || []);
+            } catch (err) {
+                console.error('Error fetching featured animals:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchFeaturedAnimals();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="container-fluid">
+                <section className="homeFeatured-section" ref={sectionRef}>
+                    <div className="homeFeatured-header">
+                        <span className="homeFeatured-header-badge">HAND PICKED</span>
+                        <h2 className="homeFeatured-header-title">
+                            Recommended <span className="homeFeatured-title-accent">Collection</span>
+                        </h2>
+                    </div>
+                    <div className="homeFeatured-grid">
+                        {[1, 2, 3].map((_, i) => (
+                            <div key={i} className="homeFeatured-card-wrapper">
+                                <div className="homeFeatured-card">
+                                    <div className="homeFeatured-card-visual homeFeatured-card-visual-skeleton" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            </div>
+        );
+    }
+
+    if (!loading && featuredGoats.length === 0) {
+        return null;
+    }
 
     return (
         <div className="container-fluid">
@@ -100,17 +100,17 @@ const HomeFeaturedCard = () => {
                 <div className="homeFeatured-grid">
                     {featuredGoats.map((goat, index) => (
                         <div
-                            key={goat.id}
+                            key={goat._id}
                             className="homeFeatured-card-wrapper"
-                            style={{ "--homeFeatured-card-delay": `${index * 0.15}s`, "--homeFeatured-card-color": goat.color }}
+                            style={{ "--homeFeatured-card-delay": `${index * 0.15}s`, "--homeFeatured-card-color": "128, 0, 0" }}
                         >
                             <div className="homeFeatured-card">
                                 {/* Image Area */}
                                 <div className="homeFeatured-card-visual">
-                                    <img src={goat.img} alt={goat.name} className="homeFeatured-card-img" />
+                                    <img src={goat.images?.[0] || goat.imageUrl} alt={goat.name} className="homeFeatured-card-img" />
                                     <div className="homeFeatured-card-badge">
-                                        <span>{goat.badgeIcon}</span>
-                                        <span>{goat.badge}</span>
+                                        <span>🔥</span>
+                                        <span>Featured</span>
                                     </div>
                                     <div className="homeFeatured-card-actions">
                                         <button className="homeFeatured-action-btn" title="Add to Wishlist">
@@ -120,7 +120,7 @@ const HomeFeaturedCard = () => {
                                         </button>
                                         <button className="homeFeatured-action-btn" title="Quick View">
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                <path d="M1 12s4-8 11-8 11 8-4 8-11 8-11-8-11-8z" />
                                                 <circle cx="12" cy="12" r="3" />
                                             </svg>
                                         </button>
@@ -139,11 +139,11 @@ const HomeFeaturedCard = () => {
                                         </div>
                                         <div className="homeFeatured-stat">
                                             <span className="homeFeatured-stat-label">Age</span>
-                                            <span className="homeFeatured-stat-value">{goat.age}</span>
+                                            <span className="homeFeatured-stat-value">{`${goat.age} ${goat.ageUnit || 'Months'}`}</span>
                                         </div>
                                         <div className="homeFeatured-stat">
                                             <span className="homeFeatured-stat-label">Location</span>
-                                            <span className="homeFeatured-stat-value">{goat.location}</span>
+                                            <span className="homeFeatured-stat-value">{goat.city}</span>
                                         </div>
                                     </div>
 
@@ -151,9 +151,9 @@ const HomeFeaturedCard = () => {
                                         <div className="homeFeatured-price-box">
                                             <span className="homeFeatured-price-label">Fixed Price</span>
                                             <div className="homeFeatured-price-main">
-                                                <span className="amount">{formatPrice(goat.price)}</span>
+                                                <span className="amount">{formatPrice(goat.discountPrice || goat.price)}</span>
                                             </div>
-                                            <span className="homeFeatured-price-old">{formatPrice(goat.oldPrice)}</span>
+                                            {goat.discountPrice && <span className="homeFeatured-price-old">{formatPrice(goat.price)}</span>}
                                         </div>
                                     </div>
 
@@ -161,8 +161,9 @@ const HomeFeaturedCard = () => {
                                         <button 
                                             className="homeFeatured-view-btn"
                                             onClick={() => {
-                                                if (!smartNavigate(goat)) {
-                                                    navigate(`/shop/${goat.id}`);
+                                                const animalData = { ...goat, type: goat.type, category: goat.category, enableRedirection: true };
+                                                if (!smartNavigate(animalData)) {
+                                                    navigate(`/shop/${goat._id}`);
                                                 }
                                             }}
                                         >

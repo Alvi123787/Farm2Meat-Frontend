@@ -5,8 +5,11 @@ import { useState, useMemo, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useMenuItems } from '../hooks/useMeatItems'
 import { useCart } from '../contexts/cartContextCore'
+import { useAuth } from '../contexts/authContextCore'
+import { useFavourites } from '../contexts/FavouritesContext'
 import CustomerReviewSection from './CustomerReviewSection'
 import ButcherSection from './ButcherSection'
+import LoginRequiredPopup from './LoginRequiredPopup'
 import { WHATSAPP_NUMBER } from '../constants/contact'
 import '../css/MenuPage.css'
 
@@ -39,7 +42,7 @@ const SkeletonCard = () => (
 )
 
 /* ── Product Card ──────────────────────────────── */
-const MenuCard = ({ item, index, onOrder }) => {
+const MenuCard = ({ item, index, onOrder, onFavouriteClick, isFav }) => {
   const isAvailable = item.isAvailable !== false;
 
   return (
@@ -68,12 +71,11 @@ const MenuCard = ({ item, index, onOrder }) => {
         )}
         <button
           className="mc__wishlist"
-          onClick={e => { e.stopPropagation(); if (isAvailable) onOrder(item); }}
-          aria-label={isAvailable ? `Order ${item.name}` : `${item.name} is unavailable`}
-          tabIndex={-1}
-          disabled={!isAvailable}
+          onClick={(e) => { e.stopPropagation(); onFavouriteClick(); }}
+          aria-label={isFav ? `Remove ${item.name} from favourites` : `Add ${item.name} to favourites`}
+          tabIndex={0}
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <svg viewBox="0 0 24 24" fill={isFav ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
           </svg>
         </button>
@@ -112,8 +114,11 @@ export default function MenuPage() {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { addItem } = useCart()
+  const { role } = useAuth()
+  const { isFavourited, toggleFavourite } = useFavourites()
   const { grouped, loading, error, refetch } = useMenuItems()
   const [activeFilter, setActiveFilter] = useState('all')
+  const [showLoginPopup, setShowLoginPopup] = useState(false)
 
   useEffect(() => {
     const cat = searchParams.get('category')
@@ -231,9 +236,25 @@ export default function MenuPage() {
               </div>
 
               <div className="mp-grid">
-                {items.map((item, idx) => (
-                  <MenuCard key={item._id} item={item} index={idx} onOrder={handleOrder} />
-                ))}
+                {items.map((item, idx) => {
+                  const handleFavClick = () => {
+                    if (role === 'guest') {
+                      setShowLoginPopup(true);
+                    } else {
+                      toggleFavourite({ ...item, id: item._id }, 'meat');
+                    }
+                  };
+                  return (
+                    <MenuCard 
+                      key={item._id} 
+                      item={item} 
+                      index={idx} 
+                      onOrder={handleOrder} 
+                      onFavouriteClick={handleFavClick}
+                      isFav={isFavourited(item._id, 'meat')}
+                    />
+                  );
+                })}
               </div>
             </section>
           )
@@ -276,6 +297,11 @@ export default function MenuPage() {
         </div>
       </footer>
 
+      <LoginRequiredPopup 
+        isOpen={showLoginPopup}
+        onClose={() => setShowLoginPopup(false)}
+        message="Please login first to add to favourites"
+      />
     </div>
   )
 }

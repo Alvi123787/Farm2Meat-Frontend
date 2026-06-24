@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import '../css/Confirmation.css';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import OrderExperienceModal from './OrderExperienceModal';
 import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl';
 import { WHATSAPP_LINK } from '../constants/contact';
 import { formatPrice } from '../utils/priceUtils';
 
 const PURCHASE_STATE_KEY = 'postPurchaseConfirmationState';
-const REVIEW_DISMISSED_PREFIX = 'postPurchaseReviewDismissed:';
 
 const loadStoredPurchaseState = () => {
   try {
@@ -53,7 +51,6 @@ const CheckIcon = ({ size = 16 }) => (
 const Confirmation = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [showExperienceModal, setShowExperienceModal] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [purchaseState, setPurchaseState] = useState(() => {
     const routeState = location.state || {};
@@ -70,36 +67,12 @@ const Confirmation = () => {
 
   const s = purchaseState || {};
   const ok = Boolean(s.fromPurchase);
-  const reviewDismissedKey = s.orderId ? `${REVIEW_DISMISSED_PREFIX}${s.orderId}` : '';
 
   useEffect(() => {
     if (!ok) {
       navigate('/shop', { replace: true });
     }
   }, [ok, navigate]);
-
-  useEffect(() => {
-    if (!s.orderId || !reviewDismissedKey) return;
-    try {
-      if (sessionStorage.getItem(reviewDismissedKey) === '1') return;
-    } catch (e) {
-      void e;
-    }
-    const timer = setTimeout(() => {
-      setShowExperienceModal(true);
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, [s.orderId, reviewDismissedKey]);
-
-  const handleExperienceModalClose = () => {
-    setShowExperienceModal(false);
-    if (!reviewDismissedKey) return;
-    try {
-      sessionStorage.setItem(reviewDismissedKey, '1');
-    } catch (e) {
-      void e;
-    }
-  };
 
   if (!ok) return null;
 
@@ -164,14 +137,6 @@ const Confirmation = () => {
 
   return (
     <div className="conf-page">
-      <OrderExperienceModal
-        open={showExperienceModal}
-        onClose={handleExperienceModalClose}
-        orderId={orderData.orderId}
-        customerName={orderData.customer.name}
-        email={s.email || ''}
-      />
-
       <div className="conf-container">
 
         {/* Hero card */}

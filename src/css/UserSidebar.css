@@ -1,0 +1,337 @@
+/* ======================================================
+   mba-sidebar – Premium Dark Sidebar (MeatByAlvi)
+   All classes prefixed with "mba-" to avoid conflicts.
+   Font: Inter (body) & Playfair Display (brand)
+   Accent: Premium Gold (#d4af37)
+   ====================================================== */
+
+/* ----- Root Variables (scoped to .mba-sidebar) ----- */
+.mba-sidebar {
+  --mba-bg-start: #0b1120;
+  --mba-bg-end: #162033;
+  --mba-accent: #d4af37;
+  --mba-accent-soft: rgba(212, 175, 55, 0.12);
+  --mba-accent-glow: rgba(212, 175, 55, 0.3);
+  --mba-text-primary: #ffffff;
+  --mba-text-secondary: #94a3b8;
+  --mba-text-muted: #64748b;
+  --mba-glass-bg: rgba(255, 255, 255, 0.04);
+  --mba-glass-border: rgba(255, 255, 255, 0.06);
+  --mba-hover-bg: rgba(255, 255, 255, 0.06);
+  --mba-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+
+  --mba-width: 280px;
+  --mba-collapsed: 72px;
+  --mba-radius: 0 24px 24px 0;
+  --mba-transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: var(--mba-width);
+  background: linear-gradient(180deg, var(--mba-bg-start), var(--mba-bg-end));
+  border-radius: var(--mba-radius);
+  box-shadow: var(--mba-shadow);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 14px 20px;
+  z-index: 1000;
+  overflow: hidden;
+  transition: width var(--mba-transition), transform var(--mba-transition);
+  color: var(--mba-text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ----- Collapsed State ----- */
+.mba-sidebar.mba-closed {
+  width: var(--mba-collapsed);
+  padding: 24px 10px 20px;
+}
+
+/* ----- Scrollbar (custom) ----- */
+.mba-sidebar::-webkit-scrollbar {
+  width: 3px;
+}
+.mba-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.mba-sidebar::-webkit-scrollbar-thumb {
+  background: var(--mba-accent);
+  border-radius: 10px;
+}
+.mba-sidebar::-webkit-scrollbar-thumb:hover {
+  background: #e8c84c;
+}
+
+/* ----- Brand ----- */
+.mba-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 6px 12px;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 16px;
+}
+
+.mba-brand-mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #d4af37, #f5d97e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 20px var(--mba-accent-glow);
+  transition: transform 0.2s ease;
+}
+.mba-brand-mark:hover {
+  transform: scale(1.05);
+}
+
+.mba-brand-letter {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0b1120;
+  letter-spacing: -0.5px;
+}
+
+.mba-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+.mba-sidebar.mba-closed .mba-brand-text {
+  opacity: 0;
+  width: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.mba-brand-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.3px;
+}
+.mba-brand-tagline {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--mba-accent);
+  opacity: 0.8;
+}
+
+/* ----- User Profile (glassmorphism) ----- */
+.mba-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  background: var(--mba-glass-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--mba-glass-border);
+  border-radius: 16px;
+  transition: all var(--mba-transition) ease;
+}
+.mba-sidebar.mba-closed .mba-user {
+  display: none;
+}
+
+.mba-user-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d4af37, #f5d97e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0b1120;
+  box-shadow: 0 2px 12px var(--mba-accent-glow);
+}
+
+.mba-user-info {
+  flex: 1;
+  min-width: 0;
+}
+.mba-user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mba-user-tier {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--mba-accent);
+  margin: 0;
+  letter-spacing: 0.3px;
+}
+
+/* ----- Navigation ----- */
+.mba-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin: 0 -4px;
+}
+
+.mba-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--mba-text-secondary);
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  text-align: left;
+  transition: all var(--mba-transition) ease;
+  position: relative;
+  white-space: nowrap;
+  border-left: 3px solid transparent;
+}
+
+.mba-nav-item:hover {
+  background: var(--mba-hover-bg);
+  color: #ffffff;
+}
+
+.mba-nav-item.mba-active {
+  background: var(--mba-accent-soft);
+  color: #ffffff;
+  border-left-color: var(--mba-accent);
+  box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.05);
+}
+.mba-nav-item.mba-active .mba-nav-icon svg {
+  stroke: var(--mba-accent);
+  filter: drop-shadow(0 0 6px var(--mba-accent-glow));
+}
+
+.mba-nav-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mba-nav-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  transition: all var(--mba-transition) ease;
+}
+.mba-nav-item:hover .mba-nav-icon svg {
+  stroke: #ffffff;
+}
+
+.mba-nav-label {
+  flex: 1;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+.mba-sidebar.mba-closed .mba-nav-label {
+  opacity: 0;
+  width: 0;
+}
+
+/* Logout button – subtle red on hover */
+.mba-nav-item.mba-logout {
+  margin-top: 4px;
+  color: var(--mba-text-muted);
+}
+.mba-nav-item.mba-logout:hover {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.08);
+}
+.mba-nav-item.mba-logout:hover .mba-nav-icon svg {
+  stroke: #ff6b6b;
+}
+
+/* ----- Dividers ----- */
+.mba-divider {
+  height: 1px;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.08), transparent);
+  margin: 8px 6px 10px;
+  flex-shrink: 0;
+}
+.mba-sidebar.mba-closed .mba-divider {
+  margin: 8px 0 10px;
+}
+
+/* ----- Toggle Button ----- */
+.mba-toggle {
+  margin: 12px 0 0;
+  padding: 10px;
+  background: var(--mba-glass-bg);
+  border: 1px solid var(--mba-glass-border);
+  border-radius: 12px;
+  cursor: pointer;
+  color: var(--mba-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--mba-transition) ease;
+  flex-shrink: 0;
+  width: 100%;
+}
+.mba-toggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border-color: rgba(212, 175, 55, 0.3);
+}
+.mba-toggle svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2;
+  stroke: currentColor;
+  transition: transform 0.3s ease;
+}
+.mba-sidebar.mba-closed .mba-toggle svg {
+  transform: rotate(180deg);
+}
+
+/* ----- Responsive (Mobile Drawer) ----- */
+@media (max-width: 768px) {
+  .mba-sidebar {
+    border-radius: 0;
+    transform: translateX(-100%);
+    width: 280px;
+  }
+  .mba-sidebar.mba-open {
+    transform: translateX(0);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+  }
+  .mba-sidebar.mba-closed {
+    transform: translateX(-100%);
+    width: 280px;
+  }
+}

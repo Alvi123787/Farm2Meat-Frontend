@@ -14,7 +14,14 @@ export default function ProtectedRoute({ children, role = 'admin' }) {
     )
   }
 
-  const ok = Boolean(token) && userRole === role
+  let ok = false;
+  if (role === 'any') {
+    // Any logged in user
+    ok = Boolean(token) && userRole !== 'guest';
+  } else {
+    // Specific role
+    ok = Boolean(token) && userRole === role;
+  }
 
   if (!ok) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />

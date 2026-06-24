@@ -8,8 +8,10 @@ import {
   faCartShopping,
   faComments,
   faUserShield,
+  faGauge,
+  faDrumstickBite,
 } from '@fortawesome/free-solid-svg-icons';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/authContextCore';
 import { useCart } from '../contexts/cartContextCore';
 
@@ -80,29 +82,25 @@ const Navbar = () => {
   const { role, logout, token } = useAuth();
   const { cartCount } = useCart();
   const location = useLocation();
+  const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(-1);
   const [ripple, setRipple] = useState(null);
-  const [showAccountPopup, setShowAccountPopup] = useState(false);
+  const [showLoginRequiredPopup, setShowLoginRequiredPopup] = useState(false);
   const [isBadgeAnimating, setIsBadgeAnimating] = useState(false);
 
   const menuItems = useMemo(() => [
     { name: 'Home', icon: faHouse, path: '/' },
-    { name: 'Shop', icon: faStore, path: '/shop' },
+    { name: 'Animals', icon: faStore, path: '/shop' },
+    { name: 'Meat', icon: faDrumstickBite, path: '/menu-page' },
     { name: 'Cart', icon: faCartShopping, path: '/cart', isCart: true },
-    { name: 'Feedback', icon: faComments, path: '/feedback' },
+    { name: 'Dashboard', icon: faGauge, path: '/dashboard', isDashboard: true },
     ...(role === 'admin' ? [{ name: 'Admin', icon: faUserShield, path: '/admin' }] : []),
-    { name: 'Account', icon: faUserShield, path: '#account', isAccount: true },
   ], [role]);
 
   useEffect(() => {
     const currentPath = location.pathname;
     
     const index = menuItems.findIndex(item => {
-      if (item.isAccount) {
-        const accountPaths = ['/login', '/signup', '/orders', '/forgot-password', '/reset-password'];
-        return accountPaths.some(p => currentPath.startsWith(p));
-      }
-      
       if (item.path === '/') {
         return currentPath === '/';
       }
@@ -110,6 +108,9 @@ const Navbar = () => {
       // For Admin and other routes, match sub-paths
       if (item.path === '/admin') {
         return currentPath.startsWith('/admin');
+      }
+      if (item.path === '/dashboard') {
+        return currentPath.startsWith('/dashboard');
       }
       
       return currentPath.startsWith(item.path);
@@ -120,39 +121,6 @@ const Navbar = () => {
     }, 0);
     return () => clearTimeout(t);
   }, [location.pathname, menuItems]);
-
-  const userEmail = useMemo(() => {
-    if (!token || role === 'guest') return '';
-    try {
-      const payload = jwtDecode(token);
-      return String(payload?.email || '').trim();
-    } catch {
-      return '';
-    }
-  }, [token, role]);
-
-  const userDisplayName = useMemo(() => {
-    if (userEmail) return displayNameFromEmail(userEmail);
-    if (role === 'admin') return 'Administrator';
-    return 'User';
-  }, [userEmail, role]);
-
-  const accountMenuItems = role === 'guest'
-    ? [
-        { name: 'Login', path: '/login' },
-        { name: 'Sign Up', path: '/signup' },
-      ]
-    : [{ name: 'Logout', path: '#logout', action: logout }];
-
-  /* close on Escape — only listens while popup is open */
-  useEffect(() => {
-    if (!showAccountPopup) return;
-    const onEsc = (e) => {
-      if (e.key === 'Escape') setShowAccountPopup(false);
-    };
-    document.addEventListener('keydown', onEsc);
-    return () => document.removeEventListener('keydown', onEsc);
-  }, [showAccountPopup]);
 
   useEffect(() => {
     if (cartCount > 0) {
@@ -165,15 +133,24 @@ const Navbar = () => {
     }
   }, [cartCount]);
 
+  /* close on Escape — only listens while popup is open */
+  useEffect(() => {
+    if (!showLoginRequiredPopup) return;
+    const onEsc = (e) => {
+      if (e.key === 'Escape') setShowLoginRequiredPopup(false);
+    };
+    document.addEventListener('keydown', onEsc);
+    return () => document.removeEventListener('keydown', onEsc);
+  }, [showLoginRequiredPopup]);
+
   const handleClick = (index) => {
     // setActiveIndex(index); // Removed: handled by useEffect/useLocation
     setRipple(index);
     setTimeout(() => setRipple(null), 600);
 
-    if (menuItems[index].isAccount) {
-      setShowAccountPopup((prev) => !prev);
-    } else {
-      setShowAccountPopup(false);
+    const item = menuItems[index];
+    if (item.isDashboard && role === 'guest') {
+      setShowLoginRequiredPopup(true);
     }
   };
 
@@ -184,11 +161,16 @@ const Navbar = () => {
 
   return (
     <>
+      {/* ── Floating Action Button (FAB) for Feedback ── */}
+      <Link to="/feedback" className="feedback-fab">
+        <FontAwesomeIcon icon={faComments} className="feedback-fab-icon" />
+      </Link>
+
       {/* ── transparent overlay — catches outside clicks ── */}
-      {showAccountPopup && (
+      {showLoginRequiredPopup && (
         <div
           className="pnav-account-overlay"
-          onClick={() => setShowAccountPopup(false)}
+          onClick={() => setShowLoginRequiredPopup(false)}
         />
       )}
 
@@ -255,105 +237,69 @@ const Navbar = () => {
                 key={item.path}
                 className={`pnav-li${
                   activeIndex === index ? ' pnav-active' : ''
-                }${
-                  item.isAccount && showAccountPopup ? ' pnav-popup-open' : ''
                 }`}
                 onClick={() => handleClick(index)}
               >
-                {item.isAccount ? (
-                  /* Account uses a <div> instead of <Link> */
-                  <div className="pnav-a" role="button" tabIndex={0}>
-                    <span className="pnav-item-icon">
-                      <FontAwesomeIcon icon={item.icon} />
-                    </span>
-                    <span className="pnav-item-label">{item.name}</span>
-                    {ripple === index && <span className="pnav-ripple"></span>}
-                  </div>
-                ) : (
-                  <Link to={item.path} className="pnav-a">
-                    <span className="pnav-item-icon">
-                      <FontAwesomeIcon icon={item.icon} />
-                      {item.isCart && cartCount > 0 && (
-                        <span className={`pnav-cart-badge ${isBadgeAnimating ? 'pnav-cart-badge--pop' : ''}`}>
-                          {cartCount}
-                        </span>
-                      )}
-                    </span>
-                    <span className="pnav-item-label">{item.name}</span>
-                    {ripple === index && <span className="pnav-ripple"></span>}
-                  </Link>
-                )}
+                <Link to={item.path} className="pnav-a">
+                  <span className="pnav-item-icon">
+                    <FontAwesomeIcon icon={item.icon} />
+                    {item.isCart && cartCount > 0 && (
+                      <span className={`pnav-cart-badge ${isBadgeAnimating ? 'pnav-cart-badge--pop' : ''}`}>
+                        {cartCount}
+                      </span>
+                    )}
+                  </span>
+                  <span className="pnav-item-label">{item.name}</span>
+                  {ripple === index && <span className="pnav-ripple"></span>}
+                </Link>
               </li>
             ))}
           </ul>
 
-          {/* ── Glass Popup ── */}
-          {showAccountPopup && (
+          {/* ── Login Required Popup ── */}
+          {showLoginRequiredPopup && (
             <div
               className="pnav-account-popup"
               role="dialog"
-              aria-label="Account access"
+              aria-label="Login required"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header row */}
-              <div
-                className={`pnav-popup-header ${role !== 'guest' ? 'pnav-popup-header--user' : ''}`}
-              >
+              <div className="pnav-popup-header">
                 <div className="pnav-popup-icon-wrap">
                   <FontAwesomeIcon
                     icon={faUserShield}
                     className="pnav-popup-icon"
                   />
                 </div>
-                {role === 'guest' ? (
-                  <div className="pnav-popup-welcome-text">
-                    <h3 className="pnav-popup-title">Welcome</h3>
-                    <p className="pnav-popup-sub">Sign in or create your account</p>
-                  </div>
-                ) : (
-                  <div className="pnav-popup-user-text">
-                    <p className="pnav-popup-user-name">{userDisplayName}</p>
-                    <p className="pnav-popup-user-email" title={userEmail || undefined}>
-                      {userEmail || '—'}
-                    </p>
-                  </div>
-                )}
+                <div className="pnav-popup-welcome-text">
+                  <h3 className="pnav-popup-title">Login Required</h3>
+                  <p className="pnav-popup-sub">Please login first to access the dashboard</p>
+                </div>
               </div>
 
               {/* Gold divider */}
               <div className="pnav-popup-divider" />
 
               {/* Action buttons */}
-              <div
-                className={`pnav-popup-actions ${role !== 'guest' ? 'pnav-popup-actions--single' : ''}`}
-              >
-                {accountMenuItems.map((item) => (
-                  item.action ? (
-                    <button
-                      key={item.name}
-                      type="button"
-                      className={`pnav-popup-btn pnav-popup-${item.name.toLowerCase().replace(' ', '-')}`}
-                      onClick={() => {
-                        item.action();
-                        setShowAccountPopup(false);
-                      }}
-                    >
-                      {item.name}
-                    </button>
-                  ) : (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      className={`pnav-popup-btn pnav-popup-${item.name.toLowerCase().replace(' ', '-')}`}
-                      onClick={() => setShowAccountPopup(false)}
-                    >
-                      {item.name}
-                    </Link>
-                  )
-                ))}
+              <div className="pnav-popup-actions">
+                <Link
+                  to="/login"
+                  className="pnav-popup-btn pnav-popup-login"
+                  onClick={() => setShowLoginRequiredPopup(false)}
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  className="pnav-popup-btn pnav-popup-sign-up"
+                  onClick={() => setShowLoginRequiredPopup(false)}
+                >
+                  Sign Up
+                </Link>
               </div>
 
-              {/* Arrow pointing down toward Account item */}
+              {/* Arrow pointing down toward Dashboard item */}
               <div className="pnav-popup-arrow" />
             </div>
           )}

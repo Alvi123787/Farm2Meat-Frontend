@@ -6,11 +6,16 @@ import {
   FaExclamationTriangle,
   FaShieldAlt,
   FaTimes,
-  FaPlay
+  FaPlay,
+  FaRegHeart,
+  FaHeart
 } from 'react-icons/fa'
 import ButcherSection from './ButcherSection'
+import LoginRequiredPopup from './LoginRequiredPopup'
 import api from '../services/api'
 import '../css/CardsGrid.css'
+import { useAuth } from '../contexts/authContextCore'
+import { useFavourites } from '../contexts/FavouritesContext'
 import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl'
 import { WHATSAPP_NUMBER } from '../constants/contact'
 import { formatPrice } from '../utils/priceUtils'
@@ -68,7 +73,7 @@ const weightLabel = (id) => {
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    ProductCard
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-const ProductCard = ({ product, index, isAnimated }) => {
+const ProductCard = ({ product, index, isAnimated, isFav, onFavouriteClick }) => {
   const needsScroll = index >= SCROLL_THRESHOLD
   const isSold = product.status === 'sold'
   const isReserved = product.status === 'reserved'
@@ -159,6 +164,16 @@ const ProductCard = ({ product, index, isAnimated }) => {
             </div>
           )}
 
+          {/* Favourite Button */}
+          <button
+            className="mc__wishlist"
+            style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 10 }}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onFavouriteClick(); }}
+            aria-label={isFav ? `Remove ${product.name} from favourites` : `Add ${product.name} to favourites`}
+          >
+            {isFav ? <FaHeart /> : <FaRegHeart />}
+          </button>
+
           {/* Hover CTA */}
           <div className="cg-hover-cta">
             <span>View Details</span>
@@ -219,6 +234,9 @@ const CardsGrid = ({ filters, onClearFilters, showAllHref = '/shop', showButcher
   const [scrollRevealed, setScrollRevealed] = useState(false)
   const [isSwitching, setIsSwitching] = useState(false)
   const scrollRef = useRef(null)
+  const { role } = useAuth()
+  const { isFavourited, toggleFavourite } = useFavourites()
+  const [showLoginPopup, setShowLoginPopup] = useState(false)
 
   useEffect(() => {
     const fetchAnimals = async () => {
@@ -498,12 +516,23 @@ const CardsGrid = ({ filters, onClearFilters, showAllHref = '/shop', showButcher
                 <div
                   className={`cg-grid ${isSwitching ? 'cg-grid--switching' : ''}`}
                 >
-                  {sortedAnimals.map((product, i) => (
-                    <React.Fragment key={product._id || product.id || i}>
+                  {sortedAnimals.map((product, i) => {
+                  const productId = product._id || product.id
+                  const handleFavClick = () => {
+                    if (role === 'guest') {
+                      setShowLoginPopup(true)
+                    } else {
+                      toggleFavourite({ ...product, id: productId }, 'animal')
+                    }
+                  }
+                  return (
+                    <React.Fragment key={productId || i}>
                       <ProductCard
                         product={product}
                         index={i}
                         isAnimated={scrollRevealed}
+                        isFav={isFavourited(productId, 'animal')}
+                        onFavouriteClick={handleFavClick}
                       />
                       {showButcher && i === 7 && (
                         <div className="cg-full-width">
@@ -511,7 +540,8 @@ const CardsGrid = ({ filters, onClearFilters, showAllHref = '/shop', showButcher
                         </div>
                       )}
                     </React.Fragment>
-                  ))}
+                  )
+                })}
                   {showButcher && sortedAnimals.length > 0 && sortedAnimals.length <= 7 && (
                     <div className="cg-full-width">
                       <ButcherSection />
@@ -524,6 +554,12 @@ const CardsGrid = ({ filters, onClearFilters, showAllHref = '/shop', showButcher
           </div>
         </div>
       </div>
+
+      <LoginRequiredPopup 
+        isOpen={showLoginPopup}
+        onClose={() => setShowLoginPopup(false)}
+        message="Please login first to add to favourites"
+      />
     </section>
   )
 }

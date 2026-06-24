@@ -29,7 +29,8 @@ import {
   FaChevronDown,
   FaChevronUp,
   FaVideo,
-  FaSpinner
+  FaSpinner,
+  FaExclamationCircle
 } from 'react-icons/fa'
 import api from '../services/api'
 import '../css/Checkout.css'
@@ -37,7 +38,6 @@ import { cartStorage } from '../utils/cartStorage'
 import { animalsService } from '../services/animalsService'
 import { useCart } from '../contexts/cartContextCore'
 import ButcherModal from '../components/ButcherModal'
-import AnimalCareModal from '../components/AnimalCareModal'
 import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl'
 import { WHATSAPP_NUMBER } from '../constants/contact'
 import { formatPrice } from '../utils/priceUtils'
@@ -50,11 +50,14 @@ const normalize = (v) => String(v || '').trim().toLowerCase()
 
 const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || '').trim())
 const validatePhone = (phone) => {
+  // First check if there are any invalid characters (only digits, spaces, hyphens, and + allowed at start)
+  const validCharRegex = /^[+\d\s\-]*$/
+  if (!validCharRegex.test(phone)) return false
+  
   const cleaned = phone.replace(/\D/g, '')
   return (
-    /^03\d{9}$/.test(cleaned) || 
-    /^92\d{10}$/.test(cleaned) || 
-    /^\+92\d{10}$/.test(phone.trim())
+    /^03\d{9}$/.test(cleaned) ||
+    /^92\d{10}$/.test(cleaned)
   )
 }
 
@@ -99,8 +102,6 @@ const buildImageUrl = (imagePath) => {
   if (!imagePath || typeof imagePath !== 'string') return '/placeholder.jpg'
   const trimmed = imagePath.trim()
   if (!trimmed) return '/placeholder.jpg'
-  
-  // Already a full URL
   if (isAbsoluteUrl(trimmed)) return trimmed
   return buildMediaUrl(trimmed) || '/placeholder.jpg'
 }
@@ -110,12 +111,8 @@ const getThumbnail = (item) => {
   if (item.images && Array.isArray(item.images) && item.images.length > 0) {
     return buildImageUrl(item.images[0])
   }
-  if (item.imageUrl) {
-    return buildImageUrl(item.imageUrl)
-  }
-  if (item.img) {
-    return buildImageUrl(item.img)
-  }
+  if (item.imageUrl) return buildImageUrl(item.imageUrl)
+  if (item.img) return buildImageUrl(item.img)
   return '/placeholder.jpg'
 }
 
@@ -133,16 +130,16 @@ const Checkout = () => {
   const [isVisible, setIsVisible] = useState(false)
   const [isButcherModalOpen, setIsButcherModalOpen] = useState(false)
   const [hasShownButcherModal, setHasShownButcherModal] = useState(false)
-  const [isAnimalCareModalOpen, setIsAnimalCareModalOpen] = useState(false)
-  const [hasShownAnimalCareModal, setHasShownAnimalCareModal] = useState(false)
   const [animalCareSelected, setAnimalCareSelected] = useState(false)
 
   // ── Refs ──
   const checkingRef = useRef(false)
   const orderItemsRef = useRef([])
   const lastCheckRef = useRef(0)
+  // FIX 2: Refs are now actually attached to inputs below
   const fullNameRef = useRef(null)
   const phoneRef = useRef(null)
+  const altPhoneRef = useRef(null)
   const emailRef = useRef(null)
   const cityRef = useRef(null)
   const addressRef = useRef(null)
@@ -177,28 +174,18 @@ const Checkout = () => {
   const [notices, setNotices] = useState([])
   const [errors, setErrors] = useState({})
 
-  useEffect(() => {
-    // Determine if any livestock item is present
-    const hasLivestock = orderItems.some(it => normalize(it.itemType) !== 'meat')
 
-    // Current flow: Open AnimalCareModal only for livestock items
-    if (!loading && orderItems.length > 0 && hasLivestock && !hasShownAnimalCareModal) {
-      setIsAnimalCareModalOpen(true)
-      setHasShownAnimalCareModal(true)
-    }
-  }, [loading, orderItems, hasShownAnimalCareModal])
 
   // ════════════════════════════════════════════
-  // Load order items from Cart page or localStorage
+  // Load order items
   // ════════════════════════════════════════════
 
   useEffect(() => {
-    if (cartLoading) return;
+    if (cartLoading) return
 
     let items = []
     if (location.state?.cart && location.state.cart.length > 0) {
       items = location.state.cart
-      // Clear state after reading to prevent issues on refresh
       window.history.replaceState({}, document.title)
     } else {
       items = cart
@@ -207,9 +194,7 @@ const Checkout = () => {
     if (items.length === 0) {
       navigate('/cart', {
         replace: true,
-        state: {
-          notice: 'Your cart is empty. Add animals from the shop, then open checkout again.'
-        }
+        state: { notice: 'Your cart is empty. Add animals from the shop, then open checkout again.' }
       })
       return
     }
@@ -224,9 +209,7 @@ const Checkout = () => {
     if (!loading && orderItems.length === 0 && !cancelled) {
       navigate('/unavailable-item', { replace: true })
     }
-    return () => {
-      cancelled = true
-    }
+    return () => { cancelled = true }
   }, [loading, orderItems, navigate])
 
   useEffect(() => {
@@ -242,14 +225,14 @@ const Checkout = () => {
   // Calculations (Memoized)
   // ════════════════════════════════════════════
 
-  const subtotal = useMemo(() => 
+  const subtotal = useMemo(() =>
     orderItems.reduce(
       (sum, item) => sum + priceToNumber(item.price) * getEffectiveQuantity(item),
       0
     ), [orderItems]
   )
 
-  const totalItems = useMemo(() => 
+  const totalItems = useMemo(() =>
     orderItems.reduce(
       (sum, item) => sum + getEffectiveQuantity(item),
       0
@@ -260,7 +243,7 @@ const Checkout = () => {
   const grandTotal = useMemo(() => subtotal + delivery, [subtotal, delivery])
 
   const allConfirmed = confirmations.weightCheck && confirmations.termsAgree
-  const isFormValid = useMemo(() => 
+  const isFormValid = useMemo(() =>
     formData.fullName &&
     validatePhone(formData.phone) &&
     (!formData.email || validateEmail(formData.email)) &&
@@ -318,13 +301,8 @@ const Checkout = () => {
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
-    
-    // Real-time validation
     const error = validateField(name, value)
-    setErrors((prev) => ({
-      ...prev,
-      [name]: error
-    }))
+    setErrors((prev) => ({ ...prev, [name]: error }))
   }
 
   const handleConfirmationChange = (key) => {
@@ -335,6 +313,7 @@ const Checkout = () => {
     setExpandedSection((prev) => ({ ...prev, [key]: !prev[key] }))
   }
 
+  // FIX 4: deliveryCharge now correctly sends DELIVERY_CHARGE instead of 0
   const createOrderPayload = (paymentMethod) => {
     const currentItems = orderItemsRef.current
     return {
@@ -355,7 +334,7 @@ const Checkout = () => {
       })),
       deliveryAddress: formData.address,
       city: formData.city,
-      deliveryCharge: 0,
+      deliveryCharge: DELIVERY_CHARGE,   // FIX 4: was hardcoded 0
       paymentMethod: paymentMethod || 'cod',
       orderSource: 'checkout',
       notes: formData.instructions || '',
@@ -367,15 +346,12 @@ const Checkout = () => {
   const buildWhatsAppOrder = (orderId) => {
     const currentItems = orderItemsRef.current
     let msg = `Assalam o Alaikum!%0A%0A✅ *ORDER CONFIRMATION — MeatByAlvi*%0A%0A`
-    if (orderId) {
-      msg += `*Order ID: ${orderId}*%0A`
-    }
+    if (orderId) msg += `*Order ID: ${orderId}*%0A`
     msg += `━━━━━━━━━━━━━━━%0A`
 
     currentItems.forEach((item, i) => {
       const qty = getEffectiveQuantity(item)
       const itemTotal = priceToNumber(item.price) * qty
-
       msg += `${i + 1}. *${item.name}*%0A`
       msg += `   Breed: ${item.breed || 'N/A'}`
       if (item.weight) msg += ` | Weight (Zinda): ${item.weight}`
@@ -387,7 +363,7 @@ const Checkout = () => {
     msg += `━━━━━━━━━━━━━━━%0A`
     msg += `Total Items: ${totalItems}%0A`
     msg += `Product Total: Rs ${formatPrice(subtotal)}%0A`
-    msg += `Delivery: Free%0A`
+    msg += `Delivery: Rs. ${DELIVERY_CHARGE}%0A`
     msg += `*Grand Total: Rs ${formatPrice(grandTotal)}*%0A`
     msg += `Payment: Cash On Delivery%0A%0A`
 
@@ -416,60 +392,64 @@ const Checkout = () => {
     return msg
   }
 
-  const focusFirstInvalid = () => {
-    const errorKeys = Object.keys(errors)
-    if (errorKeys.length > 0) {
-      const firstField = errorKeys[0]
-      switch (firstField) {
-        case 'fullName': fullNameRef.current?.focus(); break;
-        case 'phone': phoneRef.current?.focus(); break;
-        case 'email': emailRef.current?.focus(); break;
-        case 'city': cityRef.current?.focus(); break;
-        case 'address': addressRef.current?.focus(); break;
-        default: break;
-      }
-      return true
+  // FIX 2: focusFirstInvalid now uses the freshly-set newErrors from validateForm
+  const focusFirstInvalid = (newErrors) => {
+    const refMap = {
+      fullName: fullNameRef,
+      phone: phoneRef,
+      altPhone: altPhoneRef,
+      email: emailRef,
+      city: cityRef,
+      address: addressRef
     }
-    return false
+    const fieldOrder = ['fullName', 'phone', 'altPhone', 'email', 'city', 'address']
+    for (const field of fieldOrder) {
+      if (newErrors[field]) {
+        refMap[field]?.current?.focus()
+        refMap[field]?.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        break
+      }
+    }
   }
 
   const handlePlaceOrder = async () => {
     if (isSubmitting) return
-    
-    // Check confirmations first
+
     if (!confirmations.weightCheck || !confirmations.termsAgree) {
-      setNotices([{ 
-        type: 'warning', 
-        text: 'Please agree to the quality check and terms and conditions before placing your order.' 
+      setNotices([{
+        type: 'warning',
+        text: 'Please agree to the quality check and terms and conditions before placing your order.'
       }])
-      // Scroll to confirmations
       const el = document.querySelector('.co-confirm-section')
       el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       return
     }
 
-    if (!validateForm()) {
-      focusFirstInvalid()
+    // FIX 2: Pass fresh errors to focusFirstInvalid
+    const newErrors = {}
+    Object.keys(formData).forEach(key => {
+      const error = validateField(key, formData[key])
+      if (error) newErrors[key] = error
+    })
+    setErrors(newErrors)
+
+    if (Object.keys(newErrors).length > 0) {
+      focusFirstInvalid(newErrors)
       return
     }
-    
-    // Final check before placement
+
     setIsSubmitting(true)
     const itemsChanged = await pruneUnavailable(orderItemsRef.current)
     if (itemsChanged) {
       setIsSubmitting(false)
-      return // Re-render will show new notices or redirect
+      return
     }
 
     setNotices([])
 
     try {
       const response = await api.post('/api/inquiries/bulk', createOrderPayload('cod'))
-
       const data = response.data
-      
-      // Axios throws for non-2xx status codes, so 409 will be handled in catch
-      // The backend returns { success: true, data: { orderId: '...' } }
       const orderIdFromApi = String(data?.data?.orderId || data?.orderId || '').trim()
 
       clearCart()
@@ -514,19 +494,14 @@ const Checkout = () => {
         if (orderIdFromApi) {
           sessionStorage.removeItem(`postPurchaseReviewDismissed:${orderIdFromApi}`)
         }
-      } catch (e) {
-        void e
-      }
+      } catch (e) { void e }
 
-      navigate('/confirmation', {
-        replace: true,
-        state: confirmationState
-      })
+      navigate('/confirmation', { replace: true, state: confirmationState })
     } catch (err) {
       console.error('Error saving inquiries:', err)
 
       if (err.response && err.response.status === 409) {
-        navigate('/unavailable-item', { 
+        navigate('/unavailable-item', {
           replace: true,
           state: { message: 'Some items were just sold. Please review your cart again.' }
         })
@@ -543,23 +518,29 @@ const Checkout = () => {
   const handleWhatsAppOrder = async () => {
     if (isSubmitting) return
 
-    // Check confirmations first
     if (!confirmations.weightCheck || !confirmations.termsAgree) {
-      setNotices([{ 
-        type: 'warning', 
-        text: 'Please agree to the quality check and terms and conditions before placing your order.' 
+      setNotices([{
+        type: 'warning',
+        text: 'Please agree to the quality check and terms and conditions before placing your order.'
       }])
       const el = document.querySelector('.co-confirm-section')
       el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       return
     }
 
-    if (!validateForm()) {
-      focusFirstInvalid()
+    // FIX 2: Same pattern for WhatsApp path
+    const newErrors = {}
+    Object.keys(formData).forEach(key => {
+      const error = validateField(key, formData[key])
+      if (error) newErrors[key] = error
+    })
+    setErrors(newErrors)
+
+    if (Object.keys(newErrors).length > 0) {
+      focusFirstInvalid(newErrors)
       return
     }
 
-    // Final check before placement
     setIsSubmitting(true)
     const itemsChanged = await pruneUnavailable(orderItemsRef.current)
     if (itemsChanged) {
@@ -570,22 +551,19 @@ const Checkout = () => {
     setNotices([])
 
     try {
-      // First, create the inquiry in our database (without redirecting)
       const response = await api.post('/api/inquiries/bulk', createOrderPayload('whatsapp'))
-
       const data = response.data
       const orderIdFromApi = String(data?.data?.orderId || data?.orderId || '').trim()
 
       const orderText = buildWhatsAppOrder(orderIdFromApi)
       const encodedMsg = encodeURIComponent(orderText)
       const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMsg}`
-      
+
       const newWin = window.open(waUrl, '_blank')
       if (!newWin || newWin.closed || typeof newWin.closed === 'undefined') {
         alert('Please allow popups to complete your WhatsApp order redirection.')
       }
 
-      // Clear cart and redirect to success/confirmation page
       clearCart()
       setSelectedButcher(null)
 
@@ -624,18 +602,13 @@ const Checkout = () => {
 
       try {
         sessionStorage.setItem(PURCHASE_STATE_KEY, JSON.stringify(confirmationState))
-      } catch (e) {
-        void e
-      }
+      } catch (e) { void e }
 
-      navigate('/confirmation', {
-        replace: true,
-        state: confirmationState
-      })
+      navigate('/confirmation', { replace: true, state: confirmationState })
     } catch (err) {
       console.error('Error saving WhatsApp inquiry:', err)
       if (err.response && err.response.status === 409) {
-        navigate('/unavailable-item', { 
+        navigate('/unavailable-item', {
           replace: true,
           state: { message: 'Some items were just sold. Please review your cart again.' }
         })
@@ -651,22 +624,22 @@ const Checkout = () => {
   const pruneUnavailable = useCallback(
     async (items) => {
       if (checkingRef.current) return false
-      
+
       const now = Date.now()
-      if (now - lastCheckRef.current < 15000) return false // Debounce
+      if (now - lastCheckRef.current < 15000) return false
       lastCheckRef.current = now
 
       checkingRef.current = true
 
-      // Safety timeout to prevent permanent lock if API fails
       const safetyTimeout = setTimeout(() => {
         checkingRef.current = false
       }, 8000)
-      
+
       const ids = (items || [])
         .filter((it) => !isMultiQuantityItem(it))
         .map((it) => String(it._id || it.id || '').trim())
         .filter(Boolean)
+
       if (ids.length === 0) {
         clearTimeout(safetyTimeout)
         checkingRef.current = false
@@ -677,7 +650,7 @@ const Checkout = () => {
         setCheckingAvailability(true)
         const result = await animalsService.checkAvailability({ ids })
         const unavailable = Array.isArray(result?.unavailable) ? result.unavailable : []
-        
+
         if (unavailable.length === 0) {
           clearTimeout(safetyTimeout)
           checkingRef.current = false
@@ -687,7 +660,7 @@ const Checkout = () => {
 
         const setIds = new Set(unavailable)
         const removed = (items || []).filter((it) => setIds.has(String(it._id || it.id)))
-        
+
         if (removed.length > 0) {
           const kept = (items || [])
             .filter((it) => !setIds.has(String(it._id || it.id)))
@@ -695,9 +668,8 @@ const Checkout = () => {
 
           const names = removed.map((it) => it.name).filter(Boolean)
           let message = ''
-
           if (names.length === 1) {
-            message = `“${names[0]}” has already been purchased by another customer.`
+            message = `"${names[0]}" has already been purchased by another customer.`
           } else if (names.length <= 3) {
             message = `Some items are no longer available: ${names.join(', ')}`
           } else {
@@ -709,19 +681,17 @@ const Checkout = () => {
             ...prev
           ].slice(0, 3))
 
-          // 🔥 If ALL items gone → redirect 
           if (kept.length === 0) {
-            navigate('/unavailable-item', { 
+            navigate('/unavailable-item', {
               replace: true,
               state: { message: 'All items in your cart have just been purchased by others.' }
             })
-            return true // Signifies redirection or all items gone
+            return true
           }
 
-          // ✅ Otherwise update remaining items 
           await updateCart(kept)
           setOrderItems(kept)
-          return true // Signifies some items removed
+          return true
         }
         return false
       } catch (e) {
@@ -738,26 +708,24 @@ const Checkout = () => {
 
   useEffect(() => {
     if (loading || isSubmitting || hasCheckedOnce) return
-    
-    // Initial check
+
     pruneUnavailable(orderItemsRef.current)
     setHasCheckedOnce(true)
-    
+
     const onFocus = () => {
       if (!isSubmitting && !checkingRef.current && document.visibilityState === 'visible') {
         pruneUnavailable(orderItemsRef.current)
       }
     }
-    
+
     window.addEventListener('focus', onFocus)
-    
-    // Increased interval to 60s to reduce flickering/load
+
     const interval = setInterval(() => {
       if (!isSubmitting && !checkingRef.current && document.visibilityState === 'visible') {
         pruneUnavailable(orderItemsRef.current)
       }
     }, 60000)
-    
+
     return () => {
       window.removeEventListener('focus', onFocus)
       clearInterval(interval)
@@ -916,9 +884,9 @@ const Checkout = () => {
                                   src={getThumbnail(item)}
                                   alt={item.name}
                                   className="co-review-img"
-                                  onError={(e) => { 
+                                  onError={(e) => {
                                     e.target.onerror = null
-                                    e.target.src = '/placeholder.jpg' 
+                                    e.target.src = '/placeholder.jpg'
                                   }}
                                 />
                                 {qty > 1 && (
@@ -965,9 +933,7 @@ const Checkout = () => {
                       </div>
                       <div className="co-review-note">
                         <FaVideo className="co-review-note-icon" />
-                        <span>
-                          Live video verification available on WhatsApp before delivery.
-                        </span>
+                        <span>Live video verification available on WhatsApp before delivery.</span>
                       </div>
                     </div>
                   </div>
@@ -986,68 +952,106 @@ const Checkout = () => {
                     </button>
                     <div className={`co-section-body ${expandedSection.customer ? 'co-section-body--open' : ''}`}>
                       <div className="co-form-grid">
+
+                        {/* Full Name */}
                         <div className="co-form-group">
                           <label className="co-label" htmlFor="co-fullName">
                             <FaUser className="co-label-icon" />
                             Full Name <span className="co-required">*</span>
                           </label>
                           <input
+                            ref={fullNameRef}
                             type="text"
                             id="co-fullName"
                             name="fullName"
-                            className="co-input"
+                            className={`co-input${errors.fullName ? ' co-input--error' : ''}`}
                             placeholder="Apna poora naam"
                             value={formData.fullName}
                             onChange={handleChange}
                             required
                           />
+                          {/* FIX 1: Error message rendered */}
+                          {errors.fullName && (
+                            <span className="co-field-error">
+                              <FaExclamationCircle className="co-field-error-icon" />
+                              {errors.fullName}
+                            </span>
+                          )}
                         </div>
+
+                        {/* Phone */}
                         <div className="co-form-group">
                           <label className="co-label" htmlFor="co-phone">
                             <FaPhone className="co-label-icon" />
                             Phone Number <span className="co-required">*</span>
                           </label>
                           <input
+                            ref={phoneRef}
                             type="tel"
                             id="co-phone"
                             name="phone"
-                            className="co-input"
+                            className={`co-input${errors.phone ? ' co-input--error' : ''}`}
                             placeholder="03XX-XXXXXXX"
                             value={formData.phone}
                             onChange={handleChange}
                             required
                           />
+                          {errors.phone && (
+                            <span className="co-field-error">
+                              <FaExclamationCircle className="co-field-error-icon" />
+                              {errors.phone}
+                            </span>
+                          )}
                         </div>
+
+                        {/* Alt Phone */}
                         <div className="co-form-group">
                           <label className="co-label" htmlFor="co-altPhone">
                             <FaPhoneAlt className="co-label-icon" />
                             Alternate Phone
                           </label>
                           <input
+                            ref={altPhoneRef}
                             type="tel"
                             id="co-altPhone"
                             name="altPhone"
-                            className="co-input"
+                            className={`co-input${errors.altPhone ? ' co-input--error' : ''}`}
                             placeholder="Optional"
                             value={formData.altPhone}
                             onChange={handleChange}
                           />
+                          {errors.altPhone && (
+                            <span className="co-field-error">
+                              <FaExclamationCircle className="co-field-error-icon" />
+                              {errors.altPhone}
+                            </span>
+                          )}
                         </div>
+
+                        {/* Email */}
                         <div className="co-form-group">
                           <label className="co-label" htmlFor="co-email">
                             <FaEnvelope className="co-label-icon" />
                             Email <span className="co-optional">(optional)</span>
                           </label>
                           <input
+                            ref={emailRef}
                             type="email"
                             id="co-email"
                             name="email"
-                            className="co-input"
+                            className={`co-input${errors.email ? ' co-input--error' : ''}`}
                             placeholder="you@example.com"
                             value={formData.email}
                             onChange={handleChange}
                           />
+                          {errors.email && (
+                            <span className="co-field-error">
+                              <FaExclamationCircle className="co-field-error-icon" />
+                              {errors.email}
+                            </span>
+                          )}
                         </div>
+
                       </div>
                     </div>
                   </div>
@@ -1066,22 +1070,33 @@ const Checkout = () => {
                     </button>
                     <div className={`co-section-body ${expandedSection.delivery ? 'co-section-body--open' : ''}`}>
                       <div className="co-form-grid">
+
+                        {/* City */}
                         <div className="co-form-group">
                           <label className="co-label" htmlFor="co-city">
                             <FaCity className="co-label-icon" />
                             City <span className="co-required">*</span>
                           </label>
                           <input
+                            ref={cityRef}
                             type="text"
                             id="co-city"
                             name="city"
-                            className="co-input"
+                            className={`co-input${errors.city ? ' co-input--error' : ''}`}
                             placeholder="e.g., Rahim Yar Khan"
                             value={formData.city}
                             onChange={handleChange}
                             required
                           />
+                          {errors.city && (
+                            <span className="co-field-error">
+                              <FaExclamationCircle className="co-field-error-icon" />
+                              {errors.city}
+                            </span>
+                          )}
                         </div>
+
+                        {/* Landmark */}
                         <div className="co-form-group">
                           <label className="co-label" htmlFor="co-landmark">
                             <FaMapMarkerAlt className="co-label-icon" />
@@ -1097,23 +1112,34 @@ const Checkout = () => {
                             onChange={handleChange}
                           />
                         </div>
+
                       </div>
+
+                      {/* Full Address */}
                       <div className="co-form-group co-form-group--full">
                         <label className="co-label" htmlFor="co-address">
                           <FaHome className="co-label-icon" />
                           Full Address <span className="co-required">*</span>
                         </label>
                         <input
+                          ref={addressRef}
                           type="text"
                           id="co-address"
                           name="address"
-                          className="co-input"
+                          className={`co-input${errors.address ? ' co-input--error' : ''}`}
                           placeholder="Mohalla, Street, House No."
                           value={formData.address}
                           onChange={handleChange}
                           required
                         />
+                        {errors.address && (
+                          <span className="co-field-error">
+                            <FaExclamationCircle className="co-field-error-icon" />
+                            {errors.address}
+                          </span>
+                        )}
                       </div>
+
                       <div className="co-form-grid">
                         <div className="co-form-group">
                           <label className="co-label" htmlFor="co-instructions">
@@ -1131,6 +1157,27 @@ const Checkout = () => {
                           />
                         </div>
                       </div>
+
+                      {orderItems.some(it => normalize(it.itemType) !== 'meat') && (
+                        <div className="co-form-group co-form-group--full">
+                          <label className="co-checkbox-label">
+                            <input
+                              type="checkbox"
+                              className="co-checkbox-input"
+                              checked={animalCareSelected}
+                              onChange={() => setAnimalCareSelected(!animalCareSelected)}
+                            />
+                            <span className={`co-checkbox-custom ${animalCareSelected ? 'co-checkbox-custom--checked' : ''}`}>
+                              {animalCareSelected && <FaCheck />}
+                            </span>
+                            <span className="co-checkbox-text">
+                              <FaInfoCircle className="co-delivery-note-icon" style={{ marginRight: '6px', display: 'inline' }} />
+                              Request Animal Care Service (Rs. 100 per item per day)
+                            </span>
+                          </label>
+                        </div>
+                      )}
+
                       <div className="co-delivery-note">
                         <FaInfoCircle className="co-delivery-note-icon" />
                         <span>
@@ -1153,7 +1200,8 @@ const Checkout = () => {
                         {confirmations.weightCheck && <FaCheck />}
                       </span>
                       <span className="co-checkbox-text">
-                        I confirm that I have checked the <strong>details and quality</strong> of my selected {orderItems.some(it => normalize(it.itemType) !== 'meat') ? 'livestock' : 'items'}.
+                        I confirm that I have checked the <strong>details and quality</strong> of my selected{' '}
+                        {orderItems.some(it => normalize(it.itemType) !== 'meat') ? 'livestock' : 'items'}.
                       </span>
                     </label>
                     <label className="co-checkbox-label">
@@ -1190,7 +1238,6 @@ const Checkout = () => {
                       {orderItems.map((item) => {
                         const qty = getEffectiveQuantity(item)
                         const itemTotal = priceToNumber(item.price) * qty
-
                         return (
                           <div key={item._id || item.id} className="co-summary-item">
                             <div className="co-summary-item-left">
@@ -1238,51 +1285,53 @@ const Checkout = () => {
 
                     {/* CTA Buttons */}
                     <div className="co-summary-cta">
-                      <button
-                        className={`co-btn co-btn--confirm ${isSubmitting ? 'co-btn--disabled' : ''}`}
-                        onClick={handlePlaceOrder}
-                        disabled={isSubmitting}
-                      >
-                        {isSubmitting ? (
-                          <>
-                            <span className="co-spinner"></span>
-                            <span>Processing...</span>
-                          </>
-                        ) : (
-                          <>
-                            <FaCheckCircle className="co-btn-icon" />
-                            <span>Place Order</span>
-                          </>
-                        )}
-                      </button>
+                  <button
+                    className={`co-btn co-btn--confirm ${(!allConfirmed || !isFormValid || isSubmitting) ? 'co-btn--disabled' : ''}`}
+                    onClick={handlePlaceOrder}
+                    disabled={!allConfirmed || !isFormValid || isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <span className="co-spinner"></span>
+                        <span>Processing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FaCheckCircle className="co-btn-icon" />
+                        <span>Place Order</span>
+                      </>
+                    )}
+                  </button>
 
-                      <button
-                        className={`co-btn co-btn--whatsapp ${isSubmitting ? 'co-btn--disabled' : ''}`}
-                        onClick={handleWhatsAppOrder}
-                        disabled={isSubmitting}
-                      >
-                        {isSubmitting ? (
-                          <>
-                            <span className="co-spinner"></span>
-                            <span>Opening WhatsApp...</span>
-                          </>
-                        ) : (
-                          <>
-                            <FaWhatsapp className="co-btn-icon" />
-                            <span>Place via WhatsApp</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
+                  <button
+                    className={`co-btn co-btn--whatsapp ${(!allConfirmed || !isFormValid || isSubmitting) ? 'co-btn--disabled' : ''}`}
+                    onClick={handleWhatsAppOrder}
+                    disabled={!allConfirmed || !isFormValid || isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <span className="co-spinner"></span>
+                        <span>Opening WhatsApp...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FaWhatsapp className="co-btn-icon" />
+                        <span>Place via WhatsApp</span>
+                      </>
+                    )}
+                  </button>
+                </div>
 
-                    {/* Validation Hint */}
+                    {/* FIX 1 + FIX 5: Granular validation hint — tells user exactly what's missing */}
                     {(!allConfirmed || !isFormValid) && (
                       <div className="co-summary-hint">
                         <FaInfoCircle className="co-summary-hint-icon" />
                         <span>
-                          {!isFormValid
-                            ? 'Please fill all required fields.'
-                            : 'Please check both confirmation boxes.'}
+                          {!isFormValid && !allConfirmed
+                            ? 'Fill required fields and check both confirmation boxes.'
+                            : !isFormValid
+                            ? 'Please fill all required fields to continue.'
+                            : 'Please check both confirmation boxes above.'}
                         </span>
                       </div>
                     )}
@@ -1319,41 +1368,36 @@ const Checkout = () => {
       </section>
 
       {/* ══════════ MOBILE STICKY BAR ══════════ */}
+      {/* FIX 5: Tooltip on disabled state so mobile users know why button is inactive */}
       <div className="co-sticky-bar">
         <div className="co-sticky-info">
           <span className="co-sticky-label">Grand Total</span>
           <span className="co-sticky-value">{formatPrice(grandTotal)}</span>
         </div>
-        <button
-          className="co-sticky-btn"
-          onClick={handlePlaceOrder}
-          disabled={!allConfirmed || !isFormValid || isSubmitting}
-        >
-          <FaCheckCircle className="co-sticky-btn-icon" />
-          <span>Confirm</span>
-        </button>
+        <div className="co-sticky-btn-wrap">
+          <button
+            className="co-sticky-btn"
+            onClick={handlePlaceOrder}
+            disabled={!allConfirmed || !isFormValid || isSubmitting}
+          >
+            <FaCheckCircle className="co-sticky-btn-icon" />
+            <span>Confirm</span>
+          </button>
+          {(!allConfirmed || !isFormValid) && (
+            <span className="co-sticky-hint">
+              {!isFormValid ? 'Fill required fields' : 'Check confirmation boxes'}
+            </span>
+          )}
+        </div>
       </div>
 
-      {/* Butcher Modal disabled for now, replaced by AnimalCareModal */}
+      {/* Butcher Modal disabled */}
       {false && (
-        <ButcherModal 
-          isOpen={isButcherModalOpen} 
-          onClose={() => setIsButcherModalOpen(false)} 
+        <ButcherModal
+          isOpen={isButcherModalOpen}
+          onClose={() => setIsButcherModalOpen(false)}
         />
       )}
-
-      <AnimalCareModal
-        isOpen={isAnimalCareModalOpen}
-        onClose={() => {
-          setIsAnimalCareModalOpen(false);
-          setAnimalCareSelected(false);
-        }}
-        onProceed={() => {
-          setIsAnimalCareModalOpen(false);
-          setAnimalCareSelected(true);
-        }}
-        animalName={orderItems.length > 0 ? orderItems[0].name : "your animal"}
-      />
     </div>
   )
 }

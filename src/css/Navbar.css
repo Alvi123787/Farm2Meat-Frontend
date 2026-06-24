@@ -794,6 +794,58 @@
 }
 
 /* ===================================
+   FAB: FEEDBACK FLOATING ACTION BUTTON
+==================================== */
+.feedback-fab {
+  position: fixed;
+  right: 20px;
+  bottom: 120px;
+  width: 56px;
+  height: 56px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+  box-shadow:
+    0 4px 14px rgba(59, 130, 246, 0.4),
+    0 8px 24px rgba(99, 102, 241, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+  text-decoration: none;
+  animation: fabPulse 2.5s ease-in-out infinite;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.feedback-fab:hover {
+  transform: scale(1.08);
+  box-shadow:
+    0 6px 20px rgba(59, 130, 246, 0.5),
+    0 12px 32px rgba(99, 102, 241, 0.4);
+}
+
+.feedback-fab:active {
+  transform: scale(0.95);
+}
+
+.feedback-fab-icon {
+  color: white;
+  font-size: 1.35rem;
+}
+
+@keyframes fabPulse {
+  0%, 100% {
+    box-shadow:
+      0 4px 14px rgba(59, 130, 246, 0.4),
+      0 8px 24px rgba(99, 102, 241, 0.3);
+  }
+  50% {
+    box-shadow:
+      0 4px 20px rgba(59, 130, 246, 0.5),
+      0 10px 32px rgba(99, 102, 241, 0.45);
+  }
+}
+
+/* ===================================
    REDUCED MOTION
 ==================================== */
 @media (prefers-reduced-motion: reduce) {
@@ -807,4 +859,5 @@
   .pnav-account-popup     { animation: none; }
   .pnav-account-overlay   { animation: none; }
   .pnav-popup-btn         { transition-duration: 0.01s; }
+  .feedback-fab           { animation: none; }
 }

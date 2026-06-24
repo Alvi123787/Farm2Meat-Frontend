@@ -10,7 +10,7 @@ import {
   FaCalendarAlt
 } from 'react-icons/fa'
 import '../css/Checkout.css'
-import OrderExperienceModal from '../components/OrderExperienceModal'
+import AnimalCareModal from '../components/AnimalCareModal'
 
 const formatPrice = (price) => {
   if (!price && price !== 0) return '0'
@@ -24,7 +24,8 @@ const formatPrice = (price) => {
 const OrderSuccess = () => {
   const location = useLocation()
   const navigate = useNavigate()
-  const [showExperienceModal, setShowExperienceModal] = useState(false)
+  const [showAnimalCareModal, setShowAnimalCareModal] = useState(false)
+  const [animalCare, setAnimalCare] = useState(false)
 
   const s = location.state || {}
   const ok = Boolean(s.fromPurchase)
@@ -36,10 +37,17 @@ const OrderSuccess = () => {
   }, [ok, navigate])
 
   useEffect(() => {
-    if (!s.orderId) return undefined
-    const t = setTimeout(() => setShowExperienceModal(true), 600)
-    return () => clearTimeout(t)
-  }, [s.orderId])
+    setAnimalCare(s.animalCareSelected || false)
+  }, [s.animalCareSelected])
+
+  const handleAnimalCareProceed = () => {
+    setAnimalCare(true)
+    setShowAnimalCareModal(false)
+  }
+
+  const handleAnimalCareClose = () => {
+    setShowAnimalCareModal(false)
+  }
 
   if (!ok) {
     return null
@@ -58,20 +66,29 @@ const OrderSuccess = () => {
 
   const hasLivestock = items.some(it => String(it.itemType || '').toLowerCase() !== 'meat')
 
+  // Show AnimalCareModal automatically if has livestock
+  useEffect(() => {
+    if (hasLivestock && ok) {
+      const t = setTimeout(() => setShowAnimalCareModal(true), 600)
+      return () => clearTimeout(t)
+    }
+  }, [hasLivestock, ok])
+
   const advanceAmount = Math.round(grandTotal * 0.20)
   const remainingAmount = grandTotal - advanceAmount
 
+  const livestockName = items.find(it => String(it.itemType || '').toLowerCase() !== 'meat')?.name || 'your animal'
+
   return (
     <div className="checkout-page checkout-page--visible">
-      {orderId ? (
-        <OrderExperienceModal
-          open={showExperienceModal}
-          onClose={() => setShowExperienceModal(false)}
-          orderId={orderId}
-          customerName={customerName}
-          email={email}
+      {hasLivestock && (
+        <AnimalCareModal
+          isOpen={showAnimalCareModal}
+          onClose={handleAnimalCareClose}
+          onProceed={handleAnimalCareProceed}
+          animalName={livestockName}
         />
-      ) : null}
+      )}
 
       <div className="co-success-screen">
         <div className="co-success-icon-wrap">
@@ -126,7 +143,7 @@ const OrderSuccess = () => {
             </div>
             
             <div className="co-success-care-body">
-              {!animalCareSelected ? (
+              {!animalCare ? (
                 <p className="co-success-care-status-msg">
                   You did not choose Animal Care Service for this order.
                 </p>

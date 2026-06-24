@@ -43,7 +43,10 @@ import {
 } from 'react-icons/fa'
 import '../css/ProductDetail.css'
 import CustomerReviewSection from '../components/CustomerReviewSection'
+import LoginRequiredPopup from '../components/LoginRequiredPopup'
 import { useCart } from '../contexts/cartContextCore'
+import { useAuth } from '../contexts/authContextCore'
+import { useFavourites } from '../contexts/FavouritesContext'
 import api from '../services/api'
 import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl'
 import { WHATSAPP_NUMBER } from '../constants/contact'
@@ -155,6 +158,8 @@ const ProductDetail = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const { addItem } = useCart()
+  const { role } = useAuth()
+  const { isFavourited, toggleFavourite } = useFavourites()
 
   const [productData, setProductData] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -164,8 +169,8 @@ const ProductDetail = () => {
   const [showFullDesc, setShowFullDesc] = useState(false)
   const [addedToCart, setAddedToCart] = useState(false)
   const [activeTab, setActiveTab] = useState('details')
-  const [isWishlisted, setIsWishlisted] = useState(false)
   const [showShareTooltip, setShowShareTooltip] = useState(false)
+  const [showLoginPopup, setShowLoginPopup] = useState(false)
 
   useEffect(() => {
     const fetchProduct = async (isManualCheck = false) => {
@@ -360,11 +365,17 @@ const ProductDetail = () => {
 
                 <div className="pd-quick-actions">
                   <button
-                    className={`pd-icon-btn ${isWishlisted ? 'pd-icon-btn--active' : ''}`}
-                    onClick={() => setIsWishlisted(!isWishlisted)}
+                    className={`pd-icon-btn ${isFavourited(id, 'animal') ? 'pd-icon-btn--active' : ''}`}
+                    onClick={() => {
+                      if (role === 'guest') {
+                        setShowLoginPopup(true);
+                      } else {
+                        toggleFavourite({ ...productData, id }, 'animal');
+                      }
+                    }}
                     title="Add to Wishlist"
                   >
-                    {isWishlisted ? <FaHeart /> : <FaRegHeart />}
+                    {isFavourited(id, 'animal') ? <FaHeart /> : <FaRegHeart />}
                   </button>
                   <button className="pd-icon-btn" onClick={() => setIsLightboxOpen(true)} title="View Fullscreen">
                     <FaExpand />
@@ -650,6 +661,12 @@ const ProductDetail = () => {
           <div className="pd-lightbox__counter">{activeImage + 1} / {images.length}</div>
         </div>
       )}
+
+      <LoginRequiredPopup 
+        isOpen={showLoginPopup}
+        onClose={() => setShowLoginPopup(false)}
+        message="Please login first to add to favourites"
+      />
     </div>
   )
 }

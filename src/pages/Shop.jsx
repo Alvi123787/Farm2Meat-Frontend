@@ -2,7 +2,6 @@ import React, { useCallback, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import ShopHeader from '../components/ShopHeader'
 import ShopHeroSection from '../components/ShopHeroSection'
-import MenuPage from '../components/MenuPage'
 import CardsGrid from '../components/CardsGrid'
 import '../css/Shop.css'
 
@@ -21,9 +20,8 @@ const Shop = () => {
   const rawStatus = searchParams.get('status') || ''
   const rawWeightRaw = searchParams.get('weight_raw') || ''
 
-  // Determine if we should show the Menu view or the Shop view
-  const showMenu = !rawCategory && !rawSearch && rawPrice === 'all' && rawWeight === 'all' && 
-                   !rawBreed && !rawGender && !rawCity && !rawStatus && !rawWeightRaw
+  // Always show animals (CardsGrid) by default, never MenuPage
+  const showMenu = false
 
   const activeCategory = useMemo(() => {
     const c = rawCategory.trim()
@@ -82,53 +80,43 @@ const Shop = () => {
 
   return (
     <div className="shp-page">
-      {/* Header — only show on livestock shop page, not when menu is displayed */}
-      {!showMenu && (
-        <div className="shp-header-wrapper">
-          <ShopHeader activeCategory={activeCategory} />
-        </div>
-      )}
+      {/* Header — show on livestock shop page */}
+      <div className="shp-header-wrapper">
+        <ShopHeader activeCategory={activeCategory} />
+      </div>
 
-      {showMenu ? (
-        <div className="shp-menu-wrapper">
-          <MenuPage />
-        </div>
-      ) : (
-        <>
-          {/* Filters — must sit ABOVE the grid */}
-          <div className="shp-filters-wrapper">
-            <ShopHeroSection
-              activeCategory={activeCategory}
-              onCategoryChange={setCategory}
-              showHero={false}
-              searchValue={activeSearch}
-              priceValue={activePrice}
-              weightValue={activeWeight}
-              onFilter={setFilters}
-            />
-          </div>
+      {/* Filters — must sit ABOVE the grid */}
+      <div className="shp-filters-wrapper">
+        <ShopHeroSection
+          activeCategory={activeCategory}
+          onCategoryChange={setCategory}
+          showHero={false}
+          searchValue={activeSearch}
+          priceValue={activePrice}
+          weightValue={activeWeight}
+          onFilter={setFilters}
+        />
+      </div>
 
-          {/* Cards Grid — lowest layer */}
-          <div className="shp-grid-wrapper">
-            <CardsGrid
-              filters={{
-                category: activeCategory,
-                search: activeSearch,
-                price: activePrice,
-                weight: activeWeight,
-                breed: rawBreed,
-                gender: rawGender,
-                city: rawCity,
-                status: rawStatus,
-                weightRaw: rawWeightRaw
-              }}
-              onClearFilters={clearFilters}
-              showAllHref="/shop"
-              showButcher={true}
-            />
-          </div>
-        </>
-      )}
+      {/* Cards Grid — lowest layer */}
+      <div className="shp-grid-wrapper">
+        <CardsGrid
+          filters={{
+            category: activeCategory,
+            search: activeSearch,
+            price: activePrice,
+            weight: activeWeight,
+            breed: rawBreed,
+            gender: rawGender,
+            city: rawCity,
+            status: rawStatus,
+            weightRaw: rawWeightRaw
+          }}
+          onClearFilters={clearFilters}
+          showAllHref="/shop"
+          showButcher={true}
+        />
+      </div>
     </div>
   )
 }

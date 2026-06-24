@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
-import SplashScreen from './components/SplashScreen'
 import Home from './pages/Home'
 import About from './pages/About'
 import Shop from './pages/Shop'
@@ -50,7 +49,8 @@ import AdminEditMeatItem from './pages/AdminEditMeatItem'
 import ScrollToTop from './components/ScrollToTop'
 import AdminDomainSelector from './pages/AdminDomainSelector'
 import { AdminDomainProvider } from './contexts/AdminDomainContext'
-
+import Dashboard from './components/Dashboard.jsx'
+import { FavouritesProvider } from './contexts/FavouritesContext.jsx'
 
 
 const withPageTitle = (element, title) => (
@@ -61,25 +61,17 @@ const withPageTitle = (element, title) => (
 
 function AppShell() {
   const location = useLocation()
-  const [showSplash, setShowSplash] = useState(true);
-
-  useEffect(() => {
-    // Total duration: 2 to 2.5 seconds
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 1900); // Trigger fade-out slightly after text animation finishes
-    return () => clearTimeout(timer);
-  }, []);
+  const isConfirmationPage = location.pathname === '/confirmation';
 
     return (
     <AdminDomainProvider>
     <AuthProvider>
+      <FavouritesProvider>
       <CartProvider>
         <ScrollToTop />
         <Toaster position="top-right" reverseOrder={false} />
-        <SplashScreen isVisible={showSplash} />
-        {location.pathname === '/' && !showSplash && <WelcomeModal />}
-        <Navbar />
+        {location.pathname === '/' && <WelcomeModal />}
+        {!isConfirmationPage && <Navbar />}
         <Routes>
           <Route path="/" element={withPageTitle(<Home />, 'Home')} />
           <Route path="/about" element={withPageTitle(<About />, 'About')} />
@@ -97,7 +89,7 @@ function AppShell() {
           <Route path="/shop/:id" element={withPageTitle(<ProductDetail />, 'Product Details')} />
           <Route path="/unavailable-item" element={withPageTitle(<UnavailableItem />, 'Unavailable Item')} />
           <Route path="/admin-dashboard" element={<Navigate to="/admin" replace />} />
-          <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
+          <Route path="/dashboard" element={<ProtectedRoute role="any">{withPageTitle(<Dashboard />, 'User Dashboard')}</ProtectedRoute>} />
 
           {/* Domain Selector Route (outside DashboardLayout) */}
           <Route
@@ -152,8 +144,9 @@ function AppShell() {
           <Route path="/reset-password/:token" element={withPageTitle(<ResetPassword />, 'Reset Password')} />
           <Route path="/verify-email/:token" element={withPageTitle(<EmailVerification />, 'Verify Email')} />
         </Routes>
-        <Footer />
+        {!isConfirmationPage && <Footer />}
       </CartProvider>
+      </FavouritesProvider>
     </AuthProvider>
       </AdminDomainProvider>
   )

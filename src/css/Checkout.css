@@ -850,6 +850,12 @@
   font-weight: 700;
 }
 
+.co-optional {
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.7rem;
+}
+
 .co-input {
   width: 100%;
   padding: 13px 16px;
@@ -875,6 +881,40 @@
   border-color: var(--primary);
   background: var(--bg-section);
   box-shadow: 0 0 0 4px rgba(128, 0, 0, 0.06);
+}
+
+/* FIX 3: Error state for inputs */
+.co-input--error {
+  border-color: #e53935 !important;
+  background: rgba(229, 57, 53, 0.03) !important;
+  box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.08) !important;
+}
+
+.co-input--error:focus {
+  border-color: #e53935 !important;
+  box-shadow: 0 0 0 4px rgba(229, 57, 53, 0.12) !important;
+}
+
+/* FIX 1: Inline field error message */
+.co-field-error {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #e53935;
+  margin-top: 2px;
+  animation: coErrorFadeIn 0.2s ease;
+}
+
+.co-field-error-icon {
+  font-size: 0.65rem;
+  flex-shrink: 0;
+}
+
+@keyframes coErrorFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .co-delivery-note {
@@ -1357,6 +1397,23 @@
   font-weight: 900;
   color: var(--primary);
   letter-spacing: -0.5px;
+}
+
+/* FIX 5: Wrapper for button + hint text */
+.co-sticky-btn-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+/* FIX 5: Hint text under sticky button on mobile */
+.co-sticky-hint {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #f39c12;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .co-sticky-btn {
