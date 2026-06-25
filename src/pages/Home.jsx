@@ -17,10 +17,10 @@ const Home = () => {
       <HomeHeader />
       <div className="min-h-screen">
         <TrustBar />
-        <HomeFeaturedCard />
         <MeatByCategory />
         <Bestsellers />
         <HomeCategory />
+        <HomeFeaturedCard />
         <ButcherSection />
         <AboutPreview />
         <FAQSection />
