@@ -15,7 +15,9 @@ import {
   FaCheckCircle,
   FaCalendarAlt,
   FaBoxOpen,
-  FaArrowLeft
+  FaArrowLeft,
+  FaTimes,
+  FaSpinner
 } from 'react-icons/fa'
 import api from '../services/api'
 import '../css/Cart.css'
@@ -52,8 +54,6 @@ const buildImageUrl = (imagePath) => {
   if (!imagePath || typeof imagePath !== 'string') return '/placeholder.jpg'
   const trimmed = imagePath.trim()
   if (!trimmed) return '/placeholder.jpg'
-  
-  // Already a full URL
   if (isAbsoluteUrl(trimmed)) return trimmed
   return buildMediaUrl(trimmed) || '/placeholder.jpg'
 }
@@ -63,19 +63,13 @@ const getThumbnail = (item) => {
   if (item.images && Array.isArray(item.images) && item.images.length > 0) {
     return buildImageUrl(item.images[0])
   }
-  if (item.imageUrl) {
-    return buildImageUrl(item.imageUrl)
-  }
-  if (item.img) {
-    return buildImageUrl(item.img)
-  }
+  if (item.imageUrl) return buildImageUrl(item.imageUrl)
+  if (item.img) return buildImageUrl(item.img)
   return '/placeholder.jpg'
 }
 
 // ── Helper: Get stock status ──
-const getStockConfig = (stock) => {
-  return stockConfig[stock] || stockConfig.available
-}
+const getStockConfig = (stock) => stockConfig[stock] || stockConfig.available
 
 const normalize = (v) => String(v || '').trim().toLowerCase()
 
@@ -100,14 +94,11 @@ const isItemAvailable = (item) => {
   if (isMeat) {
     return item.isAvailable !== false
   } else {
-    return true // Livestock availability is checked in pruneUnavailable
+    return true
   }
 }
 
 const getEffectiveQuantity = (item) => (isMultiQuantityItem(item) ? (item.quantity || 1) : 1)
-
-const availabilityMessage = (name) =>
-  `${name} is no longer available because another customer has already purchased it.`
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Cart Component
@@ -121,6 +112,10 @@ const Cart = () => {
   const [removingId, setRemovingId] = useState(null)
   const checkingRef = useRef(false)
   const [notices, setNotices] = useState([])
+
+  // FIX: Loading states for buttons (double-click prevention)
+  const [whatsappLoading, setWhatsappLoading] = useState(false)
+  const [checkoutLoading, setCheckoutLoading] = useState(false)
 
   // ── Entrance animation ──
   useEffect(() => {
@@ -152,6 +147,11 @@ const Cart = () => {
       window.history.replaceState({}, document.title)
     }
   }, [location.state])
+
+  // FIX: Dismiss a single notice by index
+  const dismissNotice = (idx) => {
+    setNotices((prev) => prev.filter((_, i) => i !== idx))
+  }
 
   // ════════════════════════════════════════════
   // Calculations
@@ -190,14 +190,13 @@ const Cart = () => {
         .filter((it) => isMultiQuantityItem(it))
         .map((it) => String(it._id || it.id || '').trim())
         .filter(Boolean)
-      
+
       const meatItemMap = new Map()
       if (meatItemIds.length > 0) {
         try {
           const response = await api.get('/api/meat-items', { params: { limit: 1000 } })
           if (response.data && response.data.success) {
-            const allMeatItems = response.data.data
-            allMeatItems.forEach(item => meatItemMap.set(String(item._id), item))
+            response.data.data.forEach(item => meatItemMap.set(String(item._id), item))
           }
         } catch (e) {
           console.warn('Could not fetch meat items for availability check:', e)
@@ -208,13 +207,13 @@ const Cart = () => {
         .filter((it) => !isMultiQuantityItem(it))
         .map((it) => String(it._id || it.id || '').trim())
         .filter(Boolean)
-      
+
       let unavailableAnimalIds = []
       if (livestockIds.length > 0) {
         try {
           const result = await animalsService.checkAvailability({ ids: livestockIds })
-          unavailableAnimalIds = Array.isArray(result?.unavailable) 
-            ? result.unavailable.map(u => String(u.id || u)) 
+          unavailableAnimalIds = Array.isArray(result?.unavailable)
+            ? result.unavailable.map(u => String(u.id || u))
             : []
         } catch (e) {
           void e
@@ -227,7 +226,6 @@ const Cart = () => {
         if (isMeat) {
           const id = String(it._id || it.id)
           const freshItem = meatItemMap.get(id)
-          // If we have fresh data, use it; else fall back to cart data
           return freshItem ? !freshItem.isAvailable : !isItemAvailable(it)
         } else {
           return setUnavailableAnimalIds.has(String(it._id || it.id))
@@ -249,22 +247,19 @@ const Cart = () => {
       if (removed.length > 0) {
         const names = removed.map((it) => it.name).filter(Boolean)
         let message = ''
-
         if (names.length === 1) {
-          message = `“${names[0]}” has been removed from your cart because it's no longer available.`
+          message = `"${names[0]}" has been removed from your cart because it's no longer available.`
         } else if (names.length <= 3) {
           message = `Some items have been removed from your cart: ${names.join(', ')}`
         } else {
           message = `Several items have been removed from your cart because they're no longer available.`
         }
 
-        setNotices((prev) => [
-          { type: 'warning', text: message },
-          ...prev
-        ].slice(0, 3))
+        setNotices((prev) => [{ type: 'warning', text: message }, ...prev].slice(0, 3))
 
         if (kept.length === 0) {
           navigate('/unavailable-item', { replace: true })
+          checkingRef.current = false
           return
         }
         await updateCart(kept)
@@ -275,36 +270,44 @@ const Cart = () => {
     [updateCart, navigate]
   )
 
+  // FIX: Stable dependency key — only re-run when cart contents actually change,
+  //      not on every render (prevents infinite loop when updateCart causes re-render)
+  const cartItemsKey = cartItems.map(it => `${it._id || it.id}:${it.quantity || 1}`).join(',')
+
   useEffect(() => {
     pruneUnavailable(cartItems)
+
     const onFocus = () => {
       if (!checkingRef.current && document.visibilityState === 'visible') {
         pruneUnavailable(cartItems)
       }
     }
     window.addEventListener('focus', onFocus)
+
     const interval = setInterval(() => {
       if (!checkingRef.current && document.visibilityState === 'visible') {
         pruneUnavailable(cartItems)
       }
     }, 20000)
+
     return () => {
       window.removeEventListener('focus', onFocus)
       clearInterval(interval)
     }
-  }, [cartItems, pruneUnavailable])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cartItemsKey, pruneUnavailable])
 
   useEffect(() => {
     const handleExpired = () => {
-      setNotices([{ type: 'warning', text: 'Your cart expired and was cleared.' }]);
-    };
-    window.addEventListener('cart-expired', handleExpired);
-    return () => window.removeEventListener('cart-expired', handleExpired);
-  }, []);
+      setNotices([{ type: 'warning', text: 'Your cart expired and was cleared.' }])
+    }
+    window.addEventListener('cart-expired', handleExpired)
+    return () => window.removeEventListener('cart-expired', handleExpired)
+  }, [])
 
-  const handleCheckoutWhatsApp = () => {
+  // FIX: Extracted message builder (was previously inlined and called handleCheckoutWhatsApp)
+  const buildWhatsAppMessage = () => {
     let msg = `Assalam o Alaikum!%0A%0A🛒 *New Order from MeatByAlvi Website*%0A%0A`
-
     cartItems.forEach((item, i) => {
       const qty = getEffectiveQuantity(item)
       msg += `${i + 1}. *${item.name}*%0A`
@@ -314,18 +317,19 @@ const Cart = () => {
       msg += `   Price: Rs ${formatPrice(item.price)} x ${qty}%0A`
       msg += `   Subtotal: Rs ${formatPrice(priceToNumber(item.price) * qty)}%0A%0A`
     })
-
     msg += `━━━━━━━━━━━━━━━%0A`
     msg += `Items: ${totalItems}%0A`
     msg += `Subtotal: Rs ${formatPrice(subtotal)}%0A`
     msg += `*Total: Rs ${formatPrice(total)}*%0A`
-
     return msg
   }
 
   const handleWhatsAppOrder = async () => {
+    if (whatsappLoading) return
+    setWhatsappLoading(true)
+
     try {
-      const response = await api.post('/api/inquiries/bulk', {
+      await api.post('/api/inquiries/bulk', {
         customerName: 'WhatsApp User',
         phone: WHATSAPP_NUMBER,
         email: '',
@@ -348,28 +352,42 @@ const Cart = () => {
         orderSource: 'cart',
         notes: 'Customer inquiring via WhatsApp'
       })
-
-      const result = response.data
     } catch (err) {
-      console.error('Error saving inquiry:', err)
-      
-      if (err.response && err.response.status === 409) {
+      if (err.response?.status === 409) {
         // Atomic conflict: Animal already sold or reserved
         navigate('/unavailable-item', { replace: true })
+        setWhatsappLoading(false)
         return
       }
+      // FIX: Non-409 errors — show notice but still allow WhatsApp redirect
+      console.error('Error saving inquiry:', err)
+      setNotices((prev) =>
+        [
+          {
+            type: 'warning',
+            text: 'Could not save your order record, but you can still place your order via WhatsApp.'
+          },
+          ...prev
+        ].slice(0, 3)
+      )
     }
 
-    const msg = handleCheckoutWhatsApp()
+    // FIX: Clear cart after WhatsApp order is initiated
+    await updateCart([])
+
+    const msg = buildWhatsAppMessage()
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank')
+    setWhatsappLoading(false)
   }
 
   const handleCheckout = () => {
+    if (checkoutLoading) return
+    setCheckoutLoading(true)
     navigate('/checkout', {
-      state: {
-        cart: cartItems.map(normalizeCartItem)
-      }
+      state: { cart: cartItems.map(normalizeCartItem) }
     })
+    // Reset in case user navigates back
+    setTimeout(() => setCheckoutLoading(false), 1500)
   }
 
   const isCartEmpty = cartItems.length === 0
@@ -392,15 +410,15 @@ const Cart = () => {
         </div>
         <div className="container-fluid">
           <div className="row">
-          <div className="col-12">
-            <div className="cart-header-content">
-              <div className="unified-header-top">
-                <button className="cart-back-link" onClick={() => navigate('/shop')}>
-                  <FaArrowLeft />
-                  <span>Back to Shop</span>
-                </button>
-              </div>
-              <div className="cart-header-main">
+            <div className="col-12">
+              <div className="cart-header-content">
+                <div className="unified-header-top">
+                  <button className="cart-back-link" onClick={() => navigate('/shop')}>
+                    <FaArrowLeft />
+                    <span>Back to Shop</span>
+                  </button>
+                </div>
+                <div className="cart-header-main">
                   <div className="cart-header-title-row">
                     <FaShoppingCart className="cart-header-icon" />
                     <h1 className="cart-header-title">My Shopping Cart</h1>
@@ -419,12 +437,21 @@ const Cart = () => {
         <div className="container-fluid">
           <div className="row">
             <div className="col-12">
+
+              {/* FIX: Dismissible notices with × button */}
               {notices.length > 0 && (
                 <div className="cart-notice-stack">
                   {notices.map((n, idx) => (
                     <div key={idx} className={`cart-notice cart-notice--${n.type || 'info'}`}>
                       <FaShieldAlt className="cart-notice-icon" />
                       <span>{n.text}</span>
+                      <button
+                        className="cart-notice-dismiss"
+                        onClick={() => dismissNotice(idx)}
+                        aria-label="Dismiss notification"
+                      >
+                        <FaTimes />
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -436,9 +463,9 @@ const Cart = () => {
                     <FaBoxOpen className="cart-empty-icon" />
                   </div>
                   <h2 className="cart-empty-title">Your Cart is Empty</h2>
+                  {/* FIX: English only — removed Urdu mix */}
                   <p className="cart-empty-text">
-                    Abhi tak koi janwar select nahi kiya. Hamari premium
-                    collection zaroor dekhein!
+                    You haven't selected any items yet. Browse our premium collection and find the perfect choice for you!
                   </p>
                   <button className="cart-empty-btn" onClick={() => navigate('/shop')}>
                     <span>Browse Collection</span>
@@ -450,7 +477,6 @@ const Cart = () => {
 
                   {/* ═══════ LEFT: CART ITEMS ═══════ */}
                   <div className="cart-items-col">
-
                     <div className="cart-items-header">
                       <h2 className="cart-items-title">Cart Items ({totalItems})</h2>
                       {cartItems.length > 1 && (
@@ -470,7 +496,12 @@ const Cart = () => {
                           key={item._id}
                           className={`cart-item ${removingId === item._id ? 'cart-item--removing' : ''}`}
                         >
-                          <div className="cart-item-img-wrap">
+                          {/* FIX: Image thumbnail is now clickable */}
+                          <button
+                            className="cart-item-img-wrap cart-item-img-btn"
+                            onClick={() => navigate(`/shop/${item._id}`)}
+                            aria-label={`View details for ${item.name}`}
+                          >
                             <img
                               src={getThumbnail(item)}
                               alt={item.name}
@@ -481,7 +512,7 @@ const Cart = () => {
                               <span className="cart-item-stock-dot"></span>
                               {getStockConfig(item.stock).label}
                             </div>
-                          </div>
+                          </button>
 
                           <div className="cart-item-details">
                             <div className="cart-item-top">
@@ -574,7 +605,6 @@ const Cart = () => {
                   {/* ═══════ RIGHT: ORDER SUMMARY ═══════ */}
                   <div className="cart-summary-col">
                     <div className="cart-summary-card">
-
                       <div className="cart-summary-header">
                         <h3 className="cart-summary-title">Order Summary</h3>
                         <span className="cart-summary-items">
@@ -600,14 +630,25 @@ const Cart = () => {
 
                       <div className="cart-summary-row">
                         <span className="cart-summary-label">Subtotal</span>
-                        <span className="cart-summary-value">{formatPrice(subtotal)}</span>
+                        <span className="cart-summary-value">Rs {formatPrice(subtotal)}</span>
+                      </div>
+
+                      {/* FIX: Free Delivery row in summary */}
+                      <div className="cart-summary-row">
+                        <span className="cart-summary-label">
+                          <FaTruck className="cart-summary-label-icon" />
+                          Delivery
+                        </span>
+                        <span className="cart-summary-value cart-summary-value--free-delivery">
+                          Free
+                        </span>
                       </div>
 
                       <div className="cart-summary-divider cart-summary-divider--total"></div>
 
                       <div className="cart-summary-row cart-summary-row--total">
                         <span className="cart-summary-total-label">Total Amount</span>
-                        <span className="cart-summary-total-value">{formatPrice(total)}</span>
+                        <span className="cart-summary-total-value">Rs {formatPrice(total)}</span>
                       </div>
 
                       <div className="cart-cod-badge">
@@ -616,17 +657,30 @@ const Cart = () => {
                       </div>
 
                       <div className="cart-cta-group">
-                        <button className="cart-btn cart-btn--whatsapp" onClick={handleWhatsAppOrder}>
-                          <FaWhatsapp className="cart-btn-icon" />
-                          <span>Order via WhatsApp</span>
+                        {/* FIX: WhatsApp button with loading state */}
+                        <button
+                          className="cart-btn cart-btn--whatsapp"
+                          onClick={handleWhatsAppOrder}
+                          disabled={whatsappLoading}
+                        >
+                          {whatsappLoading
+                            ? <FaSpinner className="cart-btn-icon cart-btn-icon--spin" />
+                            : <FaWhatsapp className="cart-btn-icon" />
+                          }
+                          <span>{whatsappLoading ? 'Processing...' : 'Order via WhatsApp'}</span>
                         </button>
 
+                        {/* FIX: Checkout button with loading state */}
                         <button
                           className="cart-btn cart-btn--checkout"
                           onClick={handleCheckout}
+                          disabled={checkoutLoading}
                         >
-                          <span>Proceed to Checkout</span>
-                          <FaArrowRight className="cart-btn-icon" />
+                          {checkoutLoading && (
+                            <FaSpinner className="cart-btn-icon cart-btn-icon--spin" />
+                          )}
+                          <span>{checkoutLoading ? 'Loading...' : 'Proceed to Checkout'}</span>
+                          {!checkoutLoading && <FaArrowRight className="cart-btn-icon" />}
                         </button>
                       </div>
 
@@ -660,24 +714,35 @@ const Cart = () => {
       {!isCartEmpty && (
         <div className="cart-sticky-bar">
           <div className="cart-sticky-info">
-            <span className="cart-sticky-total-label">Total</span>
-            <span className="cart-sticky-total-value">{formatPrice(total)}</span>
+            {/* FIX: Items count added to sticky bar label */}
+            <span className="cart-sticky-total-label">
+              {totalItems} item{totalItems > 1 ? 's' : ''} · Total
+            </span>
+            <span className="cart-sticky-total-value">Rs {formatPrice(total)}</span>
           </div>
           <div className="cart-sticky-actions">
             <button
               type="button"
               className="cart-sticky-btn cart-sticky-btn--checkout"
               onClick={handleCheckout}
+              disabled={checkoutLoading}
             >
+              {checkoutLoading
+                ? <FaSpinner className="cart-sticky-btn-icon cart-btn-icon--spin" />
+                : <FaArrowRight className="cart-sticky-btn-icon" />
+              }
               <span>Checkout</span>
-              <FaArrowRight className="cart-sticky-btn-icon" />
             </button>
             <button
               type="button"
               className="cart-sticky-btn cart-sticky-btn--whatsapp"
               onClick={handleWhatsAppOrder}
+              disabled={whatsappLoading}
             >
-              <FaWhatsapp className="cart-sticky-btn-icon" />
+              {whatsappLoading
+                ? <FaSpinner className="cart-sticky-btn-icon cart-btn-icon--spin" />
+                : <FaWhatsapp className="cart-sticky-btn-icon" />
+              }
               <span>WhatsApp</span>
             </button>
           </div>

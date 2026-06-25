@@ -3,7 +3,6 @@ import HomeHeader from '../components/HomeHeader'
 import TrustBar from '../components/TrustBar'
 import MeatByCategory from '../components/MeatByCategory'
 import Bestsellers from '../components/Bestsellers'
-import HomeFeaturedCard from '../components/HomeFeaturedCard'
 import HomeCategory from '../components/HomeCategory'
 import ButcherSection from '../components/ButcherSection'
 import AboutPreview from '../components/AboutPreview'
@@ -20,7 +19,6 @@ const Home = () => {
         <MeatByCategory />
         <Bestsellers />
         <HomeCategory />
-        <HomeFeaturedCard />
         <ButcherSection />
         <AboutPreview />
         <FAQSection />

@@ -48,7 +48,6 @@ const emptyForm = {
   slaughterWeight: '',
   meatYieldEstimate: '',
   status: 'available',
-  listingType: 'normal',
   visibility: true,
   deliveryAvailable: false,
   negotiable: false,
@@ -475,14 +474,6 @@ export default function AddAnimal() {
                     value={form.gender}
                     onChange={(v) => update('gender', v)}
                     options={[{ value: 'male', label: 'Male' }, { value: 'female', label: 'Female' }]}
-                  />
-                </Field>
-
-                <Field label="Listing type">
-                  <SegmentedToggle
-                    value={form.listingType}
-                    onChange={(v) => update('listingType', v)}
-                    options={[{ value: 'normal', label: 'Normal' }, { value: 'featured', label: 'Featured' }]}
                   />
                 </Field>
 

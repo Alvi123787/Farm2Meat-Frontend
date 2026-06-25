@@ -12,7 +12,7 @@ import "../css/TrustBar.css";
 const trustItems = [
   {
     icon: faMotorcycle,
-    title: "Delivery for 50 Rs",
+    title: "Delivery for 49 Rs",
     subtitle: "Rahim Yar Khan only",
     color: "212, 175, 55",
     accentHex: "#D4AF37",

@@ -51,6 +51,8 @@ import AdminDomainSelector from './pages/AdminDomainSelector'
 import { AdminDomainProvider } from './contexts/AdminDomainContext'
 import Dashboard from './components/Dashboard.jsx'
 import { FavouritesProvider } from './contexts/FavouritesContext.jsx'
+import AppDownloadBanner from './components/AppDownloadBanner.jsx'
+import ContactPage from './pages/ContactPage.jsx'
 
 
 const withPageTitle = (element, title) => (
@@ -62,6 +64,7 @@ const withPageTitle = (element, title) => (
 function AppShell() {
   const location = useLocation()
   const isConfirmationPage = location.pathname === '/confirmation';
+  const isAdminPage = location.pathname.startsWith('/admin');
 
     return (
     <AdminDomainProvider>
@@ -70,6 +73,7 @@ function AppShell() {
       <CartProvider>
         <ScrollToTop />
         <Toaster position="top-right" reverseOrder={false} />
+        {!isAdminPage && !isConfirmationPage && <AppDownloadBanner />}
         {location.pathname === '/' && <WelcomeModal />}
         {!isConfirmationPage && <Navbar />}
         <Routes>
@@ -79,6 +83,7 @@ function AppShell() {
           <Route path="/shop" element={withPageTitle(<Shop />, 'Products')} />
           <Route path="/all-reviews" element={withPageTitle(<AllReviews />, 'Reviews')} />
           <Route path="/feedback" element={withPageTitle(<FeedbackPage />, 'Feedback')} />
+          <Route path="/contact" element={withPageTitle(<ContactPage />, 'Contact Us')} />
           <Route path="/cart" element={withPageTitle(<Cart />, 'Cart')} />
           <Route path="/checkout" element={withPageTitle(<Checkout />, 'Checkout')} />
           <Route path="/order-success" element={withPageTitle(<OrderSuccess />, 'Order Success')} />

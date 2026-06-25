@@ -63,7 +63,7 @@ const Footer = () => {
                   MeatBy <span className="footer-brand-accent">Alvi</span>
                 </h3>
                 <p className="footer-brand-desc">
-                  Rahim Yar Khan ki sab se bharosemand online mandi — sehatmand janwar, live video verification, aur free home delivery.
+                  Rahim Yar Khan ki sab se bharosemand online mandi — sehatmand janwar, live video verification, aur 49 Rs mein home delivery.
                 </p>
                 <div className="footer-social">
                   {socialLinks.map((social, index) => (
@@ -156,7 +156,7 @@ const Footer = () => {
                     <div>
                       <span className="footer-contact-label">Timing</span>
                       <span className="footer-contact-value">
-                        Mon – Sun: 8:00 AM – 10:00 PM
+                        Mon – Sun: 8:00 AM – 11:00 PM
                       </span>
                     </div>
                   </li>
@@ -181,7 +181,7 @@ const Footer = () => {
                   </div>
                   <div className="footer-trust-item">
                     <FaShieldAlt className="footer-trust-icon" />
-                    <span>Free Home Delivery in RYK</span>
+                    <span>Delivery in just 49 Rs within RYK</span>
                   </div>
                 </div>
               </div>
