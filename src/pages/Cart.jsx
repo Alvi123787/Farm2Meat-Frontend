@@ -314,13 +314,13 @@ const Cart = () => {
       msg += `   Breed: ${item.breed}`
       if (item.weight) msg += ` | Weight (Zinda): ${item.weight}`
       msg += `%0A`
-      msg += `   Price: Rs ${formatPrice(item.price)} x ${qty}%0A`
-      msg += `   Subtotal: Rs ${formatPrice(priceToNumber(item.price) * qty)}%0A%0A`
+      msg += `   Price: ${formatPrice(item.price)} x ${qty}%0A`
+      msg += `   Subtotal: ${formatPrice(priceToNumber(item.price) * qty)}%0A%0A`
     })
     msg += `━━━━━━━━━━━━━━━%0A`
     msg += `Items: ${totalItems}%0A`
-    msg += `Subtotal: Rs ${formatPrice(subtotal)}%0A`
-    msg += `*Total: Rs ${formatPrice(total)}*%0A`
+    msg += `Subtotal:  ${formatPrice(subtotal)}%0A`
+    msg += `*Total:  ${formatPrice(total)}*%0A`
     return msg
   }
 
@@ -592,7 +592,7 @@ const Cart = () => {
                               <div className="cart-item-total">
                                 <span className="cart-item-total-label">Subtotal</span>
                                 <span className="cart-item-total-value">
-                                  Rs {formatPrice(priceToNumber(item.price) * getEffectiveQuantity(item))}
+                                   {formatPrice(priceToNumber(item.price) * getEffectiveQuantity(item))}
                                 </span>
                               </div>
                             </div>
@@ -620,7 +620,7 @@ const Cart = () => {
                               <span className="cart-summary-item-qty">x{getEffectiveQuantity(item)}</span>
                             </div>
                             <span className="cart-summary-item-price">
-                              Rs {formatPrice(priceToNumber(item.price) * getEffectiveQuantity(item))}
+                              {formatPrice(priceToNumber(item.price) * getEffectiveQuantity(item))}
                             </span>
                           </div>
                         ))}
@@ -630,25 +630,17 @@ const Cart = () => {
 
                       <div className="cart-summary-row">
                         <span className="cart-summary-label">Subtotal</span>
-                        <span className="cart-summary-value">Rs {formatPrice(subtotal)}</span>
+                        <span className="cart-summary-value"> {formatPrice(subtotal)}</span>
                       </div>
 
                       {/* FIX: Free Delivery row in summary */}
-                      <div className="cart-summary-row">
-                        <span className="cart-summary-label">
-                          <FaTruck className="cart-summary-label-icon" />
-                          Delivery
-                        </span>
-                        <span className="cart-summary-value cart-summary-value--free-delivery">
-                          Free
-                        </span>
-                      </div>
+                      
 
                       <div className="cart-summary-divider cart-summary-divider--total"></div>
 
                       <div className="cart-summary-row cart-summary-row--total">
                         <span className="cart-summary-total-label">Total Amount</span>
-                        <span className="cart-summary-total-value">Rs {formatPrice(total)}</span>
+                        <span className="cart-summary-total-value"> {formatPrice(total)}</span>
                       </div>
 
                       <div className="cart-cod-badge">
@@ -718,7 +710,7 @@ const Cart = () => {
             <span className="cart-sticky-total-label">
               {totalItems} item{totalItems > 1 ? 's' : ''} · Total
             </span>
-            <span className="cart-sticky-total-value">Rs {formatPrice(total)}</span>
+            <span className="cart-sticky-total-value"> {formatPrice(total)}</span>
           </div>
           <div className="cart-sticky-actions">
             <button

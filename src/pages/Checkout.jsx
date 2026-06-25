@@ -1250,7 +1250,7 @@ const Checkout = () => {
                               </span>
                             </div>
                             <span className="co-summary-item-price">
-                              Rs {formatPrice(itemTotal)}
+                               {formatPrice(itemTotal)}
                             </span>
                           </div>
                         )
@@ -1261,20 +1261,20 @@ const Checkout = () => {
 
                     <div className="co-summary-row">
                       <span>Product Total ({totalItems} items)</span>
-                      <span>Rs {formatPrice(subtotal)}</span>
+                      <span> {formatPrice(subtotal)}</span>
                     </div>
                     <div className="co-summary-row">
                       <span className="co-summary-row-label">
                         <FaTruck className="co-summary-row-icon" /> Delivery
                       </span>
-                      <span className="co-summary-value">Rs {formatPrice(DELIVERY_CHARGE)}</span>
+                      <span className="co-summary-value"> {formatPrice(DELIVERY_CHARGE)}</span>
                     </div>
 
                     <div className="co-summary-divider co-summary-divider--total"></div>
 
                     <div className="co-summary-row co-summary-row--total">
                       <span>Grand Total</span>
-                      <span>Rs {formatPrice(grandTotal)}</span>
+                      <span> {formatPrice(grandTotal)}</span>
                     </div>
 
                     {/* COD Badge */}
