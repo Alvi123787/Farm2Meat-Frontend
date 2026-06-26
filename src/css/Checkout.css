@@ -1017,7 +1017,8 @@
   padding: 26px 22px;
   box-shadow: var(--card-shadow);
   position: sticky;
-  top: 20px;
+  top: 24px;
+  z-index: 10;
 }
 
 .co-summary-header {

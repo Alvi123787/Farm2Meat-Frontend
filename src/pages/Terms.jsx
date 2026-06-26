@@ -195,11 +195,11 @@ const Terms = () => {
                 <div className="tp-header-meta">
                   <div className="tp-meta-item">
                     <FaCalendarAlt className="tp-meta-icon" />
-                    <span>Effective Date: January 1, 2024</span>
+                    <span>Effective Date: April 1, 2026</span>
                   </div>
                   <div className="tp-meta-item">
                     <FaSyncAlt className="tp-meta-icon" />
-                    <span>Last Updated: December 15, 2024</span>
+                    <span>Last Updated: June 25, 2026</span>
                   </div>
                   <button className="tp-print-btn" onClick={handlePrint}>
                     <FaPrint className="tp-print-icon" />
@@ -320,7 +320,7 @@ const Terms = () => {
                   {/* Footer Note */}
                   <div className="tp-footer-note">
                     <p>
-                      © 2024 MeatByAlvi — All Rights Reserved. These terms and conditions are
+                      © 2026 MeatByAlvi — All Rights Reserved. These terms and conditions are
                       governed by the laws of Pakistan. By continuing to use this website, you
                       acknowledge and accept these terms.
                     </p>

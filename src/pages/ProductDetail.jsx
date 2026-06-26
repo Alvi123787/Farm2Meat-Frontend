@@ -41,6 +41,7 @@ import {
   FaUndoAlt,
   FaHeadset
 } from 'react-icons/fa'
+import ReactGA from 'react-ga4'
 import '../css/ProductDetail.css'
 import CustomerReviewSection from '../components/CustomerReviewSection'
 import LoginRequiredPopup from '../components/LoginRequiredPopup'
@@ -282,10 +283,28 @@ const ProductDetail = () => {
     addItem(productData)
     setAddedToCart(true)
     setTimeout(() => setAddedToCart(false), 3000)
+    ReactGA.event({
+      category: 'Ecommerce',
+      action: 'add_to_cart',
+      label: productData.name,
+      value: priceToNumber(productData.price),
+      item_id: productData._id,
+      item_type: productData.itemType || 'livestock'
+    })
+    console.log('✅ [GA4] Add to cart event tracked')
   }
 
   const handleBuyNow = async () => {
     if (!productData) return
+    ReactGA.event({
+      category: 'Ecommerce',
+      action: 'begin_checkout',
+      label: productData.name,
+      value: priceToNumber(productData.price),
+      item_id: productData._id,
+      item_type: productData.itemType || 'livestock'
+    })
+    console.log('✅ [GA4] Begin checkout event tracked')
     try {
       setLoading(true)
       const response = await api.get(`/api/animals/${id}`)

@@ -97,6 +97,28 @@
 .order-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; min-width: 100px; }
 .order-price { font-size: 15px; font-weight: 700; color: var(--text-primary); }
 
+.pill {
+  padding: 5px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.pill-delivered {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.pill-processing {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.pill-cancelled {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
 .order-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
 .empty-state { padding: 60px; text-align: center; color: var(--text-secondary); font-size: 14px; }

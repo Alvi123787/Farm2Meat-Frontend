@@ -3,6 +3,7 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import ReactGA from 'react-ga4'
 import { useMenuItems } from '../hooks/useMeatItems'
 import { useCart } from '../contexts/cartContextCore'
 import { useAuth } from '../contexts/authContextCore'
@@ -140,6 +141,25 @@ export default function MenuPage() {
   }
 
   const handleOrder = (item) => {
+    // Track GA4 events
+    ReactGA.event({
+      category: 'Ecommerce',
+      action: 'add_to_cart',
+      label: item.name,
+      value: item.price,
+      item_id: item._id,
+      item_type: 'meat'
+    })
+    ReactGA.event({
+      category: 'Ecommerce',
+      action: 'begin_checkout',
+      label: item.name,
+      value: item.price,
+      item_id: item._id,
+      item_type: 'meat'
+    })
+    console.log('✅ [GA4] Add to cart and begin checkout events tracked for meat item')
+    
     addItem({ ...item, itemType: 'meat' })
     navigate('/cart', { state: { fromBuyNow: true } })
   }

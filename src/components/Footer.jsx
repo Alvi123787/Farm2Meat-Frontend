@@ -198,7 +198,7 @@ const Footer = () => {
             <div className="col-md-12">
               <div className="footer-bottom-content">
                 <p className="footer-copyright">
-                  &copy; 2024 MeatByAlvi &mdash; All Rights Reserved.
+                  &copy; 2026 MeatByAlvi &mdash; All Rights Reserved.
                 </p>
                 <div className="footer-bottom-links">
                   <a href="/privacy-policy">Privacy Policy</a>

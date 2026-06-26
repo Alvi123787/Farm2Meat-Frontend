@@ -242,11 +242,11 @@ const PrivacyPolicy = () => {
                 <div className="pp-header-meta">
                   <div className="pp-meta-item">
                     <FaCalendarAlt className="pp-meta-icon" />
-                    <span>Effective Date: January 1, 2024</span>
+                    <span>Effective Date: April 1, 2026</span>
                   </div>
                   <div className="pp-meta-item">
                     <FaSyncAlt className="pp-meta-icon" />
-                    <span>Last Updated: December 15, 2024</span>
+                    <span>Last Updated: June 25, 2026</span>
                   </div>
                   <button className="pp-print-btn" onClick={handlePrint}>
                     <FaPrint className="pp-print-icon" />
@@ -449,7 +449,7 @@ const PrivacyPolicy = () => {
                   {/* Footer Note */}
                   <div className="pp-footer-note">
                     <p>
-                      © 2024 MeatByAlvi — All Rights Reserved. This Privacy Policy is governed
+                      © 2026 MeatByAlvi — All Rights Reserved. This Privacy Policy is governed
                       by the laws of Pakistan. By continuing to use this website, you acknowledge
                       and accept this privacy policy and all its terms.
                     </p>

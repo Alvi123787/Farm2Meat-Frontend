@@ -11,6 +11,7 @@ import {
 } from 'react-icons/fa'
 import '../css/Checkout.css'
 import AnimalCareModal from '../components/AnimalCareModal'
+import ReactGA from 'react-ga4'
 
 const formatPrice = (price) => {
   if (!price && price !== 0) return '0'
@@ -65,6 +66,27 @@ const OrderSuccess = () => {
   } = s
 
   const hasLivestock = items.some(it => String(it.itemType || '').toLowerCase() !== 'meat')
+
+  // Track purchase in GA4
+  useEffect(() => {
+    if (ok) {
+      const itemsForGA = items.map(item => ({
+        item_id: item.id,
+        item_name: item.name,
+        price: item.price,
+        quantity: item.quantity
+      }))
+      ReactGA.event({
+        category: 'Ecommerce',
+        action: 'purchase',
+        value: grandTotal,
+        currency: 'PKR',
+        transaction_id: orderId,
+        items: itemsForGA
+      })
+      console.log('✅ [GA4] Purchase event tracked')
+    }
+  }, [ok, grandTotal, orderId, items])
 
   // Show AnimalCareModal automatically if has livestock
   useEffect(() => {

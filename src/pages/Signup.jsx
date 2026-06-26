@@ -23,6 +23,7 @@ import {
 import { Link } from 'react-router-dom'
 import '../css/Signup.css'
 import { authService } from '../services/authService'
+import ReactGA from 'react-ga4'
 
 const Signup = () => {
   const [isVisible, setIsVisible] = useState(false)
@@ -120,6 +121,13 @@ const Signup = () => {
         phone: String(formData.phone || '').trim(),
         city: String(formData.city || '').trim(),
       })
+      // Track sign_up in GA4
+      ReactGA.event({
+        category: 'User',
+        action: 'sign_up',
+        method: 'email'
+      })
+      console.log('✅ [GA4] Sign up event tracked')
       setSignupPhase('sent')
       setBtnState('idle')
     } catch (err) {
