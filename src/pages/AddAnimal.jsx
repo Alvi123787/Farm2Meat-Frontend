@@ -34,7 +34,6 @@ const emptyForm = {
   gender: 'male',
   age: '',
   ageUnit: 'months',
-  weight: '',
   color: '',
   teeth: '',
   healthStatus: 'good',
@@ -210,7 +209,6 @@ export default function AddAnimal() {
       if (!form.category) e.category = 'Category is required';
       if (!form.breed.trim()) e.breed = 'Breed is required';
       if (!form.age) e.age = 'Age is required';
-      if (!form.weight.trim()) e.weight = 'Weight is required';
       if (!form.farmLocation.trim()) e.farmLocation = 'Farm location is required';
       if (!form.city.trim()) e.city = 'City is required';
     }
@@ -492,16 +490,6 @@ export default function AddAnimal() {
                     />
                   </div>
                   {errors.age && <p className="aa-error">{errors.age}</p>}
-                </Field>
-
-                <Field label="Weight" required hint="Include unit, e.g. 45 kg">
-                  <TextInput
-                    className="aa-input--mono"
-                    placeholder="45 kg"
-                    value={form.weight}
-                    onChange={(e) => update('weight', e.target.value)}
-                  />
-                  {errors.weight && <p className="aa-error">{errors.weight}</p>}
                 </Field>
 
                 <Field label="Color">

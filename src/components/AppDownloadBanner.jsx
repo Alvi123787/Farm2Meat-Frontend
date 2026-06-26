@@ -6,10 +6,12 @@ const AppDownloadBanner = () => {
   const progressIntervalRef = useRef(null);
   const AUTO_DISMISS_TIME = 4000; // 4 seconds
   const STORAGE_KEY = 'meatbyalvi_app_banner_dismissed';
+  const DOWNLOAD_STORAGE_KEY = 'meatbyalvi_app_downloaded';
 
   useEffect(() => {
     const hasDismissed = localStorage.getItem(STORAGE_KEY) === 'true';
-    if (!hasDismissed) {
+    const hasDownloaded = localStorage.getItem(DOWNLOAD_STORAGE_KEY) === 'true';
+    if (!hasDismissed && !hasDownloaded) {
       setIsVisible(true);
     }
   }, []);
@@ -23,7 +25,7 @@ const AppDownloadBanner = () => {
         setProgress(newProgress);
 
         if (newProgress >= 100) {
-          handleDismiss(false);
+          handleDismiss(true); // Auto-dismiss should also be permanent
         }
       }, 50);
     } else {
@@ -47,10 +49,22 @@ const AppDownloadBanner = () => {
   };
 
   const handleDownload = () => {
+    // Set download status first
+    localStorage.setItem(DOWNLOAD_STORAGE_KEY, 'true');
     localStorage.setItem(STORAGE_KEY, 'true');
     setIsVisible(false);
-    // Link to app store or download page (customize this URL!)
+    
+    // Track download start with blur/focus detection
+    const originalFocus = document.hasFocus();
+    
+    // Open the download link
     window.open('https://meatbyalvi.com/download', '_blank');
+    
+    // If window loses focus, assume download started (optional but helpful)
+    const handleBlur = () => {
+      // Optional: You could add a small timeout here to confirm, but setting the flag on click is sufficient
+    };
+    window.addEventListener('blur', handleBlur, { once: true });
   };
 
   if (!isVisible) return null;
