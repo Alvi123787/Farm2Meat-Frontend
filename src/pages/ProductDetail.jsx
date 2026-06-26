@@ -58,7 +58,7 @@ const trustElements = [
   { icon: <FaShieldAlt />, title: 'No Hidden Charges', desc: 'Price is what you see' },
   { icon: <FaHistory />, title: '30+ Years Legacy', desc: 'Trusted since 1994' },
   { icon: <FaVideo />, title: 'Live Video', desc: 'Available on request' },
-  { icon: <FaTruck />, title: 'Free Delivery', desc: 'Within RYK city' },
+  { icon: <FaTruck />, title: 'Delivery in 49 Rs', desc: 'Within RYK city' },
   { icon: <FaMoneyBillWave />, title: 'Cash on Delivery', desc: 'Pay when you receive' }
 ]
 
@@ -523,7 +523,7 @@ const ProductDetail = () => {
               </div>
 
               <div className="pd-delivery">
-                <div className="pd-delivery__item"><FaTruck /><span>Free Delivery in RYK</span></div>
+                <div className="pd-delivery__item"><FaTruck /><span>Delivery in 49 Rs within RYK</span></div>
                 <div className="pd-delivery__item"><FaMoneyBillWave /><span>Cash on Delivery</span></div>
               </div>
 
