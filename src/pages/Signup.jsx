@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   FaUser,
   FaPhone,
@@ -20,12 +20,13 @@ import {
   FaUsers,
   FaAward
 } from 'react-icons/fa'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import '../css/Signup.css'
 import { authService } from '../services/authService'
 import ReactGA from 'react-ga4'
 
 const Signup = () => {
+  const navigate = useNavigate()
   const [isVisible, setIsVisible] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -38,38 +39,15 @@ const Signup = () => {
     confirmPassword: '',
   })
   const [agreed, setAgreed] = useState(false)
-  const [signupPhase, setSignupPhase] = useState('form')
-  const [resendHint, setResendHint] = useState('')
   const [focusedField, setFocusedField] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [btnState, setBtnState] = useState('idle')
-  const [resendCooldown, setResendCooldown] = useState(60)
-  const [canResend, setCanResend] = useState(false)
-  const cooldownRef = useRef(null)
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100)
     return () => clearTimeout(timer)
   }, [])
-
-  useEffect(() => {
-    if (signupPhase === 'sent') {
-      setCanResend(false)
-      setResendCooldown(60)
-      cooldownRef.current = setInterval(() => {
-        setResendCooldown((prev) => {
-          if (prev <= 1) {
-            clearInterval(cooldownRef.current)
-            setCanResend(true)
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
-    }
-    return () => clearInterval(cooldownRef.current)
-  }, [signupPhase])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -123,7 +101,6 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    setResendHint('')
 
     if (!validateStep1()) {
       setBtnState('error')
@@ -142,15 +119,16 @@ const Signup = () => {
         phone: String(formData.phone || '').trim(),
         city: String(formData.city || '').trim(),
       })
-      // Track sign_up in GA4
       ReactGA.event({
         category: 'User',
         action: 'sign_up',
         method: 'email'
       })
       console.log('✅ [GA4] Sign up event tracked')
-      setSignupPhase('sent')
       setBtnState('idle')
+      navigate('/login', {
+        state: { message: 'Account created! Please login.' }
+      })
     } catch (err) {
       const msg = err?.message || 'Signup failed'
       setError(msg)
@@ -158,24 +136,6 @@ const Signup = () => {
       setTimeout(() => setBtnState('idle'), 2000)
     } finally {
       setLoading(false)
-    }
-  }
-
-  const handleResendVerification = async () => {
-    const email = String(formData.email || '').trim().toLowerCase()
-    setError('')
-    setResendHint('')
-    try {
-      await authService.resendVerification(email)
-      setResendHint('A new verification link has been sent. Check your inbox.')
-    } catch (err) {
-      if (err?.status === 429) {
-        setResendHint(err?.message || 'Please wait before requesting another email.')
-      } else if (err?.status === 404) {
-        setError('No account found with this email.')
-      } else {
-        setError(err?.message || 'Could not resend email')
-      }
     }
   }
 
@@ -210,7 +170,7 @@ const Signup = () => {
 
   const btnClassName = [
     'su-submit',
-    signupPhase === 'form' && !agreed && 'su-submit--disabled',
+    !agreed && 'su-submit--disabled',
     btnState === 'loading' && 'su-submit--loading',
     btnState === 'success' && 'su-submit--success',
     btnState === 'error' && 'su-submit--error',
@@ -220,7 +180,6 @@ const Signup = () => {
 
   return (
     <div className={`su-page ${isVisible ? 'su-page--visible' : ''}`}>
-      {/* Clean Background */}
       <div className="su-bg">
         <div className="su-bg-base"></div>
         <div className="su-bg-glow su-bg-glow--1"></div>
@@ -228,7 +187,6 @@ const Signup = () => {
       </div>
 
       <div className="su-container">
-        {/* Left Panel - Clean Hero */}
         <div className="su-hero">
           <div className="su-hero-content">
             <div className="su-hero-badge">
@@ -275,7 +233,6 @@ const Signup = () => {
           </div>
         </div>
 
-        {/* Right Panel - Clean Form */}
         <div className="su-form-panel">
           <div className="su-card">
             <div className="su-card-header">
@@ -292,219 +249,172 @@ const Signup = () => {
               <p className="su-subtitle">Join thousands of happy buyers and sellers</p>
             </div>
 
-            <div className="su-progress">
-              <div className={`su-progress-step ${signupPhase === 'form' ? 'active' : ''} ${signupPhase === 'sent' ? 'completed' : ''}`}>
-                <span className="su-progress-num">1</span>
-                <span className="su-progress-label">Account Details</span>
-              </div>
-              <div className="su-progress-line">
-                <div className={`su-progress-line-fill ${signupPhase === 'sent' ? 'filled' : ''}`} />
-              </div>
-              <div className={`su-progress-step ${signupPhase === 'sent' ? 'active' : ''}`}>
-                <span className="su-progress-num">2</span>
-                <span className="su-progress-label">Verify Email</span>
-              </div>
-            </div>
-
             <form className="su-form" onSubmit={handleSubmit} noValidate>
-              {signupPhase === 'sent' && (
-                <div className="su-success-panel">
-                  <div className="su-success-icon">
-                    <FaEnvelope />
+              <div className="su-form-fields">
+                <div className="su-field-row">
+                  <div className={`su-field ${focusedField === 'fullName' ? 'focused' : ''} ${formData.fullName ? 'filled' : ''}`}>
+                    <label>Full Name</label>
+                    <div className="su-field-input">
+                      <FaUser className="su-field-icon" />
+                      <input
+                        type="text"
+                        name="fullName"
+                        placeholder="Muhammad Ahmed"
+                        value={formData.fullName}
+                        onChange={handleChange}
+                        onFocus={() => setFocusedField('fullName')}
+                        onBlur={() => setFocusedField(null)}
+                        disabled={loading}
+                      />
+                      {formData.fullName.trim().length > 2 && <FaCheckCircle className="su-field-check" />}
+                    </div>
                   </div>
-                  <h3>Check your inbox</h3>
-                  <p>
-                    We've sent a verification link to <strong>{formData.email.trim()}</strong>
-                  </p>
-                  <p className="su-success-note">
-                    Click the link to activate your account. The link expires in 24 hours.
-                  </p>
-                  {resendHint && <p className="su-success-hint">{resendHint}</p>}
-                  <div className="su-success-actions">
+
+                  <div className={`su-field ${focusedField === 'phone' ? 'focused' : ''} ${formData.phone ? 'filled' : ''}`}>
+                    <label>Phone Number</label>
+                    <div className="su-field-input">
+                      <FaPhone className="su-field-icon" />
+                      <input
+                        type="tel"
+                        name="phone"
+                        placeholder="03XX-XXXXXXX"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        onFocus={() => setFocusedField('phone')}
+                        onBlur={() => setFocusedField(null)}
+                        disabled={loading}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="su-field-row">
+                  <div className={`su-field ${focusedField === 'email' ? 'focused' : ''} ${formData.email ? 'filled' : ''}`}>
+                    <label>Email Address</label>
+                    <div className="su-field-input">
+                      <FaEnvelope className="su-field-icon" />
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="ahmed@example.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                        onFocus={() => setFocusedField('email')}
+                        onBlur={() => setFocusedField(null)}
+                        disabled={loading}
+                      />
+                      {formData.email && isValidEmail(formData.email) && <FaCheckCircle className="su-field-check" />}
+                    </div>
+                  </div>
+
+                  <div className={`su-field ${focusedField === 'city' ? 'focused' : ''} ${formData.city ? 'filled' : ''}`}>
+                    <label>City</label>
+                    <div className="su-field-input">
+                      <FaMapMarkerAlt className="su-field-icon" />
+                      <input
+                        type="text"
+                        name="city"
+                        placeholder="Rahim Yar Khan"
+                        value={formData.city}
+                        onChange={handleChange}
+                        onFocus={() => setFocusedField('city')}
+                        onBlur={() => setFocusedField(null)}
+                        disabled={loading}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`su-field ${focusedField === 'password' ? 'focused' : ''} ${formData.password ? 'filled' : ''}`}>
+                  <label>Password</label>
+                  <div className="su-field-input">
+                    <FaLock className="su-field-icon" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      name="password"
+                      placeholder="Create a strong password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      onFocus={() => setFocusedField('password')}
+                      onBlur={() => setFocusedField(null)}
+                      disabled={loading}
+                    />
                     <button
                       type="button"
-                      className="su-btn su-btn--secondary"
-                      onClick={handleResendVerification}
-                      disabled={loading || !canResend}
+                      className="su-field-eye"
+                      onClick={() => setShowPassword(!showPassword)}
+                      disabled={loading}
                     >
-                      {canResend
-                        ? 'Resend Email'
-                        : `Resend in ${resendCooldown}s`}
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
                     </button>
-                    <Link to="/login" className="su-btn su-btn--primary">
-                      Go to Login <FaArrowRight />
-                    </Link>
                   </div>
-                </div>
-              )}
-
-              {signupPhase === 'form' && (
-                <div className="su-form-fields">
-                  <div className="su-field-row">
-                    <div className={`su-field ${focusedField === 'fullName' ? 'focused' : ''} ${formData.fullName ? 'filled' : ''}`}>
-                      <label>Full Name</label>
-                      <div className="su-field-input">
-                        <FaUser className="su-field-icon" />
-                        <input
-                          type="text"
-                          name="fullName"
-                          placeholder="Muhammad Ahmed"
-                          value={formData.fullName}
-                          onChange={handleChange}
-                          onFocus={() => setFocusedField('fullName')}
-                          onBlur={() => setFocusedField(null)}
-                          disabled={loading}
-                        />
-                        {formData.fullName.trim().length > 2 && <FaCheckCircle className="su-field-check" />}
+                  {formData.password && (
+                    <div className="su-password-strength">
+                      <div className="su-strength-bar">
+                        {[1, 2, 3, 4].map((level) => (
+                          <div
+                            key={level}
+                            className={`su-strength-segment ${passwordStrength >= level ? 'active' : ''}`}
+                            style={{ backgroundColor: passwordStrength >= level ? strengthColors[passwordStrength] : undefined }}
+                          />
+                        ))}
                       </div>
-                    </div>
-
-                    <div className={`su-field ${focusedField === 'phone' ? 'focused' : ''} ${formData.phone ? 'filled' : ''}`}>
-                      <label>Phone Number</label>
-                      <div className="su-field-input">
-                        <FaPhone className="su-field-icon" />
-                        <input
-                          type="tel"
-                          name="phone"
-                          placeholder="03XX-XXXXXXX"
-                          value={formData.phone}
-                          onChange={handleChange}
-                          onFocus={() => setFocusedField('phone')}
-                          onBlur={() => setFocusedField(null)}
-                          disabled={loading}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="su-field-row">
-                    <div className={`su-field ${focusedField === 'email' ? 'focused' : ''} ${formData.email ? 'filled' : ''}`}>
-                      <label>Email Address</label>
-                      <div className="su-field-input">
-                        <FaEnvelope className="su-field-icon" />
-                        <input
-                          type="email"
-                          name="email"
-                          placeholder="ahmed@example.com"
-                          value={formData.email}
-                          onChange={handleChange}
-                          onFocus={() => setFocusedField('email')}
-                          onBlur={() => setFocusedField(null)}
-                          disabled={loading}
-                        />
-                        {formData.email && isValidEmail(formData.email) && <FaCheckCircle className="su-field-check" />}
-                      </div>
-                    </div>
-
-                    <div className={`su-field ${focusedField === 'city' ? 'focused' : ''} ${formData.city ? 'filled' : ''}`}>
-                      <label>City</label>
-                      <div className="su-field-input">
-                        <FaMapMarkerAlt className="su-field-icon" />
-                        <input
-                          type="text"
-                          name="city"
-                          placeholder="Rahim Yar Khan"
-                          value={formData.city}
-                          onChange={handleChange}
-                          onFocus={() => setFocusedField('city')}
-                          onBlur={() => setFocusedField(null)}
-                          disabled={loading}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={`su-field ${focusedField === 'password' ? 'focused' : ''} ${formData.password ? 'filled' : ''}`}>
-                    <label>Password</label>
-                    <div className="su-field-input">
-                      <FaLock className="su-field-icon" />
-                      <input
-                        type={showPassword ? 'text' : 'password'}
-                        name="password"
-                        placeholder="Create a strong password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        onFocus={() => setFocusedField('password')}
-                        onBlur={() => setFocusedField(null)}
-                        disabled={loading}
-                      />
-                      <button
-                        type="button"
-                        className="su-field-eye"
-                        onClick={() => setShowPassword(!showPassword)}
-                        disabled={loading}
-                      >
-                        {showPassword ? <FaEyeSlash /> : <FaEye />}
-                      </button>
-                    </div>
-                    {formData.password && (
-                      <div className="su-password-strength">
-                        <div className="su-strength-bar">
-                          {[1, 2, 3, 4].map((level) => (
-                            <div
-                              key={level}
-                              className={`su-strength-segment ${passwordStrength >= level ? 'active' : ''}`}
-                              style={{ backgroundColor: passwordStrength >= level ? strengthColors[passwordStrength] : undefined }}
-                            />
-                          ))}
-                        </div>
-                        <span className="su-strength-text" style={{ color: strengthColors[passwordStrength] }}>
-                          {strengthLabels[passwordStrength]}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className={`su-field ${focusedField === 'confirmPassword' ? 'focused' : ''} ${formData.confirmPassword ? 'filled' : ''}`}>
-                    <label>Confirm Password</label>
-                    <div className="su-field-input">
-                      <FaLock className="su-field-icon" />
-                      <input
-                        type={showConfirmPassword ? 'text' : 'password'}
-                        name="confirmPassword"
-                        placeholder="Re-enter your password"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        onFocus={() => setFocusedField('confirmPassword')}
-                        onBlur={() => setFocusedField(null)}
-                        disabled={loading}
-                      />
-                      <button
-                        type="button"
-                        className="su-field-eye"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        disabled={loading}
-                      >
-                        {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                      </button>
-                    </div>
-                    {formData.confirmPassword && (
-                      <div className="su-password-match">
-                        {formData.password === formData.confirmPassword ? (
-                          <span className="match"><FaCheckCircle /> Passwords match</span>
-                        ) : (
-                          <span className="no-match">Passwords do not match</span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="su-terms">
-                    <label className="su-checkbox">
-                      <input
-                        type="checkbox"
-                        checked={agreed}
-                        onChange={() => setAgreed(!agreed)}
-                        disabled={loading}
-                      />
-                      <span className="su-checkbox-custom"></span>
-                      <span className="su-checkbox-text">
-                        I agree to the <a href="/terms">Terms of Service</a> and <a href="/privacy-policy">Privacy Policy</a>
+                      <span className="su-strength-text" style={{ color: strengthColors[passwordStrength] }}>
+                        {strengthLabels[passwordStrength]}
                       </span>
-                    </label>
-                  </div>
+                    </div>
+                  )}
                 </div>
-              )}
+
+                <div className={`su-field ${focusedField === 'confirmPassword' ? 'focused' : ''} ${formData.confirmPassword ? 'filled' : ''}`}>
+                  <label>Confirm Password</label>
+                  <div className="su-field-input">
+                    <FaLock className="su-field-icon" />
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      name="confirmPassword"
+                      placeholder="Re-enter your password"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      onFocus={() => setFocusedField('confirmPassword')}
+                      onBlur={() => setFocusedField(null)}
+                      disabled={loading}
+                    />
+                    <button
+                      type="button"
+                      className="su-field-eye"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      disabled={loading}
+                    >
+                      {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
+                  {formData.confirmPassword && (
+                    <div className="su-password-match">
+                      {formData.password === formData.confirmPassword ? (
+                        <span className="match"><FaCheckCircle /> Passwords match</span>
+                      ) : (
+                        <span className="no-match">Passwords do not match</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <div className="su-terms">
+                  <label className="su-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={agreed}
+                      onChange={() => setAgreed(!agreed)}
+                      disabled={loading}
+                    />
+                    <span className="su-checkbox-custom"></span>
+                    <span className="su-checkbox-text">
+                      I agree to the <a href="/terms">Terms of Service</a> and <a href="/privacy-policy">Privacy Policy</a>
+                    </span>
+                  </label>
+                </div>
+              </div>
 
               {error && (
                 <div className="su-error">
@@ -513,32 +423,30 @@ const Signup = () => {
                 </div>
               )}
 
-              {signupPhase === 'form' && (
-                <>
-                  <button
-                    type="submit"
-                    className={btnClassName}
-                    disabled={!agreed || loading}
-                  >
-                    <span className="su-submit-text">
-                      {btnState === 'idle' && (
-                        <>Create Account <FaArrowRight /></>
-                      )}
-                      {btnState === 'loading' && (
-                        <>Creating Account...</>
-                      )}
-                      {btnState === 'error' && (
-                        <>Try Again <FaArrowRight /></>
-                      )}
-                    </span>
-                  </button>
+              <>
+                <button
+                  type="submit"
+                  className={btnClassName}
+                  disabled={!agreed || loading}
+                >
+                  <span className="su-submit-text">
+                    {btnState === 'idle' && (
+                      <>Create Account <FaArrowRight /></>
+                    )}
+                    {btnState === 'loading' && (
+                      <>Creating Account...</>
+                    )}
+                    {btnState === 'error' && (
+                      <>Try Again <FaArrowRight /></>
+                    )}
+                  </span>
+                </button>
 
-                  <div className="su-secure-badge">
-                    <FaShieldAlt />
-                    <span>Protected by 256-bit SSL encryption</span>
-                  </div>
-                </>
-              )}
+                <div className="su-secure-badge">
+                  <FaShieldAlt />
+                  <span>Protected by 256-bit SSL encryption</span>
+                </div>
+              </>
             </form>
 
             <div className="su-footer">

@@ -32,9 +32,7 @@ const Login = () => {
   const [focusedField, setFocusedField] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [needsVerify, setNeedsVerify] = useState(false)
-  const [resendBusy, setResendBusy] = useState(false)
-  const [resendOk, setResendOk] = useState('')
+
   const [message, setMessage] = useState(location.state?.message || '')
   const [formData, setFormData] = useState({ email: '', password: '' })
 
@@ -54,8 +52,6 @@ const Login = () => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
     if (error) setError('')
-    if (needsVerify) setNeedsVerify(false)
-    if (resendOk) setResendOk('')
   }
 
   const isValidEmail = (email) =>
@@ -88,37 +84,14 @@ const Login = () => {
         navigate(from, { replace: true })
       }
     } catch (err) {
-      const status = err?.status
       const msg = err?.message || 'Login failed. Please try again.'
       setError(msg)
-      setNeedsVerify(status === 403 || err?.code === 'EMAIL_NOT_VERIFIED' || /verify your email/i.test(msg))
     } finally {
       setLoading(false)
     }
   }
 
-  const handleResendVerification = async () => {
-    const email = String(formData.email || '').trim().toLowerCase()
-    if (!isValidEmail(email)) {
-      setError('Enter your email above, then resend the verification link.')
-      return
-    }
-    setResendBusy(true)
-    setResendOk('')
-    setError('')
-    try {
-      await authService.resendVerification(email)
-      setResendOk('Verification email sent. Check your inbox.')
-    } catch (e) {
-      if (e?.status === 404) {
-        setError('No account found with this email.')
-      } else {
-        setError(e?.message || 'Could not resend email.')
-      }
-    } finally {
-      setResendBusy(false)
-    }
-  }
+
 
   const features = [
     { icon: <FaVideo />, title: 'Live Inspection', desc: 'WhatsApp video calls' },
@@ -282,20 +255,7 @@ const Login = () => {
                 </div>
               )}
 
-              {needsVerify && (
-                <div className="lg-verify-box">
-                  <p>Please verify your email to continue.</p>
-                  <button
-                    type="button"
-                    className="lg-verify-btn"
-                    onClick={handleResendVerification}
-                    disabled={resendBusy || loading}
-                  >
-                    {resendBusy ? 'Sending...' : 'Resend verification email'}
-                  </button>
-                  {resendOk && <p className="lg-verify-success">{resendOk}</p>}
-                </div>
-              )}
+
 
               <button
                 type="submit"

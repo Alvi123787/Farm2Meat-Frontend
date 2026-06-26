@@ -23,7 +23,7 @@ import Orders from './pages/Orders'
 import Confirmation from './components/Confirmation'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
-import EmailVerification from './pages/EmailVerification'
+
 import AllReviews from './pages/AllReviews'
 import HowItWorks from './pages/HowItWorks'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -170,7 +170,7 @@ function AppShell() {
           <Route path="/confirmation" element={withPageTitle(<Confirmation />, 'Confirmation')} />
           <Route path="/forgot-password" element={withPageTitle(<ForgotPassword />, 'Forgot Password')} />
           <Route path="/reset-password/:token" element={withPageTitle(<ResetPassword />, 'Reset Password')} />
-          <Route path="/verify-email/:token" element={withPageTitle(<EmailVerification />, 'Verify Email')} />
+
         </Routes>
         {!isConfirmationPage && <Footer />}
       </CartProvider>

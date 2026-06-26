@@ -27,12 +27,7 @@ const normalizeAuthError = (error, action) => {
       else message = 'Login failed. Please try again.'
     } else if (action === 'signup') {
       if (status === 409) message = 'An account with this email already exists.'
-      else if (status === 429) message = 'Too many requests. Please wait and try again.'
       else message = 'Signup failed. Please try again.'
-    } else if (action === 'resendVerification') {
-      if (status === 404) message = 'No account found with this email.'
-      else if (status === 429) message = 'Please wait before requesting another verification email.'
-      else message = 'Could not resend verification email.'
     } else {
       message = 'Request failed. Please try again.'
     }
@@ -79,25 +74,6 @@ export const authService = {
       return response.data
     } catch (error) {
       return normalizeAuthError(error, 'resetPassword')
-    }
-  },
-
-  verifyEmail: async (token, email, { signal } = {}) => {
-    try {
-      const query = email ? `?email=${encodeURIComponent(email)}` : ''
-      const response = await api.get(`/api/auth/verify-email/${encodeURIComponent(token)}${query}`, { signal })
-      return response.data
-    } catch (error) {
-      return normalizeAuthError(error, 'verifyEmail')
-    }
-  },
-
-  resendVerification: async (email, { signal } = {}) => {
-    try {
-      const response = await api.post('/api/auth/resend-verification', { email }, { signal })
-      return response.data
-    } catch (error) {
-      return normalizeAuthError(error, 'resendVerification')
     }
   }
 }
