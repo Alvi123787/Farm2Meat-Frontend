@@ -351,12 +351,13 @@ const Checkout = () => {
 
     currentItems.forEach((item, i) => {
       const qty = getEffectiveQuantity(item)
+      const unitText = item.unit ? ` ${item.unit}` : ''
       const itemTotal = priceToNumber(item.price) * qty
       msg += `${i + 1}. *${item.name}*%0A`
       msg += `   Breed: ${item.breed || 'N/A'}`
       if (item.weight) msg += ` | Weight (Zinda): ${item.weight}`
       msg += `%0A`
-      msg += `   Price: Rs ${formatPrice(item.price)} x ${qty}%0A`
+      msg += `   Price: Rs ${formatPrice(item.price)} x ${qty}${unitText}%0A`
       msg += `   Subtotal: Rs ${formatPrice(itemTotal)}%0A%0A`
     })
 
@@ -919,7 +920,7 @@ const Checkout = () => {
                                   <span className="co-review-price-label">
                                     <FaTag className="co-review-price-icon" />
                                     {qty > 1
-                                      ? `${formatPrice(item.price)} x ${qty}`
+                                      ? `${formatPrice(item.price)} x ${qty}${item.unit ? ` ${item.unit}` : ''}`
                                       : 'Price'}
                                   </span>
                                   <span className="co-review-price">

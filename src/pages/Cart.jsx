@@ -19,6 +19,7 @@ import {
   FaTimes,
   FaSpinner
 } from 'react-icons/fa'
+import ReactGA from 'react-ga4'
 import api from '../services/api'
 import '../css/Cart.css'
 import { animalsService } from '../services/animalsService'
@@ -170,10 +171,42 @@ const Cart = () => {
   // ════════════════════════════════════════════
 
   const handleUpdateQuantity = (id, delta) => {
+    // Find item to get details for GA4 event
+    const item = cartItems.find(i => i._id === id)
+    if (item) {
+      const newQuantity = (item.quantity || 1) + delta
+      console.log(`📦 [GA4] Tracking quantity change: ${item.name} - ${delta > 0 ? 'increased' : 'decreased'} to ${newQuantity}${item.unit ? ` ${item.unit}` : ''}`)
+      
+      ReactGA.event({
+        category: 'Cart',
+        action: 'Quantity_Changed',
+        label: item.name,
+        value: newQuantity,
+        item_id: id,
+        item_type: item.itemType || 'livestock',
+        unit: item.unit || 'piece',
+        price: priceToNumber(item.price)
+      })
+    }
     updateQuantity(id, delta)
   }
 
   const handleRemoveItem = (id) => {
+    // Track item removal before removing it
+    const item = cartItems.find(i => i._id === id)
+    if (item) {
+      console.log(`🗑️ [GA4] Tracking item removed: ${item.name}`)
+      ReactGA.event({
+        category: 'Cart',
+        action: 'Item_Removed',
+        label: item.name,
+        item_id: id,
+        item_type: item.itemType || 'livestock',
+        unit: item.unit || 'piece',
+        price: priceToNumber(item.price)
+      })
+    }
+
     setRemovingId(id)
     setTimeout(() => {
       removeItem(id)
@@ -310,11 +343,12 @@ const Cart = () => {
     let msg = `Assalam o Alaikum!%0A%0A🛒 *New Order from MeatByAlvi Website*%0A%0A`
     cartItems.forEach((item, i) => {
       const qty = getEffectiveQuantity(item)
+      const unitText = item.unit ? ` ${item.unit}` : ''
       msg += `${i + 1}. *${item.name}*%0A`
       msg += `   Breed: ${item.breed}`
       if (item.weight) msg += ` | Weight (Zinda): ${item.weight}`
       msg += `%0A`
-      msg += `   Price: ${formatPrice(item.price)} x ${qty}%0A`
+      msg += `   Price: ${formatPrice(item.price)} x ${qty}${unitText}%0A`
       msg += `   Subtotal: ${formatPrice(priceToNumber(item.price) * qty)}%0A%0A`
     })
     msg += `━━━━━━━━━━━━━━━%0A`
@@ -564,30 +598,33 @@ const Cart = () => {
                               </div>
 
                               {isMultiQuantityItem(item) ? (
-                                <div className="cart-item-qty">
-                                  <button
-                                    className="cart-qty-btn"
-                                    onClick={() => handleUpdateQuantity(item._id, -1)}
-                                    disabled={(item.quantity || 1) <= 1}
-                                    aria-label="Decrease quantity"
-                                  >
-                                    <FaMinus />
-                                  </button>
-                                  <span className="cart-qty-value">{item.quantity || 1}</span>
-                                  <button
-                                    className="cart-qty-btn"
-                                    onClick={() => handleUpdateQuantity(item._id, 1)}
-                                    disabled={(item.quantity || 1) >= 99}
-                                    aria-label="Increase quantity"
-                                  >
-                                    <FaPlus />
-                                  </button>
-                                </div>
-                              ) : (
-                                <div className="cart-item-qty cart-item-qty--fixed">
-                                  <span className="cart-qty-value">Qty: 1</span>
-                                </div>
-                              )}
+                        <div className="cart-item-qty">
+                          <button
+                            className="cart-qty-btn"
+                            onClick={() => handleUpdateQuantity(item._id, -1)}
+                            disabled={(item.quantity || 1) <= 1}
+                            aria-label="Decrease quantity"
+                          >
+                            <FaMinus />
+                          </button>
+                          <span className="cart-qty-value">
+                            {item.quantity || 1}
+                            {item.unit ? ` ${item.unit}` : ''}
+                          </span>
+                          <button
+                            className="cart-qty-btn"
+                            onClick={() => handleUpdateQuantity(item._id, 1)}
+                            disabled={(item.quantity || 1) >= 99}
+                            aria-label="Increase quantity"
+                          >
+                            <FaPlus />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="cart-item-qty cart-item-qty--fixed">
+                          <span className="cart-qty-value">Qty: 1</span>
+                        </div>
+                      )}
 
                               <div className="cart-item-total">
                                 <span className="cart-item-total-label">Subtotal</span>

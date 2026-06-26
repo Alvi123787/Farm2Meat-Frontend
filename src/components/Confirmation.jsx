@@ -258,7 +258,7 @@ const Confirmation = () => {
                       onError={(e) => { e.target.src = '/placeholder.jpg'; }}
                     />
                     {(item.quantity || 1) > 1 && (
-                      <span className="conf-item__qty">×{item.quantity}</span>
+                      <span className="conf-item__qty">×{item.quantity}{item.unit ? ` ${item.unit}` : ''}</span>
                     )}
                   </div>
                   <div className="conf-item__details">
@@ -268,7 +268,9 @@ const Confirmation = () => {
                       {item.breed && item.weight && <span className="conf-item__dot"> · </span>}
                       {item.weight && <span>{item.weight}</span>}
                       {!item.breed && !item.weight && (
-                        <span>Qty ×{item.quantity || 1}</span>
+                        <span>
+                          Qty ×{item.quantity || 1}{item.unit ? ` ${item.unit}` : ''}
+                        </span>
                       )}
                     </p>
                   </div>

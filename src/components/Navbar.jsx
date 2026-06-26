@@ -143,13 +143,15 @@ const Navbar = () => {
     return () => document.removeEventListener('keydown', onEsc);
   }, [showLoginRequiredPopup]);
 
-  const handleClick = (index) => {
+  const handleClick = (index, e) => {
     // setActiveIndex(index); // Removed: handled by useEffect/useLocation
     setRipple(index);
     setTimeout(() => setRipple(null), 600);
 
     const item = menuItems[index];
     if (item.isDashboard && role === 'guest') {
+      e.preventDefault();
+      e.stopPropagation();
       setShowLoginRequiredPopup(true);
     }
   };
@@ -238,9 +240,20 @@ const Navbar = () => {
                 className={`pnav-li${
                   activeIndex === index ? ' pnav-active' : ''
                 }`}
-                onClick={() => handleClick(index)}
+                onClick={(e) => handleClick(index, e)}
               >
-                <Link to={item.path} className="pnav-a">
+                <Link 
+                  to={item.path} 
+                  className="pnav-a"
+                  onClick={(e) => {
+                    const menuItem = menuItems[index];
+                    if (menuItem.isDashboard && role === 'guest') {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setShowLoginRequiredPopup(true);
+                    }
+                  }}
+                >
                   <span className="pnav-item-icon">
                     <FontAwesomeIcon icon={item.icon} />
                     {item.isCart && cartCount > 0 && (

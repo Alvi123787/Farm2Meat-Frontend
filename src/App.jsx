@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
@@ -53,6 +53,7 @@ import Dashboard from './components/Dashboard.jsx'
 import { FavouritesProvider } from './contexts/FavouritesContext.jsx'
 import AppDownloadBanner from './components/AppDownloadBanner.jsx'
 import ContactPage from './pages/ContactPage.jsx'
+import ReactGA from 'react-ga4'
 
 
 const withPageTitle = (element, title) => (
@@ -65,6 +66,28 @@ function AppShell() {
   const location = useLocation()
   const isConfirmationPage = location.pathname === '/confirmation';
   const isAdminPage = location.pathname.startsWith('/admin');
+
+  // Track page views on route change with enhanced logging
+  useEffect(() => {
+    console.log(`🔄 [GA4] Route changed to: ${location.pathname}`);
+    
+    // Send pageview to GA4
+    ReactGA.send({
+      hitType: 'pageview',
+      page: location.pathname,
+      title: document.title,
+      location: window.location.href
+    });
+
+    // Also track custom "page_view" event using recommended event name
+    ReactGA.event({
+      category: 'Navigation',
+      action: 'Page_View',
+      label: location.pathname,
+    });
+
+    console.log(`✅ [GA4] Page view sent for: ${location.pathname}`);
+  }, [location])
 
     return (
     <AdminDomainProvider>
