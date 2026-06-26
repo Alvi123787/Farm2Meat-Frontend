@@ -44,11 +44,32 @@ const Signup = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [btnState, setBtnState] = useState('idle')
+  const [resendCooldown, setResendCooldown] = useState(60)
+  const [canResend, setCanResend] = useState(false)
+  const cooldownRef = useRef(null)
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100)
     return () => clearTimeout(timer)
   }, [])
+
+  useEffect(() => {
+    if (signupPhase === 'sent') {
+      setCanResend(false)
+      setResendCooldown(60)
+      cooldownRef.current = setInterval(() => {
+        setResendCooldown((prev) => {
+          if (prev <= 1) {
+            clearInterval(cooldownRef.current)
+            setCanResend(true)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    }
+    return () => clearInterval(cooldownRef.current)
+  }, [signupPhase])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -148,7 +169,9 @@ const Signup = () => {
       await authService.resendVerification(email)
       setResendHint('A new verification link has been sent. Check your inbox.')
     } catch (err) {
-      if (err?.status === 404) {
+      if (err?.status === 429) {
+        setResendHint(err?.message || 'Please wait before requesting another email.')
+      } else if (err?.status === 404) {
         setError('No account found with this email.')
       } else {
         setError(err?.message || 'Could not resend email')
@@ -302,9 +325,11 @@ const Signup = () => {
                       type="button"
                       className="su-btn su-btn--secondary"
                       onClick={handleResendVerification}
-                      disabled={loading}
+                      disabled={loading || !canResend}
                     >
-                      Resend Email
+                      {canResend
+                        ? 'Resend Email'
+                        : `Resend in ${resendCooldown}s`}
                     </button>
                     <Link to="/login" className="su-btn su-btn--primary">
                       Go to Login <FaArrowRight />
