@@ -1,0 +1,403 @@
+/* ============================================================
+   SUPPORT HUB — unique "sh-" prefix
+   ============================================================ */
+
+/* ── FAB (Floating Action Button) ── */
+
+.sh-fab {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #8B0000;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(139, 0, 0, 0.3);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  z-index: 9998;
+  animation: sh-pulse 1.5s ease-out 1;
+}
+
+.sh-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 24px rgba(139, 0, 0, 0.4);
+}
+
+.sh-fab:focus {
+  outline: 2px solid #8B0000;
+  outline-offset: 4px;
+}
+
+.sh-fab-icon {
+  font-size: 24px;
+  color: white;
+}
+
+.sh-tooltip {
+  position: absolute;
+  right: 72px;
+  background-color: #1f2937;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.sh-fab:hover .sh-tooltip {
+  opacity: 1;
+}
+
+@keyframes sh-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(139, 0, 0, 0.7);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 15px rgba(139, 0, 0, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 16px rgba(139, 0, 0, 0.3);
+  }
+}
+
+/* ── Overlay ── */
+
+.sh-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9997;
+  animation: sh-fade-in 0.3s ease-in-out;
+}
+
+.sh-overlay--closing {
+  animation: sh-fade-out 0.22s ease-in-out forwards;
+}
+
+/* ── Modal ── */
+
+.sh-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  width: 380px;
+  max-width: 90vw;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  padding: 32px;
+  animation: sh-scale-in 0.3s ease-in-out;
+}
+
+.sh-modal--closing {
+  animation: sh-scale-out 0.22s ease-in-out forwards;
+}
+
+@keyframes sh-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sh-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes sh-scale-in {
+  from {
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes sh-scale-out {
+  from {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0;
+  }
+}
+
+/* ── Close Button ── */
+
+.sh-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+  color: #6b7280;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.sh-close:hover {
+  background-color: #f3f4f6;
+  color: #1f2937;
+}
+
+.sh-close:focus {
+  outline: 2px solid #8B0000;
+  outline-offset: 2px;
+}
+
+/* ── Header ── */
+
+.sh-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.sh-heading {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.sh-heading-icon {
+  font-size: 20px;
+  color: #8B0000;
+}
+
+.sh-subheading {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* ── Step Content ── */
+
+.sh-steps {
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.sh-step-content {
+  display: flex;
+  transition: transform 0.3s ease-in-out;
+}
+
+.sh-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.sh-step-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.sh-step-icon svg {
+  font-size: 32px;
+}
+
+.sh-step-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.sh-step-description {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.sh-step-button {
+  width: 100%;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  margin-top: 8px;
+}
+
+.sh-step-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sh-step-button:focus {
+  outline: 2px solid #1f2937;
+  outline-offset: 2px;
+}
+
+/* ── Navigation ── */
+
+.sh-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.sh-nav-btn {
+  padding: 8px 16px;
+  border: 1px solid #e5e7eb;
+  background-color: white;
+  color: #6b7280;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.sh-nav-btn:hover:not(:disabled) {
+  background-color: #f9fafb;
+  color: #1f2937;
+  border-color: #d1d5db;
+}
+
+.sh-nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sh-nav-btn:focus {
+  outline: 2px solid #8B0000;
+  outline-offset: 2px;
+}
+
+.sh-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.sh-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background-color: #d1d5db;
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.sh-dot:hover {
+  background-color: #9ca3af;
+}
+
+.sh-dot--active {
+  background-color: #8B0000;
+  transform: scale(1.2);
+}
+
+.sh-step-indicator {
+  text-align: center;
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+/* ── Responsive tweaks ── */
+
+@media (max-width: 768px) {
+  .sh-fab {
+    bottom: 96px; /* Higher to avoid overlapping with bottom navbar */
+  }
+}
+
+@media (max-width: 480px) {
+  .sh-modal {
+    padding: 24px 20px;
+  }
+  .sh-heading {
+    font-size: 18px;
+  }
+  .sh-step-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 24px;
+  }
+  .sh-step-icon svg {
+    font-size: 24px;
+  }
+  .sh-step-title {
+    font-size: 16px;
+  }
+  .sh-nav-btn {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+}
+
+/* ── Reduced motion ── */
+
+@media (prefers-reduced-motion: reduce) {
+  .sh-fab,
+  .sh-overlay,
+  .sh-modal,
+  .sh-nav-btn,
+  .sh-step-button,
+  .sh-dot {
+    animation: none !important;
+    transition: none !important;
+  }
+}

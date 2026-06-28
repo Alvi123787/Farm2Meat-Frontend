@@ -1,20 +1,54 @@
 import React, { useState, useEffect, useRef } from 'react';
+import usePwaInstall from '../hooks/usePwaInstall';
 
 const AppDownloadBanner = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [installFeedback, setInstallFeedback] = useState('');
   const progressIntervalRef = useRef(null);
   const AUTO_DISMISS_TIME = 4000; // 4 seconds
   const STORAGE_KEY = 'meatbyalvi_app_banner_dismissed';
   const DOWNLOAD_STORAGE_KEY = 'meatbyalvi_app_downloaded';
+  const WELCOME_MODAL_KEY = 'welcome_modal_seen';
+  const { canInstall, isInstalled, needsManualInstall, promptInstall } = usePwaInstall();
 
   useEffect(() => {
-    const hasDismissed = localStorage.getItem(STORAGE_KEY) === 'true';
-    const hasDownloaded = localStorage.getItem(DOWNLOAD_STORAGE_KEY) === 'true';
-    if (!hasDismissed && !hasDownloaded) {
-      setIsVisible(true);
-    }
+    const checkAndShowBanner = () => {
+      const hasDismissed = localStorage.getItem(STORAGE_KEY) === 'true';
+      const hasDownloaded = localStorage.getItem(DOWNLOAD_STORAGE_KEY) === 'true';
+      const welcomeModalSeen = sessionStorage.getItem(WELCOME_MODAL_KEY) === 'true';
+      
+      if (!hasDismissed && !hasDownloaded && welcomeModalSeen) {
+        setIsVisible(true);
+      }
+    };
+
+    // Initial check
+    checkAndShowBanner();
+
+    // Listen for storage changes (in case WelcomeModal sets it while this component is already mounted)
+    const handleStorageChange = (e) => {
+      if (e.storageArea === sessionStorage && e.key === WELCOME_MODAL_KEY) {
+        checkAndShowBanner();
+      }
+    };
+
+    // Also poll in case storage events aren't working reliably
+    const intervalId = setInterval(checkAndShowBanner, 100);
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(intervalId);
+    };
   }, []);
+
+  useEffect(() => {
+    if (!installFeedback) return;
+    const feedbackTimer = setTimeout(() => setInstallFeedback(""), 3200);
+    return () => clearTimeout(feedbackTimer);
+  }, [installFeedback]);
 
   useEffect(() => {
     if (isVisible) {
@@ -48,23 +82,26 @@ const AppDownloadBanner = () => {
     }
   };
 
-  const handleDownload = () => {
-    // Set download status first
-    localStorage.setItem(DOWNLOAD_STORAGE_KEY, 'true');
-    localStorage.setItem(STORAGE_KEY, 'true');
-    setIsVisible(false);
-    
-    // Track download start with blur/focus detection
-    const originalFocus = document.hasFocus();
-    
-    // Open the download link
-    window.open('https://meatbyalvi.com/download', '_blank');
-    
-    // If window loses focus, assume download started (optional but helpful)
-    const handleBlur = () => {
-      // Optional: You could add a small timeout here to confirm, but setting the flag on click is sufficient
+  const handleDownload = async () => {
+    const outcome = await promptInstall();
+    const messages = {
+      manual: "On iPhone, tap Share → Add to Home Screen",
+      dismissed: "You can install anytime from the menu",
+      accepted: "Installing MeatByAlvi...",
+      installed: "Already installed on this device",
     };
-    window.addEventListener('blur', handleBlur, { once: true });
+    setInstallFeedback(messages[outcome] || "Install not available in this browser");
+    
+    if (outcome === 'accepted' || outcome === 'installed') {
+      // Set download status first
+      localStorage.setItem(DOWNLOAD_STORAGE_KEY, 'true');
+      localStorage.setItem(STORAGE_KEY, 'true');
+      
+      // Wait a bit to show the feedback before closing
+      setTimeout(() => {
+        setIsVisible(false);
+      }, 2000);
+    }
   };
 
   if (!isVisible) return null;
@@ -110,8 +147,14 @@ const AppDownloadBanner = () => {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {installFeedback && (
+            <div style={{ color: 'white', fontSize: '14px', fontWeight: 500 }}>
+              {installFeedback}
+            </div>
+          )}
           <button
             onClick={handleDownload}
+            disabled={isInstalled}
             style={{
               background: 'white',
               color: '#8B4513',
@@ -120,18 +163,23 @@ const AppDownloadBanner = () => {
               borderRadius: '8px',
               fontSize: '14px',
               fontWeight: 600,
-              cursor: 'pointer',
+              cursor: isInstalled ? 'not-allowed' : 'pointer',
+              opacity: isInstalled ? 0.7 : 1,
               transition: 'all 0.2s ease',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}
             onMouseEnter={(e) => {
-              e.target.style.transform = 'scale(1.05)';
+              if (!isInstalled) {
+                e.target.style.transform = 'scale(1.05)';
+              }
             }}
             onMouseLeave={(e) => {
-              e.target.style.transform = 'scale(1)';
+              if (!isInstalled) {
+                e.target.style.transform = 'scale(1)';
+              }
             }}
           >
-            Download Now
+            {isInstalled ? 'Installed' : 'Download Now'}
           </button>
           <button
             onClick={() => handleDismiss(true)}

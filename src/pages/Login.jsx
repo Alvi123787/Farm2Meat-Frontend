@@ -9,14 +9,11 @@ import {
   FaShieldAlt,
   FaCheckCircle,
   FaSpinner,
-  FaStar,
   FaLeaf,
   FaTruck,
   FaVideo,
   FaHandshake,
-  FaCrown,
-  FaUsers,
-  FaAward
+  FaCrown
 } from 'react-icons/fa'
 import '../css/Login.css'
 import { authService } from '../services/authService'
@@ -100,11 +97,7 @@ const Login = () => {
     { icon: <FaHandshake />, title: 'COD Available', desc: 'Pay on delivery' }
   ]
 
-  const stats = [
-    { icon: <FaUsers />, value: '5,000+', label: 'Animals Sold' },
-    { icon: <FaStar />, value: '4.9', label: 'User Rating' },
-    { icon: <FaAward />, value: '1990', label: 'Since' }
-  ]
+
 
   return (
     <div className={`lg-page ${isVisible ? 'lg-page--visible' : ''}`}>
@@ -146,20 +139,7 @@ const Login = () => {
               ))}
             </div>
 
-            <div className="lg-hero-stats">
-              {stats.map((s, i) => (
-                <React.Fragment key={i}>
-                  <div className="lg-hero-stat">
-                    <div className="lg-hero-stat-icon">{s.icon}</div>
-                    <div className="lg-hero-stat-content">
-                      <span className="lg-hero-stat-value">{s.value}</span>
-                      <span className="lg-hero-stat-label">{s.label}</span>
-                    </div>
-                  </div>
-                  {i < stats.length - 1 && <div className="lg-hero-stat-divider" />}
-                </React.Fragment>
-              ))}
-            </div>
+
           </div>
         </div>
 

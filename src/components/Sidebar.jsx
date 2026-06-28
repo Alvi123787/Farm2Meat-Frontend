@@ -22,6 +22,7 @@ import {
   faDrumstickBite,
   faPaw,
   faExchangeAlt,
+  faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import "../css/Sidebar.css";
 
@@ -90,6 +91,11 @@ const Sidebar = React.memo(({ isOpen, toggleSidebar, totalAnimals, domain }) => 
           icon: faEnvelopeOpenText,
         },
         {
+          label: "Complaints",
+          path: "/admin/complaints",
+          icon: faExclamationTriangle,
+        },
+        {
           label: "Reviews",
           path: "/admin/reviews",
           icon: faCommentDots,
@@ -146,6 +152,11 @@ const Sidebar = React.memo(({ isOpen, toggleSidebar, totalAnimals, domain }) => 
           label: "Inquiries",
           path: "/admin/inquiries",
           icon: faEnvelopeOpenText,
+        },
+        {
+          label: "Complaints",
+          path: "/admin/complaints",
+          icon: faExclamationTriangle,
         },
         {
           label: "Reviews",
@@ -260,6 +271,7 @@ const Sidebar = React.memo(({ isOpen, toggleSidebar, totalAnimals, domain }) => 
                   {!isCollapsed && (
                     <>
                       <span className="link-label">{item.label}</span>
+                      {item.badge && <span className="link-badge">{item.badge}</span>}
                       <span className="link-indicator"></span>
                     </>
                   )}

@@ -145,7 +145,7 @@ body {
 }
 
 /* ── Shared card ── */
-.card {
+.dashboard-card {
   background: var(--bg-section);
   border-radius: var(--radius);
   box-shadow: var(--card-shadow);

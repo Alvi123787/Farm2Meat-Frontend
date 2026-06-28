@@ -23,6 +23,7 @@ import Orders from './pages/Orders'
 import Confirmation from './components/Confirmation'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
+import ComplaintPage from './pages/ComplaintPage'
 
 import AllReviews from './pages/AllReviews'
 import HowItWorks from './pages/HowItWorks'
@@ -52,7 +53,9 @@ import { AdminDomainProvider } from './contexts/AdminDomainContext'
 import Dashboard from './components/Dashboard.jsx'
 import { FavouritesProvider } from './contexts/FavouritesContext.jsx'
 import AppDownloadBanner from './components/AppDownloadBanner.jsx'
+import SupportHub from './components/SupportHub.jsx'
 import ContactPage from './pages/ContactPage.jsx'
+import AdminComplaints from './pages/AdminComplaints.jsx'
 import ReactGA from 'react-ga4'
 
 
@@ -114,6 +117,7 @@ function AppShell() {
           <Route path="/privacy-policy" element={withPageTitle(<PrivacyPolicy />, 'Privacy Policy')} />
           <Route path="/signup" element={withPageTitle(<Signup />, 'Sign Up')} />
           <Route path="/login" element={withPageTitle(<Login />, 'Login')} />
+          <Route path="/complaint" element={withPageTitle(<ComplaintPage />, 'Complaint')} />
           <Route path="/shop/:id" element={withPageTitle(<ProductDetail />, 'Product Details')} />
           <Route path="/unavailable-item" element={withPageTitle(<UnavailableItem />, 'Unavailable Item')} />
           <Route path="/admin-dashboard" element={<Navigate to="/admin" replace />} />
@@ -149,6 +153,7 @@ function AppShell() {
             <Route path="orders" element={withPageTitle(<Orders />, 'Orders')} />
             <Route path="animals" element={withPageTitle(<InventoryPreview />, 'Inventory')} />
             <Route path="inquiries" element={withPageTitle(<RecentInquiriesTable />, 'Inquiries')} />
+            <Route path="complaints" element={withPageTitle(<AdminComplaints />, 'Complaints')} />
             <Route path="reviews" element={withPageTitle(<AdminReviews />, 'Reviews')} />
             <Route path="users" element={withPageTitle(<AdminUsers />, 'Users')} />
             <Route path="guest-users" element={withPageTitle(<AdminGuestUsers />, 'Guest Users')} />
@@ -173,6 +178,7 @@ function AppShell() {
 
         </Routes>
         {!isConfirmationPage && <Footer />}
+        {!isAdminPage && !isConfirmationPage && <SupportHub />}
       </CartProvider>
       </FavouritesProvider>
     </AuthProvider>

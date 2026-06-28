@@ -27,21 +27,52 @@
   --card-shadow: 0 6px 16px rgba(0,0,0,0.1);
 }
 
-* {
+/* Global Reset - Override Bootstrap defaults */
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
 }
 
 body {
   background-color: var(--bg-main);
   color: var(--text-primary);
   line-height: 1.5;
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Reset Bootstrap's default spacing on common elements */
+h1, h2, h3, h4, h5, h6,
+p, ul, ol, figure, blockquote, dl, dd {
+  margin: 0;
+  padding: 0;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
 .container-fluid {
   width: 100%;
+  padding-right: 1rem;
+  padding-left: 1rem;
+}
+
+@media (min-width: 992px) {
+  .container-fluid {
+    padding-right: 3rem;
+    padding-left: 3rem;
+  }
 }
 
 /* Logo Visibility Utility for Dark Backgrounds - Amazing & Clean Design */

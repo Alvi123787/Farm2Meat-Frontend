@@ -15,38 +15,47 @@ const features = [
     icon: <FaShieldAlt />,
     title: 'Premium Meat',
     desc: 'Hand-selected livestock and expertly processed fresh cuts.',
-    color: '128, 0, 0'
+    accent: 'maroon'
   },
   {
     icon: <FaBalanceScale />,
     title: 'Fair Pricing',
     desc: 'Transparent weight and competitive market rates.',
-    color: '139, 69, 19'
+    accent: 'gold'
   },
   {
     icon: <FaWhatsapp />,
     title: 'Direct Support',
-    desc: 'Connect with our team for custom cuts and bulk orders.',
-    color: '34, 85, 34'
+    desc: 'Custom cuts and bulk orders via direct team contact.',
+    accent: 'maroon'
   },
   {
     icon: <FaTruck />,
     title: 'Fresh Delivery',
-    desc: 'Safe and timely delivery of meat and livestock to your home.',
-    color: '128, 0, 0'
+    desc: 'Safe and timely delivery to your door, every time.',
+    accent: 'gold'
   }
 ]
+
+const checklist = [
+  'Hygienically Processed Meat',
+  'Ethically Raised Livestock',
+  'Cold-Chain Preservation',
+  'Guaranteed Freshness & Quality'
+]
+
+
 
 export default function AboutPreview({
   buttonText = 'More About Us',
   to = '/about'
 }) {
   const navigate = useNavigate()
-  const ref = useRef(null)
+  const sectionRef = useRef(null)
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    const el = ref.current
+    const el = sectionRef.current
     if (!el) return
 
     if (!('IntersectionObserver' in window)) {
@@ -61,7 +70,7 @@ export default function AboutPreview({
           observer.disconnect()
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.1 }
     )
 
     observer.observe(el)
@@ -70,98 +79,83 @@ export default function AboutPreview({
 
   return (
     <section
-      ref={ref}
-      className={`ap-section ${visible ? 'ap-section--visible' : ''}`}
+      ref={sectionRef}
+      className={`abp-root${visible ? ' abp-root--visible' : ''}`}
     >
-      {/* Decorative Background */}
-      <div className="ap-bg-decor">
-        <div className="ap-decor-circle ap-decor-circle-1"></div>
-        <div className="ap-decor-circle ap-decor-circle-2"></div>
-        <div className="ap-decor-circle ap-decor-circle-3"></div>
+      <div className="abp-bg" aria-hidden="true">
+        <div className="abp-bg__blob abp-bg__blob--1" />
+        <div className="abp-bg__blob abp-bg__blob--2" />
       </div>
 
       <div className="container-fluid px-lg-5">
-        {/* Section Header */}
-        <div className="row mb-5">
-          <div className="col-12">
-            <span className="ap-badge">ABOUT US</span>
-            <h2 className="ap-title">
-              Why Choose <span className="ap-title-highlight">MeatByAlvi</span>?
-            </h2>
-            <div className="ap-title-divider">
-              <span className="ap-divider-dot"></span>
-              <span className="ap-divider-line"></span>
-              <span className="ap-divider-dot"></span>
-            </div>
-          </div>
+
+        <div className="abp-header">
+          <span className="abp-eyebrow">About Us</span>
+          <h2 className="abp-heading">
+            Why Choose <span className="abp-heading__brand">MeatByAlvi</span>?
+          </h2>
+          <div className="abp-rule" />
         </div>
 
-        {/* Main Content */}
-        <div className="row g-4 px-md-3">
-          {/* Left — Description Card */}
+        <div className="row g-4 g-lg-5 px-md-2">
+
           <div className="col-12 col-lg-5">
-            <div className="ap-desc-card">
-              <div className="ap-desc-card-accent"></div>
-              <div className="ap-desc-card-body">
-                <div className="ap-desc-icon-wrap">
-                  <FaShieldAlt />
-                </div>
-                <h3 className="ap-desc-heading">Our Expertise</h3>
-                <p className="ap-desc-text">
-                  At MeatByAlvi, we provide premium quality meat and healthy
-                  livestock sourced directly from our managed farms. Our focus is
-                  on maintaining the highest standards of hygiene and transparency,
-                  ensuring every family receives fresh, halal, and nutritious food
-                  with complete peace of mind.
-                </p>
-                <ul className="ap-desc-list">
-                  <li className="ap-desc-list-item">
-                    <FaCheckCircle className="ap-check-icon" />
-                    <span>Hygienically Processed Meat</span>
-                  </li>
-                  <li className="ap-desc-list-item">
-                    <FaCheckCircle className="ap-check-icon" />
-                    <span>Ethically Raised Livestock</span>
-                  </li>
-                  <li className="ap-desc-list-item">
-                    <FaCheckCircle className="ap-check-icon" />
-                    <span>Cold-Chain Preservation</span>
-                  </li>
-                  <li className="ap-desc-list-item">
-                    <FaCheckCircle className="ap-check-icon" />
-                    <span>Guaranteed Freshness &amp; Quality</span>
-                  </li>
-                </ul>
-                <button
-                  className="ap-btn"
-                  type="button"
-                  onClick={() => navigate(to)}
-                >
-                  <span className="ap-btn-text">{buttonText}</span>
-                  <FaArrowRight className="ap-btn-arrow" />
-                </button>
+            <div className="abp-desc">
+              <div className="abp-desc__icon-wrap" aria-hidden="true">
+                <FaShieldAlt />
               </div>
+
+              <h3 className="abp-desc__title">Our Expertise</h3>
+
+              <p className="abp-desc__body">
+                At MeatByAlvi, we provide premium quality meat and healthy
+                livestock sourced directly from our managed farms. Our focus is
+                on maintaining the highest standards of hygiene and transparency,
+                ensuring every family receives fresh, halal, and nutritious food
+                with complete peace of mind.
+              </p>
+
+              <ul className="abp-checklist">
+                {checklist.map((item, i) => (
+                  <li key={i} className="abp-checklist__item">
+                    <FaCheckCircle className="abp-checklist__icon" aria-hidden="true" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <button
+                className="abp-cta"
+                type="button"
+                onClick={() => navigate(to)}
+              >
+                <span>{buttonText}</span>
+                <FaArrowRight className="abp-cta__arrow" aria-hidden="true" />
+              </button>
             </div>
           </div>
 
-          {/* Right — Feature Cards */}
           <div className="col-12 col-lg-7">
-            <div className="row g-3">
+            <div className="abp-features">
               {features.map((feat, i) => (
-                <div key={i} className="col-6 col-sm-6">
-                  <div
-                    className="ap-feature-card"
-                    style={{ '--ap-feat-color': feat.color, '--ap-delay': `${i * 0.1}s` }}
-                  >
-                    <div className="ap-feature-icon">{feat.icon}</div>
-                    <h4 className="ap-feature-title">{feat.title}</h4>
-                    <p className="ap-feature-desc">{feat.desc}</p>
-                    <div className="ap-feature-line"></div>
+                <div
+                  key={i}
+                  className={`abp-feature abp-feature--${feat.accent}`}
+                  style={{ '--abp-delay': `${i * 0.08}s` }}
+                >
+                  <div className="abp-feature__icon" aria-hidden="true">
+                    {feat.icon}
                   </div>
+                  <h4 className="abp-feature__title">{feat.title}</h4>
+                  <p className="abp-feature__desc">{feat.desc}</p>
+                  <div className="abp-feature__bar" aria-hidden="true" />
                 </div>
               ))}
             </div>
+
+
           </div>
+
         </div>
       </div>
     </section>

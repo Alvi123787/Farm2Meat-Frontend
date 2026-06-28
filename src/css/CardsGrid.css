@@ -294,7 +294,7 @@
 .cg-sold-badge {
   position: absolute;
   top: 16px;
-  left: 16px;
+  right: 16px;
   z-index: 5;
   padding: 6px 16px;
   background: rgba(198, 40, 40, 0.92);
@@ -317,7 +317,7 @@
 .cg-video-badge {
   position: absolute;
   top: 16px;
-  right: 16px;
+  left: 16px;
   z-index: 5;
   width: 34px;
   height: 34px;

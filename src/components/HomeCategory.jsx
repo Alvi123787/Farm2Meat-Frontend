@@ -84,59 +84,59 @@ const HomeCategory = () => {
   }, [])
 
   return (
-    <section className="homeCategory-section">
-      <div className="homeCategory-bg-decor">
-        <div className="homeCategory-decor-circle homeCategory-decor-circle-1"></div>
-        <div className="homeCategory-decor-circle homeCategory-decor-circle-2"></div>
+    <section className="hc-wrapper">
+      <div className="hc-bg-decor">
+        <div className="hc-decor-circle hc-decor-circle-1"></div>
+        <div className="hc-decor-circle hc-decor-circle-2"></div>
       </div>
 
       <div className="container-fluid px-lg-5">
         <div className="row mb-5">
           <div className="col-12">
-            <span className="homeCategory-badge">CATEGORIES</span>
-            <h2 className="homeCategory-title">
-              Shop <span className="homeCategory-title-highlight">Livestocks</span>
+            <span className="hc-badge">CATEGORIES</span>
+            <h2 className="hc-title">
+              Shop <span className="hc-title-highlight">Livestocks</span>
             </h2>
-            <p className="homeCategory-subtitle">
+            <p className="hc-subtitle">
               Select the most relevant category for your needs
             </p>
-            <div className="homeCategory-title-divider">
-              <span className="homeCategory-divider-dot"></span>
-              <span className="homeCategory-divider-line"></span>
-              <span className="homeCategory-divider-dot"></span>
+            <div className="hc-title-divider">
+              <span className="hc-divider-dot"></span>
+              <span className="hc-divider-line"></span>
+              <span className="hc-divider-dot"></span>
             </div>
           </div>
         </div>
 
-        <div className="row g-4 px-md-3">
+        <div className="row g-5 px-md-3">
           {categories.map((cat, index) => (
             <div key={index} className="col-12 col-md-4">
               <div
-                className={`homeCategory-card ${hoveredIndex === index ? 'homeCategory-card-hovered' : ''}`}
+                className={`hc-card ${hoveredIndex === index ? 'hc-card-hovered' : ''}`}
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
                 style={{
-                  '--homeCategory-gradient-color': cat.gradientColor,
-                  '--homeCategory-accent-color': cat.accentColor
+                  '--hc-gradient-color': cat.gradientColor,
+                  '--hc-accent-color': cat.accentColor
                 }}
               >
-                <div className="homeCategory-card-img-wrapper">
+                <div className="hc-card-img-wrapper">
                   <img
                     src={cat.img}
                     alt={cat.title}
-                    className="homeCategory-card-img"
+                    className="hc-card-img"
                   />
                 </div>
 
-                <div className="homeCategory-card-gradient"></div>
-                <div className="homeCategory-card-shimmer"></div>
+                <div className="hc-card-gradient"></div>
+                <div className="hc-card-shimmer"></div>
 
-                <div className="homeCategory-card-tag">
+                <div className="hc-card-tag">
                   <span>{cat.tag}</span>
                 </div>
 
-                <div className="homeCategory-card-content">
-                  <div className="homeCategory-card-count">
+                <div className="hc-card-content">
+                  <div className="hc-card-count">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
                       viewBox="0 0 24 24" fill="none" stroke="currentColor"
                       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -150,16 +150,14 @@ const HomeCategory = () => {
                     </span>
                   </div>
 
-                  <h3 className="homeCategory-card-title">{cat.title}</h3>
-                  <p className="homeCategory-card-subtitle">{cat.subtitle}</p>
+                  <h3 className="hc-card-title">{cat.title}</h3>
+                  <p className="hc-card-subtitle">{cat.subtitle}</p>
 
                   <button
-                    className="homeCategory-card-btn"
+                    className="hc-card-btn"
                     type="button"
                     onClick={() => {
-                      // Attempt smart navigation first
                       if (!smartNavigate(cat)) {
-                        // Fallback to default if not handled
                         navigate(`/shop?category=${encodeURIComponent(cat.title)}`);
                       }
                     }}
@@ -174,7 +172,7 @@ const HomeCategory = () => {
                   </button>
                 </div>
 
-                <div className="homeCategory-card-accent-line"></div>
+                <div className="hc-card-accent-line"></div>
               </div>
             </div>
           ))}

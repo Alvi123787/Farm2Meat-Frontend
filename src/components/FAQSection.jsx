@@ -5,7 +5,7 @@ const faqs = [
   {
     question: "How do I know the meat is fresh when it arrives?",
     answer:
-      "All orders are cut to order on the same day of delivery. We use insulated packaging with ice packs to maintain temperature during transit, and every item is sourced fresh from our farm partners each morning. You can also request a live video of your cut before dispatch via WhatsApp.",
+      "All orders are cut to order on the same day of delivery. We use insulated packaging to maintain temperature during transit, and every item is sourced fresh from our farm partners each morning. You can also request a live video of your cut before dispatch via WhatsApp.",
   },
   {
     question: "Can I customize my cut — size, boneless, or special portions?",
@@ -20,7 +20,7 @@ const faqs = [
   {
     question: "What if I'm not satisfied with the quality after delivery?",
     answer:
-      "We stand behind every order with a 7-day return and replacement policy. If the weight is incorrect, the cut doesn't match your order, or you're unhappy with the quality for any reason, contact us within 24 hours of delivery and we'll make it right — no questions asked.",
+      "We stand behind every order with a return and replacement policy. If the weight is incorrect, the cut doesn't match your order, or you're unhappy with the quality for any reason, contact us within 24 hours of delivery and we'll make it right — no questions asked.",
   },
   {
     question:

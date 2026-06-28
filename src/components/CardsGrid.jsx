@@ -167,7 +167,7 @@ const ProductCard = ({ product, index, isAnimated, isFav, onFavouriteClick }) =>
           {/* Favourite Button */}
           <button
             className="mc__wishlist"
-            style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 10 }}
+            style={{ position: 'absolute', top: '60px', right: '12px', zIndex: 10 }}
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); onFavouriteClick(); }}
             aria-label={isFav ? `Remove ${product.name} from favourites` : `Add ${product.name} to favourites`}
           >

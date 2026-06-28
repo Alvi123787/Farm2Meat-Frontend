@@ -163,11 +163,6 @@ const Navbar = () => {
 
   return (
     <>
-      {/* ── Floating Action Button (FAB) for Feedback ── */}
-      <Link to="/feedback" className="feedback-fab">
-        <FontAwesomeIcon icon={faComments} className="feedback-fab-icon" />
-      </Link>
-
       {/* ── transparent overlay — catches outside clicks ── */}
       {showLoginRequiredPopup && (
         <div
