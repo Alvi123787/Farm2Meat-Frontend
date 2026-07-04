@@ -80,17 +80,50 @@ function VoiceRecorder({ onRecordingChange }) {
   const audioRef = useRef(null);
   const MAX = 120;
 
-  useEffect(() => () => { clearInterval(timerRef.current); }, []);
+  useEffect(() => () => { 
+    if (timerRef.current) clearInterval(timerRef.current); 
+  }, []);
 
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mr = new MediaRecorder(stream);
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }
+      });
+      
+      // Try different MIME types that browsers support
+      const mimeTypes = [
+        "audio/webm;codecs=opus",
+        "audio/webm",
+        "audio/ogg;codecs=opus",
+        "audio/mp4",
+      ];
+      
+      let mimeType = "";
+      for (const type of mimeTypes) {
+        if (MediaRecorder.isTypeSupported(type)) {
+          mimeType = type;
+          break;
+        }
+      }
+
+      const mr = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
       mediaRef.current = mr;
       chunksRef.current = [];
-      mr.ondataavailable = (e) => chunksRef.current.push(e.data);
+
+      mr.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) {
+          chunksRef.current.push(e.data);
+        }
+      };
+
       mr.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        const blob = new Blob(chunksRef.current, { 
+          type: mimeType || "audio/webm" 
+        });
         const url = URL.createObjectURL(blob);
         setAudioUrl(url);
         setFileSize(blob.size);
@@ -98,35 +131,58 @@ function VoiceRecorder({ onRecordingChange }) {
         setState("done");
         stream.getTracks().forEach((t) => t.stop());
       };
-      mr.start();
+
+      // Request data every 1 second
+      mr.start(1000);
       setState("recording");
       setElapsed(0);
+      
       timerRef.current = setInterval(() => {
         setElapsed((p) => {
-          if (p + 1 >= MAX) { mr.stop(); clearInterval(timerRef.current); return MAX; }
-          return p + 1;
+          const next = p + 1;
+          if (next >= MAX) { 
+            mr.stop(); 
+            clearInterval(timerRef.current); 
+            return MAX; 
+          }
+          return next;
         });
       }, 1000);
-    } catch {
-      alert("Microphone access denied.");
+
+    } catch (err) {
+      console.error("Error starting recording:", err);
+      alert(
+        `Could not start recording: ${err.message || "Please allow microphone access."}`
+      );
     }
   };
 
   const stopRecording = () => {
-    clearInterval(timerRef.current);
-    mediaRef.current?.stop();
+    if (timerRef.current) clearInterval(timerRef.current);
+    if (mediaRef.current && mediaRef.current.state !== "inactive") {
+      mediaRef.current.stop();
+    }
   };
 
   const deleteRecording = () => {
     if (audioUrl) URL.revokeObjectURL(audioUrl);
-    setAudioUrl(null); setElapsed(0); setIsPlaying(false); setAudioProgress(0);
-    setState("idle"); onRecordingChange(null);
+    setAudioUrl(null); 
+    setElapsed(0); 
+    setIsPlaying(false); 
+    setAudioProgress(0);
+    setState("idle"); 
+    onRecordingChange(null);
   };
 
   const togglePlay = () => {
     if (!audioRef.current) return;
-    if (isPlaying) { audioRef.current.pause(); setIsPlaying(false); }
-    else { audioRef.current.play(); setIsPlaying(true); }
+    if (isPlaying) { 
+      audioRef.current.pause(); 
+      setIsPlaying(false); 
+    } else { 
+      audioRef.current.play(); 
+      setIsPlaying(true); 
+    }
   };
 
   return (
