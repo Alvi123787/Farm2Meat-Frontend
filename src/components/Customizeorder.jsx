@@ -365,9 +365,7 @@ export default function CustomizeOrder() {
       });
 
       // Use axios directly with the correct config so Content-Type is NOT forced to JSON
-      const response = await api.post("/custom-orders", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await api.post("/api/custom-orders", formData);
 
       if (response.data.success) {
         setSuccess(true);
