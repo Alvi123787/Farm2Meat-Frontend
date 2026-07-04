@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "../css/Customizeorder.css";
 import api from "../services/api";
 
-/* ── Icons (inline SVG to avoid dependency issues) ── */
+/* ── Icons ── */
 const IconSend = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
@@ -68,7 +68,7 @@ const fmtSize = (bytes) => {
 
 /* ── Voice Recorder ── */
 function VoiceRecorder({ onRecordingChange }) {
-  const [state, setState] = useState("idle"); // idle | recording | done
+  const [state, setState] = useState("idle");
   const [elapsed, setElapsed] = useState(0);
   const [audioUrl, setAudioUrl] = useState(null);
   const [fileSize, setFileSize] = useState(0);
@@ -136,7 +136,6 @@ function VoiceRecorder({ onRecordingChange }) {
           <IconMic /> Record Voice
         </button>
       )}
-
       {state === "recording" && (
         <div className="cor-voice-recording">
           <div className="cor-voice-pulse">
@@ -152,7 +151,6 @@ function VoiceRecorder({ onRecordingChange }) {
           </button>
         </div>
       )}
-
       {state === "done" && audioUrl && (
         <div className="cor-voice-player">
           <audio
@@ -182,7 +180,8 @@ function VoiceRecorder({ onRecordingChange }) {
             <button type="button" className="cor-voice-action-btn" onClick={deleteRecording}>
               <IconTrash /> Delete
             </button>
-            <button type="button" className="cor-voice-action-btn" onClick={() => { deleteRecording(); setTimeout(startRecording, 100); }}>
+            <button type="button" className="cor-voice-action-btn"
+              onClick={() => { deleteRecording(); setTimeout(startRecording, 100); }}>
               <IconRefresh /> Record Again
             </button>
           </div>
@@ -226,7 +225,8 @@ function ImageUploader({ images, onChange }) {
           onClick={() => inputRef.current?.click()}
         >
           <input
-            ref={inputRef} type="file" accept="image/*" multiple hidden
+            ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp"
+            multiple hidden
             onChange={(e) => addFiles(e.target.files)}
           />
           <div className="cor-drop-icon"><IconUpload /></div>
@@ -240,7 +240,8 @@ function ImageUploader({ images, onChange }) {
           {images.map((img, i) => (
             <div key={i} className="cor-image-thumb">
               <img src={img.url} alt={`ref ${i + 1}`} />
-              <button type="button" className="cor-image-remove" onClick={() => remove(i)} aria-label="Remove image">
+              <button type="button" className="cor-image-remove"
+                onClick={() => remove(i)} aria-label="Remove image">
                 <IconX />
               </button>
             </div>
@@ -261,18 +262,21 @@ export default function CustomizeOrder() {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [serverError, setServerError] = useState("");
 
   const MAX_DESC = 500;
 
   const set = (k, v) => {
     setForm((f) => ({ ...f, [k]: v }));
     if (errors[k]) setErrors((e) => ({ ...e, [k]: "" }));
+    if (serverError) setServerError("");
   };
 
   const validate = () => {
     const e = {};
     if (!form.title.trim()) e.title = "Product title is required.";
-    if (!form.description.trim() && !recording) e.description = "Please add a description or record your voice.";
+    if (!form.description.trim() && !recording)
+      e.description = "Please add a description or record your voice.";
     if (form.quantity < 1) e.quantity = "Quantity must be at least 1.";
     return e;
   };
@@ -281,35 +285,55 @@ export default function CustomizeOrder() {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
+
     setSubmitting(true);
+    setServerError("");
 
     try {
+      // Build FormData — do NOT set Content-Type header manually
       const formData = new FormData();
-      formData.append('title', form.title);
-      formData.append('description', form.description);
-      formData.append('unit', form.unit);
-      formData.append('quantity', form.quantity);
-      formData.append('additionalNotes', form.notes);
-      
-      if (recording) {
-        formData.append('voice', recording, 'voice.webm');
+      formData.append("title", form.title.trim());
+      formData.append("description", form.description.trim());
+      formData.append("unit", form.unit);           // "kg" or "piece" — matches backend enum
+      formData.append("quantity", String(form.quantity));
+      if (form.notes.trim()) {
+        formData.append("additionalNotes", form.notes.trim());
       }
-      
+      if (recording) {
+        // fieldname must be "voice" — matches uploadFields in controller
+        formData.append("voice", recording, "voice.webm");
+      }
       images.forEach((img) => {
-        formData.append('images', img.file);
+        // fieldname must be "images" — matches uploadFields in controller
+        formData.append("images", img.file, img.file.name);
       });
 
-      const response = await api.post('/custom-orders', formData);
-      
+      // Use axios directly with the correct config so Content-Type is NOT forced to JSON
+      const response = await api.post("/custom-orders", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       if (response.data.success) {
-        setSubmitting(false);
         setSuccess(true);
       }
     } catch (error) {
-      console.error('Error submitting custom order:', error);
+      console.error("Error submitting custom order:", error);
+      const msg =
+        error.response?.data?.message ||
+        "Failed to submit order. Please try again.";
+      setServerError(msg);
+    } finally {
       setSubmitting(false);
-      alert(error.response?.data?.message || 'Failed to submit order. Please try again.');
     }
+  };
+
+  const resetForm = () => {
+    setSuccess(false);
+    setForm({ title: "", description: "", unit: "kg", quantity: 1, notes: "" });
+    setRecording(null);
+    setImages([]);
+    setErrors({});
+    setServerError("");
   };
 
   if (success) {
@@ -317,17 +341,13 @@ export default function CustomizeOrder() {
       <div className="cor-page">
         <div className="cor-success-wrap">
           <div className="cor-success-card">
-            <div className="cor-success-icon">
-              <IconCheck />
-            </div>
+            <div className="cor-success-icon"><IconCheck /></div>
             <h2 className="cor-success-title">Order Submitted Successfully!</h2>
             <p className="cor-success-msg">
-              Thank you. We've received your custom order request. Our team will review it and contact you shortly.
+              Thank you. We've received your custom order request. Our team will
+              review it and contact you shortly.
             </p>
-            <button
-              className="cor-success-btn"
-              onClick={() => { setSuccess(false); setForm({ title: "", description: "", unit: "Kg", quantity: 1, notes: "" }); setRecording(null); setImages([]); }}
-            >
+            <button className="cor-success-btn" onClick={resetForm}>
               Place Another Order
             </button>
           </div>
@@ -340,17 +360,23 @@ export default function CustomizeOrder() {
     <div className="cor-page">
       <div className="cor-container">
 
-        {/* Header */}
         <div className="cor-header">
           <span className="cor-eyebrow">Special Request</span>
           <h1 className="cor-title">Customize Your Order</h1>
           <p className="cor-subtitle">
-            Can't find the meat you need? Tell us exactly what you're looking for,
-            and we'll do our best to arrange it for you.
+            Can't find the meat you need? Tell us exactly what you're looking
+            for, and we'll do our best to arrange it for you.
           </p>
         </div>
 
         <form className="cor-form" onSubmit={handleSubmit} noValidate>
+
+          {/* Server-level error banner */}
+          {serverError && (
+            <div className="cor-server-error">
+              <strong>Error:</strong> {serverError}
+            </div>
+          )}
 
           {/* 1. Product Title */}
           <div className={`cor-field${errors.title ? " cor-field--error" : ""}`}>
@@ -380,11 +406,13 @@ export default function CustomizeOrder() {
               placeholder="Describe your requirement in detail. Mention the type of meat, preferred cut, size, freshness requirements, or anything else that helps us understand your order."
               value={form.description}
               maxLength={MAX_DESC}
-              onChange={(e) => { set("description", e.target.value); }}
+              onChange={(e) => set("description", e.target.value)}
               rows={5}
             />
             <div className="cor-char-row">
-              {errors.description && <p className="cor-error-msg cor-error-inline">{errors.description}</p>}
+              {errors.description && (
+                <p className="cor-error-msg cor-error-inline">{errors.description}</p>
+              )}
               <span className={`cor-char-count${form.description.length >= MAX_DESC * 0.9 ? " cor-char-count--warn" : ""}`}>
                 {form.description.length}/{MAX_DESC}
               </span>
@@ -396,7 +424,9 @@ export default function CustomizeOrder() {
             <label className="cor-label">
               Voice Description <span className="cor-optional">Optional</span>
             </label>
-            <p className="cor-field-hint">Prefer speaking instead of typing? Record your requirement and we'll review it.</p>
+            <p className="cor-field-hint">
+              Prefer speaking instead of typing? Record your requirement and we'll review it.
+            </p>
             <VoiceRecorder onRecordingChange={(blob) => {
               setRecording(blob);
               if (blob && errors.description) setErrors((e) => ({ ...e, description: "" }));
@@ -414,25 +444,25 @@ export default function CustomizeOrder() {
                     className={`cor-segment-btn${form.unit === u ? " cor-segment-btn--active" : ""}`}
                     onClick={() => set("unit", u)}
                   >
-                    {u.charAt(0).toUpperCase() + u.slice(1)}
+                    {u === "kg" ? "Kg" : "Piece"}
                   </button>
                 ))}
               </div>
             </div>
 
             <div className="cor-field">
-              <label className="cor-label" htmlFor="cor-qty">Quantity</label>
+              <label className="cor-label">Quantity</label>
               <div className="cor-qty-wrap">
                 <button
                   type="button" className="cor-qty-btn"
                   onClick={() => set("quantity", Math.max(1, form.quantity - 1))}
-                  aria-label="Decrease"
+                  aria-label="Decrease quantity"
                 >−</button>
                 <span className="cor-qty-val">{form.quantity}</span>
                 <button
                   type="button" className="cor-qty-btn"
                   onClick={() => set("quantity", form.quantity + 1)}
-                  aria-label="Increase"
+                  aria-label="Increase quantity"
                 >+</button>
               </div>
               {errors.quantity && <p className="cor-error-msg">{errors.quantity}</p>}
@@ -444,7 +474,9 @@ export default function CustomizeOrder() {
             <label className="cor-label">
               Reference Images <span className="cor-optional">Optional</span>
             </label>
-            <p className="cor-field-hint">Upload reference images if you want a specific cut or product.</p>
+            <p className="cor-field-hint">
+              Upload reference images if you want a specific cut or product.
+            </p>
             <ImageUploader images={images} onChange={setImages} />
           </div>
 
@@ -471,15 +503,9 @@ export default function CustomizeOrder() {
               disabled={submitting}
             >
               {submitting ? (
-                <>
-                  <span className="cor-spinner" />
-                  Submitting Order...
-                </>
+                <><span className="cor-spinner" />Submitting Order...</>
               ) : (
-                <>
-                  <IconSend />
-                  Submit Custom Order
-                </>
+                <><IconSend />Submit Custom Order</>
               )}
             </button>
           </div>

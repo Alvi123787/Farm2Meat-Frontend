@@ -1,50 +1,49 @@
+// =====================================================
+// FIX: Replace your api.js with this version
+// Root cause: axios.create({ headers: { 'Content-Type': 'application/json' } })
+// sets a DEFAULT header. Even deleting it in the interceptor doesn't always
+// remove the instance-level default. Fix: don't set it at instance level,
+// and explicitly set multipart/form-data when sending FormData.
+// =====================================================
+
 import axios from 'axios'
 import { API_BASE_URL } from '../utils/mediaUrl'
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  // DO NOT set Content-Type here — let each request decide
 })
 
-// Request interceptor to attach token
+// Request interceptor
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('authToken')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
-    // Remove credentials: 'include' if it was somehow set
     config.withCredentials = false
-    // If data is FormData, don't set Content-Type—let Axios handle it automatically!
-    if (!(config.data instanceof FormData)) {
-      config.headers['Content-Type'] = 'application/json'
-    } else {
+
+    if (config.data instanceof FormData) {
+      // Let the browser set multipart/form-data with the correct boundary
+      // Manually setting it here would BREAK the boundary, causing 400/404
       delete config.headers['Content-Type']
+    } else {
+      config.headers['Content-Type'] = 'application/json'
     }
+
     return config
   },
-  (error) => {
-    return Promise.reject(error)
-  }
+  (error) => Promise.reject(error)
 )
 
-// Response interceptor to handle errors (like 401)
+// Response interceptor
 api.interceptors.response.use(
-  (response) => {
-    return response
-  },
+  (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      // Clear local storage and redirect to login
+    if (error.response?.status === 401) {
       localStorage.removeItem('authToken')
       localStorage.removeItem('userRole')
       localStorage.removeItem('lastVisit')
-      
-      // We can't use navigate() here directly, but we can redirect using window.location
-      // or trigger a custom event that AuthContext listens to.
-      // For now, simple redirect if we are not already on login page
       if (!window.location.pathname.includes('/login')) {
         window.location.href = '/login?message=Session expired. Please log in again.'
       }
