@@ -105,7 +105,8 @@ export default function RecentInquiriesTable() {
       'Pending': 'pending',
       'Contacted': 'confirmed',
       'Completed': 'delivered',
-      'Cancelled': 'cancelled'
+      'Cancelled': 'cancelled',
+      'Refunded': 'refunded'
     }
 
     const orderStatus = orderStatusMap[orderGroup.status] || 'pending'

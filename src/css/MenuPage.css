@@ -614,6 +614,114 @@
 .sk-line--md { width: 68%; }
 .sk-line--lg { width: 88%; }
 
+/* ── CUSTOM ORDER CARD ─────────────────────────────── */
+.mp-custom-order-card {
+  background: var(--white);
+  border: 1px solid var(--gold-dim);
+  border-radius: 16px;
+  padding: clamp(20px, 3vw, 28px);
+  margin-bottom: clamp(40px, 6vw, 64px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.mp-custom-order-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #a07840, #e8c97e, #a07840);
+}
+
+.mp-custom-order-card__content {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.mp-custom-order-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 100px;
+  background: var(--gold-dim);
+  color: var(--gold);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.mp-custom-order-card__icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.mp-custom-order-card__eyebrow {
+  font-family: var(--ff-ui);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+
+.mp-custom-order-card__title {
+  font-family: var(--ff-display);
+  font-size: clamp(20px, 2.5vw, 28px);
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+.mp-custom-order-card__desc {
+  font-family: var(--ff-display);
+  font-size: clamp(13px, 1.4vw, 15px);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--ink-60);
+}
+
+.mp-custom-order-card__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--ink);
+  color: var(--ivory);
+  font-family: var(--ff-ui);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: background 0.25s, gap 0.25s var(--ease-out), box-shadow 0.25s;
+  align-self: flex-start;
+}
+
+.mp-custom-order-card__btn:hover {
+  background: #3d2a00;
+  gap: 12px;
+  box-shadow: 0 4px 18px rgba(200,169,110,0.22);
+}
+
+.mp-custom-order-card__btn svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.25s var(--ease-out);
+}
+
+.mp-custom-order-card__btn:hover svg {
+  transform: translateX(3px);
+}
+
 /* ── ERROR ─────────────────────────────────────── */
 .mp-error {
   text-align: center;

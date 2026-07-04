@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { FaRegStar, FaStar, FaStarHalfAlt, FaSpinner, FaTrashAlt } from 'react-icons/fa'
+import { FaRegStar, FaStar, FaStarHalfAlt, FaSpinner, FaTrashAlt, FaEyeSlash, FaEye } from 'react-icons/fa'
 import '../css/AdminReviews.css'
 import { reviewsService } from '../services/reviewsService'
 import { useAdminLiveRefresh } from '../hooks/useAdminLiveRefresh'
@@ -44,6 +44,7 @@ export default function AdminReviews() {
   const [error, setError] = useState('')
   const [reviews, setReviews] = useState([])
   const [deletingId, setDeletingId] = useState('')
+  const [togglingId, setTogglingId] = useState('')
 
   const load = useCallback(async ({ signal } = {}) => {
     // ✅ Step 2 & Bonus: Early returns for auth loading
@@ -52,7 +53,7 @@ export default function AdminReviews() {
     setLoading(true)
     setError('')
     try {
-      const result = await reviewsService.getAll({ signal })
+      const result = await reviewsService.getAll({ signal, isAdmin: true })
       setReviews(Array.isArray(result?.data) ? result.data : [])
     } catch (err) {
       // ✅ Bonus Improvement: Ignore abort errors
@@ -120,6 +121,29 @@ export default function AdminReviews() {
     }
   }
 
+  const handleToggleHidden = async (review) => {
+    const id = String(review?._id || '').trim()
+    if (!id || togglingId) return
+
+    setTogglingId(id)
+    try {
+      const result = await reviewsService.toggleHidden(id)
+      setReviews((prev) => prev.map((r) => 
+        String(r?._id || '') === id ? result.data : r
+      ))
+    } catch (err) {
+      if (err?.code === 'UNAUTHORIZED') {
+        if (!authLoading) {
+          navigate('/login')
+        }
+        return
+      }
+      setError(err?.message || 'Failed to update review')
+    } finally {
+      setTogglingId('')
+    }
+  }
+
   // ✅ Show auth loading state
   if (authLoading) {
     return (
@@ -181,7 +205,7 @@ export default function AdminReviews() {
             </div>
 
             {sorted.map((r) => (
-              <div key={r._id} className={`arv-row ${deletingId === r._id ? 'arv-row--deleting' : ''}`}>
+              <div key={r._id} className={`arv-row ${deletingId === r._id ? 'arv-row--deleting' : ''} ${r.hidden ? 'arv-row--hidden' : ''}`}>
                 <div className="arv-cell arv-cell--name">
                   <div className="arv-user">
                     <div className="arv-avatar">{String(r.name || '?').trim().slice(0, 2).toUpperCase()}</div>
@@ -209,6 +233,16 @@ export default function AdminReviews() {
                 </div>
 
                 <div className="arv-cell arv-cell--actions">
+                  <button
+                    className="arv-toggle"
+                    type="button"
+                    onClick={() => handleToggleHidden(r)}
+                    disabled={Boolean(togglingId) || authLoading}
+                    aria-label={r.hidden ? "Unhide review" : "Hide review"}
+                  >
+                    {r.hidden ? <FaEye /> : <FaEyeSlash />}
+                    <span>{r.hidden ? "Unhide" : "Hide"}</span>
+                  </button>
                   <button
                     className="arv-del"
                     type="button"

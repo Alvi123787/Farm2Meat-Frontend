@@ -1,8 +1,9 @@
 import api from './api'
 
 export const reviewsService = {
-  getAll: async ({ signal } = {}) => {
-    const response = await api.get('/api/reviews', { signal })
+  getAll: async ({ signal, isAdmin } = {}) => {
+    const headers = isAdmin ? { 'x-admin': 'true' } : {}
+    const response = await api.get('/api/reviews', { signal, headers })
     const payload = response.data
     if (payload?.success === false) {
       const error = new Error(payload?.message || 'Failed to load reviews')
@@ -50,6 +51,17 @@ export const reviewsService = {
     const payload = response.data
     if (payload?.success === false) {
       const error = new Error(payload?.message || 'Failed to delete review')
+      error.response = response
+      throw error
+    }
+    return payload
+  },
+
+  toggleHidden: async (id, { signal } = {}) => {
+    const response = await api.patch(`/api/reviews/${encodeURIComponent(id)}/toggle-hidden`, {}, { signal })
+    const payload = response.data
+    if (payload?.success === false) {
+      const error = new Error(payload?.message || 'Failed to update review')
       error.response = response
       throw error
     }

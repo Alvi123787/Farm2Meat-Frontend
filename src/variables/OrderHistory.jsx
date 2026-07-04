@@ -3,12 +3,13 @@ import "../css/OrderHistory.css";
 import { orderService } from "../services/orderService";
 import { formatPrice } from "../utils/priceUtils";
 
-const FILTERS = ["All", "Delivered", "Pending", "Cancelled"];
+const FILTERS = ["All", "Delivered", "Pending", "Cancelled", "Refunded"];
 const STATUS_MAP = { 
   Delivered: "pill-delivered",
   Completed: "pill-delivered", // Treat Completed as Delivered
   Pending: "pill-processing",
-  Cancelled: "pill-cancelled" 
+  Cancelled: "pill-cancelled",
+  Refunded: "pill-cancelled" // Use cancelled style for Refunded
 };
 
 export default function OrderHistory() {

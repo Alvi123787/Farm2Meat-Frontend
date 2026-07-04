@@ -110,6 +110,31 @@ const MenuCard = ({ item, index, onOrder, onFavouriteClick, isFav }) => {
   );
 }
 
+/* ── Custom Order Card ──────────────────────────────── */
+const CustomOrderCard = ({ onNavigate }) => (
+  <div className="mp-custom-order-card">
+    <div className="mp-custom-order-card__content">
+      <div className="mp-custom-order-card__icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <path d="M9 11l3 3L22 4"/>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+        </svg>
+      </div>
+      <div>
+        <p className="mp-custom-order-card__eyebrow">CAN'T FIND WHAT YOU NEED?</p>
+        <h3 className="mp-custom-order-card__title">Order It Your Way</h3>
+        <p className="mp-custom-order-card__desc">Tell us exactly what you're looking for and we'll arrange it for you.</p>
+      </div>
+    </div>
+    <button className="mp-custom-order-card__btn" onClick={onNavigate}>
+      Create Custom Order
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </button>
+  </div>
+)
+
 /* ── Page ──────────────────────────────────────── */
 export default function MenuPage() {
   const navigate = useNavigate()
@@ -233,7 +258,12 @@ export default function MenuPage() {
           </div>
         )}
 
-        {!loading && !error && categoriesToRender.map(cat => {
+        {/* Show custom order card once before the first category */}
+        {!loading && !error && categoriesToRender.some(cat => (grouped[cat] || []).length > 0) && (
+          <CustomOrderCard onNavigate={() => navigate('/customize-order')} />
+        )}
+
+        {!loading && !error && categoriesToRender.map((cat, idx) => {
           const items = grouped[cat] || []
           if (!items.length) return null
           const meta = CATEGORY_META[cat] || { label: '', number: '0' + (Object.keys(CATEGORY_META).indexOf(cat) + 1), accent: cat[0].toUpperCase() }

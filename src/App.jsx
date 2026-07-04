@@ -44,6 +44,7 @@ import UserAnalytics from './pages/UserAnalytics';
 import Adminmeatform from './components/Adminmeatform'
 import MenuPage from './components/MenuPage'
 import FormSelection from './components/FormSelection'
+import CustomizeOrder from './components/Customizeorder'
 import AdminMeatDashboard from './pages/AdminMeatDashboard'
 import AdminMeatItemsPage from './pages/AdminMeatItemsPage'
 import AdminEditMeatItem from './pages/AdminEditMeatItem'
@@ -168,6 +169,7 @@ function AppShell() {
           <Route path="/add-animal" element={<Navigate to="/admin/add-animal" replace />} />
           <Route path="/admin-meatform" element={<Navigate to="/admin/add-animal/meat" replace />} />
           <Route path="/menu-page" element={withPageTitle(<MenuPage />, 'Menu Page')} />
+          <Route path="/customize-order" element={withPageTitle(<CustomizeOrder />, 'Customize Your Order')} />
           <Route path="/revenue-chart" element={withPageTitle(<RevenueChart />, 'Revenue')} />
           <Route path="/recent-inquiries" element={<Navigate to="/admin/inquiries" replace />} />
           <Route path="/inventory-preview" element={<Navigate to="/admin/animals" replace />} />

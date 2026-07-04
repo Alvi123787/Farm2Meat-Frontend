@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import "../css/FAQSection.css";
 
 const faqs = [
@@ -32,9 +32,34 @@ const faqs = [
 
 const FAQSection = () => {
   const [openIndex, setOpenIndex] = useState(null);
+  const [heights, setHeights] = useState({});
+  const answerRefs = useRef([]);
 
   const toggle = (index) => {
     setOpenIndex(openIndex === index ? null : index);
+  };
+
+  useEffect(() => {
+    // Calculate heights on mount
+    const calculateHeights = () => {
+      const newHeights = {};
+      answerRefs.current.forEach((ref, index) => {
+        if (ref) {
+          newHeights[index] = `${ref.scrollHeight}px`;
+        }
+      });
+      setHeights(newHeights);
+    };
+
+    calculateHeights();
+
+    // Recalculate on window resize to handle responsive changes
+    window.addEventListener('resize', calculateHeights);
+    return () => window.removeEventListener('resize', calculateHeights);
+  }, []);
+
+  const getMaxHeight = (index) => {
+    return openIndex === index ? heights[index] || "0px" : "0px";
   };
 
   return (
@@ -82,11 +107,16 @@ const FAQSection = () => {
               <div
                 className="faq__answer-wrapper"
                 style={{
-                  maxHeight: openIndex === index ? "300px" : "0px",
+                  maxHeight: getMaxHeight(index),
                   opacity: openIndex === index ? 1 : 0,
                 }}
               >
-                <div className="faq__answer">{faq.answer}</div>
+                <div
+                  className="faq__answer"
+                  ref={(el) => (answerRefs.current[index] = el)}
+                >
+                  {faq.answer}
+                </div>
               </div>
             </div>
           ))}
