@@ -20,7 +20,7 @@ import {
   FaEnvelope
 } from 'react-icons/fa'
 import "../css/Terms.css"
-import { PHONE_LINK, WHATSAPP_LINK } from '../constants/contact'
+import { PHONE_LINK, WHATSAPP_LINK, EMAIL_DISPLAY, EMAIL_LINK } from '../constants/contact'
 
 const sections = [
   {
@@ -310,7 +310,7 @@ const Terms = () => {
                         <FaPhoneAlt />
                         <span>Call Us</span>
                       </a>
-                      <a href="mailto:MeatByAlvi@gmail.com" className="tp-contact-link tp-contact-link--email">
+                      <a href={EMAIL_LINK} className="tp-contact-link tp-contact-link--email">
                         <FaEnvelope />
                         <span>Email</span>
                       </a>

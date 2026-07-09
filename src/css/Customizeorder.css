@@ -696,7 +696,7 @@
 /* ── Responsive ── */
 @media (max-width: 720px) {
   .cor-page {
-    padding: 32px 12px 110px;
+    padding: 32px 12px 160px; /* Increased bottom padding to avoid bottom nav */
   }
 
   .cor-form {
@@ -712,7 +712,7 @@
 
   .cor-submit-wrap {
     position: fixed;
-    bottom: 0;
+    bottom: 90px; /* Position fixed button 90px from bottom to avoid navbar */
     left: 0;
     right: 0;
     padding: 14px 16px;
@@ -728,7 +728,7 @@
   }
 
   .cor-success-card {
-    padding: 40px 24px;
+    padding: 40px 24px 100px; /* Add bottom padding to avoid navbar on success page too */
   }
 
   .cor-image-thumb {

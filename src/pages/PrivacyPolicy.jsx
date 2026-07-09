@@ -20,7 +20,7 @@ import {
   FaExclamationCircle
 } from 'react-icons/fa'
 import '../css/PrivacyPolicy.css'
-import { PHONE_DISPLAY, PHONE_LINK, WHATSAPP_LINK } from '../constants/contact'
+import { PHONE_DISPLAY, PHONE_LINK, WHATSAPP_LINK, EMAIL_DISPLAY, EMAIL_LINK } from '../constants/contact'
 
 const sections = [
   {
@@ -409,7 +409,7 @@ const PrivacyPolicy = () => {
                             <FaCheckCircle className="pp-callout-icon" />
                             <span>
                               To exercise any of your rights, contact us via WhatsApp at
-                              {PHONE_DISPLAY} or email MeatByAlvi@gmail.com. We will respond
+                              {PHONE_DISPLAY} or email {EMAIL_DISPLAY}. We will respond
                               within 7 business days.
                             </span>
                           </div>
@@ -439,7 +439,7 @@ const PrivacyPolicy = () => {
                         <FaPhoneAlt />
                         <span>Call Us</span>
                       </a>
-                      <a href="mailto:MeatByAlvi@gmail.com" className="pp-contact-link pp-contact-link--email">
+                      <a href={EMAIL_LINK} className="pp-contact-link pp-contact-link--email">
                         <FaEnvelope />
                         <span>Email</span>
                       </a>

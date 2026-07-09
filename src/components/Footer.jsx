@@ -18,6 +18,8 @@ import {
   PHONE_LINK,
   WHATSAPP_DISPLAY,
   WHATSAPP_LINK,
+  EMAIL_DISPLAY,
+  EMAIL_LINK,
 } from '../constants/contact'
 
 const quickLinks = [
@@ -133,8 +135,8 @@ const Footer = () => {
                     </span>
                     <div>
                       <span className="footer-contact-label">Email</span>
-                      <a href="mailto:rebalalvi123@gmail.com" className="footer-contact-value">
-                        rebalalvi123@gmail.com
+                      <a href={EMAIL_LINK} className="footer-contact-value">
+                        {EMAIL_DISPLAY}
                       </a>
                     </div>
                   </li>
