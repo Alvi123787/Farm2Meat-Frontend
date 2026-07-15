@@ -185,6 +185,18 @@ export default function MenuPage() {
     })
     console.log('✅ [GA4] Add to cart and begin checkout events tracked for meat item')
     
+    // Meta Pixel - AddToCart event
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', 'AddToCart', {
+        value: item.price,
+        currency: 'PKR',
+        content_name: item.name,
+        content_ids: [item._id],
+        content_type: 'product'
+      })
+      console.log('✅ [Meta Pixel] AddToCart event tracked (MenuPage)')
+    }
+    
     addItem({ ...item, itemType: 'meat' })
     navigate('/cart', { state: { fromBuyNow: true } })
   }

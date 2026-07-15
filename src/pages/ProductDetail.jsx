@@ -292,6 +292,18 @@ const ProductDetail = () => {
       item_type: productData.itemType || 'livestock'
     })
     console.log('✅ [GA4] Add to cart event tracked')
+    
+    // Meta Pixel - AddToCart event
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', 'AddToCart', {
+        value: priceToNumber(productData.price),
+        currency: 'PKR',
+        content_name: productData.name,
+        content_ids: [productData._id],
+        content_type: 'product'
+      })
+      console.log('✅ [Meta Pixel] AddToCart event tracked')
+    }
   }
 
   const handleBuyNow = async () => {

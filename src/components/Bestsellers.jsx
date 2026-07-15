@@ -30,6 +30,19 @@ const Bestsellers = () => {
       ...item,
       itemType: 'meat'
     })
+    
+    // Meta Pixel - AddToCart event
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', 'AddToCart', {
+        value: item.price,
+        currency: 'PKR',
+        content_name: item.name,
+        content_ids: [item._id],
+        content_type: 'product'
+      })
+      console.log('✅ [Meta Pixel] AddToCart event tracked (Bestsellers)')
+    }
+    
     navigate('/cart', { state: { fromBuyNow: true } })
   }
 

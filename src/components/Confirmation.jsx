@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import '../css/Confirmation.css';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl';
@@ -6,6 +6,7 @@ import { WHATSAPP_LINK } from '../constants/contact';
 import { formatPrice } from '../utils/priceUtils';
 
 const PURCHASE_STATE_KEY = 'postPurchaseConfirmationState';
+const PURCHASE_EVENT_KEY = 'purchaseEventFired';
 
 const loadStoredPurchaseState = () => {
   try {
@@ -126,6 +127,28 @@ const Confirmation = () => {
         orderData.advanceAmount;
 
   const grandTotal = orderData.total + (orderData.animalCare ? orderData.animalCarePrice : 0);
+
+  // Meta Pixel - Purchase event (fire once per order)
+  const purchaseEventFiredRef = useRef(false);
+  useEffect(() => {
+    // Check if we already fired (either via ref or sessionStorage)
+    const hasFiredInSession = sessionStorage.getItem(`${PURCHASE_EVENT_KEY}-${orderData.orderId}`);
+    
+    if (ok && !purchaseEventFiredRef.current && !hasFiredInSession && typeof window.fbq === 'function') {
+      window.fbq('track', 'Purchase', {
+        value: grandTotal,
+        currency: 'PKR',
+        content_ids: orderData.products.map(item => item._id || item.id),
+        content_type: 'product',
+        num_items: orderData.products.length
+      });
+      console.log('✅ [Meta Pixel] Purchase event tracked', grandTotal);
+      
+      // Mark as fired
+      purchaseEventFiredRef.current = true;
+      sessionStorage.setItem(`${PURCHASE_EVENT_KEY}-${orderData.orderId}`, 'true');
+    }
+  }, [ok, grandTotal, orderData]);
 
   const handleCopyOrderId = () => {
     navigator.clipboard.writeText(orderData.orderId);

@@ -242,6 +242,20 @@ const Checkout = () => {
   const delivery = useMemo(() => (orderItems.length > 0 ? DELIVERY_CHARGE : 0), [orderItems.length])
   const grandTotal = useMemo(() => subtotal + delivery, [subtotal, delivery])
 
+  // Meta Pixel - InitiateCheckout event
+  useEffect(() => {
+    if (!loading && orderItems.length > 0 && typeof window.fbq === 'function') {
+      window.fbq('track', 'InitiateCheckout', {
+        value: grandTotal,
+        currency: 'PKR',
+        content_ids: orderItems.map(item => item._id || item.id),
+        content_type: 'product',
+        num_items: totalItems
+      })
+      console.log('✅ [Meta Pixel] InitiateCheckout event tracked')
+    }
+  }, [loading, orderItems, grandTotal, totalItems])
+
   const allConfirmed = confirmations.weightCheck && confirmations.termsAgree
   const isFormValid = useMemo(() =>
     formData.fullName &&
