@@ -464,6 +464,113 @@ export default function CustomizeOrder() {
             </div>
           )}
 
+          {/* Order Details Section */}
+          <div className="cor-section-divider">
+            <h3 className="cor-section-title">Order Details</h3>
+          </div>
+
+          {/* 1. Product Title */}
+          <div className={`cor-field${errors.title ? " cor-field--error" : ""}`}>
+            <label className="cor-label" htmlFor="cor-title">
+              Product Title <span className="cor-required">*</span>
+            </label>
+            <input
+              id="cor-title"
+              className="cor-input"
+              type="text"
+              placeholder="e.g. Siri, Paye, Maghz, Kaleji, Special Cut, etc."
+              value={form.title}
+              onChange={(e) => set("title", e.target.value)}
+            />
+            {errors.title && <p className="cor-error-msg">{errors.title}</p>}
+          </div>
+
+          {/* 2. Description */}
+          <div className={`cor-field${errors.description ? " cor-field--error" : ""}`}>
+            <label className="cor-label" htmlFor="cor-desc">
+              Description <span className="cor-required">*</span>
+              <span className="cor-label-note">(or record voice below)</span>
+            </label>
+            <textarea
+              id="cor-desc"
+              className="cor-input cor-textarea"
+              placeholder="Describe your requirement in detail. Mention the type of meat, preferred cut, size, freshness requirements, or anything else that helps us understand your order."
+              value={form.description}
+              maxLength={MAX_DESC}
+              onChange={(e) => set("description", e.target.value)}
+              rows={5}
+            />
+            <div className="cor-char-row">
+              {errors.description && (
+                <p className="cor-error-msg cor-error-inline">{errors.description}</p>
+              )}
+              <span className={`cor-char-count${form.description.length >= MAX_DESC * 0.9 ? " cor-char-count--warn" : ""}`}>
+                {form.description.length}/{MAX_DESC}
+              </span>
+            </div>
+          </div>
+
+          {/* 3. Voice */}
+          <div className="cor-field">
+            <label className="cor-label">
+              Voice Description <span className="cor-optional">Optional</span>
+            </label>
+            <p className="cor-field-hint">
+              Prefer speaking instead of typing? Record your requirement and we'll review it.
+            </p>
+            <VoiceRecorder onRecordingChange={(blob) => {
+              setRecording(blob);
+              if (blob && errors.description) setErrors((e) => ({ ...e, description: "" }));
+            }} />
+          </div>
+
+          {/* 4 & 5. Unit + Quantity */}
+          <div className="cor-field-row">
+            <div className="cor-field">
+              <label className="cor-label">Unit</label>
+              <div className="cor-segment">
+                {["kg", "piece"].map((u) => (
+                  <button
+                    key={u} type="button"
+                    className={`cor-segment-btn${form.unit === u ? " cor-segment-btn--active" : ""}`}
+                    onClick={() => set("unit", u)}
+                  >
+                    {u === "kg" ? "Kg" : "Piece"}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="cor-field">
+              <label className="cor-label">Quantity</label>
+              <div className="cor-qty-wrap">
+                <button
+                  type="button" className="cor-qty-btn"
+                  onClick={() => set("quantity", Math.max(1, form.quantity - 1))}
+                  aria-label="Decrease quantity"
+                >−</button>
+                <span className="cor-qty-val">{form.quantity}</span>
+                <button
+                  type="button" className="cor-qty-btn"
+                  onClick={() => set("quantity", form.quantity + 1)}
+                  aria-label="Increase quantity"
+                >+</button>
+              </div>
+              {errors.quantity && <p className="cor-error-msg">{errors.quantity}</p>}
+            </div>
+          </div>
+
+          {/* 6. Images */}
+          <div className="cor-field">
+            <label className="cor-label">
+              Reference Images <span className="cor-optional">Optional</span>
+            </label>
+            <p className="cor-field-hint">
+              Upload reference images if you want a specific cut or product.
+            </p>
+            <ImageUploader images={images} onChange={setImages} />
+          </div>
+
           {/* Customer Information Section */}
           <div className="cor-section-divider">
             <h3 className="cor-section-title">Customer Information</h3>
@@ -585,113 +692,6 @@ export default function CustomizeOrder() {
               value={form.city}
               onChange={(e) => set("city", e.target.value)}
             />
-          </div>
-
-          {/* Order Details Section */}
-          <div className="cor-section-divider">
-            <h3 className="cor-section-title">Order Details</h3>
-          </div>
-
-          {/* 1. Product Title */}
-          <div className={`cor-field${errors.title ? " cor-field--error" : ""}`}>
-            <label className="cor-label" htmlFor="cor-title">
-              Product Title <span className="cor-required">*</span>
-            </label>
-            <input
-              id="cor-title"
-              className="cor-input"
-              type="text"
-              placeholder="e.g. Siri, Paye, Maghz, Kaleji, Special Cut, etc."
-              value={form.title}
-              onChange={(e) => set("title", e.target.value)}
-            />
-            {errors.title && <p className="cor-error-msg">{errors.title}</p>}
-          </div>
-
-          {/* 2. Description */}
-          <div className={`cor-field${errors.description ? " cor-field--error" : ""}`}>
-            <label className="cor-label" htmlFor="cor-desc">
-              Description <span className="cor-required">*</span>
-              <span className="cor-label-note">(or record voice below)</span>
-            </label>
-            <textarea
-              id="cor-desc"
-              className="cor-input cor-textarea"
-              placeholder="Describe your requirement in detail. Mention the type of meat, preferred cut, size, freshness requirements, or anything else that helps us understand your order."
-              value={form.description}
-              maxLength={MAX_DESC}
-              onChange={(e) => set("description", e.target.value)}
-              rows={5}
-            />
-            <div className="cor-char-row">
-              {errors.description && (
-                <p className="cor-error-msg cor-error-inline">{errors.description}</p>
-              )}
-              <span className={`cor-char-count${form.description.length >= MAX_DESC * 0.9 ? " cor-char-count--warn" : ""}`}>
-                {form.description.length}/{MAX_DESC}
-              </span>
-            </div>
-          </div>
-
-          {/* 3. Voice */}
-          <div className="cor-field">
-            <label className="cor-label">
-              Voice Description <span className="cor-optional">Optional</span>
-            </label>
-            <p className="cor-field-hint">
-              Prefer speaking instead of typing? Record your requirement and we'll review it.
-            </p>
-            <VoiceRecorder onRecordingChange={(blob) => {
-              setRecording(blob);
-              if (blob && errors.description) setErrors((e) => ({ ...e, description: "" }));
-            }} />
-          </div>
-
-          {/* 4 & 5. Unit + Quantity */}
-          <div className="cor-field-row">
-            <div className="cor-field">
-              <label className="cor-label">Unit</label>
-              <div className="cor-segment">
-                {["kg", "piece"].map((u) => (
-                  <button
-                    key={u} type="button"
-                    className={`cor-segment-btn${form.unit === u ? " cor-segment-btn--active" : ""}`}
-                    onClick={() => set("unit", u)}
-                  >
-                    {u === "kg" ? "Kg" : "Piece"}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="cor-field">
-              <label className="cor-label">Quantity</label>
-              <div className="cor-qty-wrap">
-                <button
-                  type="button" className="cor-qty-btn"
-                  onClick={() => set("quantity", Math.max(1, form.quantity - 1))}
-                  aria-label="Decrease quantity"
-                >−</button>
-                <span className="cor-qty-val">{form.quantity}</span>
-                <button
-                  type="button" className="cor-qty-btn"
-                  onClick={() => set("quantity", form.quantity + 1)}
-                  aria-label="Increase quantity"
-                >+</button>
-              </div>
-              {errors.quantity && <p className="cor-error-msg">{errors.quantity}</p>}
-            </div>
-          </div>
-
-          {/* 6. Images */}
-          <div className="cor-field">
-            <label className="cor-label">
-              Reference Images <span className="cor-optional">Optional</span>
-            </label>
-            <p className="cor-field-hint">
-              Upload reference images if you want a specific cut or product.
-            </p>
-            <ImageUploader images={images} onChange={setImages} />
           </div>
 
           {/* Delivery Preferences */}
