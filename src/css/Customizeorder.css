@@ -51,6 +51,21 @@
   margin: 0 auto;
 }
 
+/* ── Section Divider ── */
+.cor-section-divider {
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+.cor-section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--primary, #800000);
+  margin: 0;
+  padding-bottom: 8px;
+  border-bottom: 1.5px solid var(--border-light, #E5E5E5);
+}
+
 /* ── Form card ── */
 .cor-form {
   background: var(--bg-section, #FFFFFF);
@@ -548,7 +563,8 @@
 
 /* ── Submit ── */
 .cor-submit-wrap {
-  padding-top: 4px;
+  padding-top: 32px;
+  padding-bottom: 0;
 }
 
 .cor-submit-btn {
@@ -711,15 +727,8 @@
   }
 
   .cor-submit-wrap {
-    position: fixed;
-    bottom: 90px; /* Position fixed button 90px from bottom to avoid navbar */
-    left: 0;
-    right: 0;
-    padding: 14px 16px;
-    background: rgba(255,255,255,0.92);
-    backdrop-filter: blur(12px);
-    border-top: 1px solid var(--border-light, #E5E5E5);
-    z-index: 100;
+    padding-top: 24px;
+    padding-bottom: 0;
   }
 
   .cor-submit-btn {

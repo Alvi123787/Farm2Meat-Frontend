@@ -312,6 +312,9 @@ function ImageUploader({ images, onChange }) {
 export default function CustomizeOrder() {
   const [form, setForm] = useState({
     title: "", description: "", unit: "kg", quantity: 1, notes: "",
+    fullName: "", phoneNumber: "", whatsappNumber: "", email: "",
+    houseNoStreet: "", areaColony: "", city: "Rahim Yar Khan",
+    preferredDeliveryDate: "", preferredDeliveryTime: ""
   });
   const [recording, setRecording] = useState(null);
   const [images, setImages] = useState([]);
@@ -334,6 +337,10 @@ export default function CustomizeOrder() {
     if (!form.description.trim() && !recording)
       e.description = "Please add a description or record your voice.";
     if (form.quantity < 1) e.quantity = "Quantity must be at least 1.";
+    if (!form.fullName.trim()) e.fullName = "Full name is required.";
+    if (!form.phoneNumber.trim()) e.phoneNumber = "Phone number is required.";
+    if (!form.houseNoStreet.trim()) e.houseNoStreet = "House no./street is required.";
+    if (!form.areaColony.trim()) e.areaColony = "Area/colony is required.";
     return e;
   };
 
@@ -354,6 +361,26 @@ export default function CustomizeOrder() {
       formData.append("quantity", String(form.quantity));
       if (form.notes.trim()) {
         formData.append("additionalNotes", form.notes.trim());
+      }
+      // Customer information
+      formData.append("fullName", form.fullName.trim());
+      formData.append("phoneNumber", form.phoneNumber.trim());
+      if (form.whatsappNumber.trim()) {
+        formData.append("whatsappNumber", form.whatsappNumber.trim());
+      }
+      if (form.email.trim()) {
+        formData.append("email", form.email.trim());
+      }
+      // Address
+      formData.append("houseNoStreet", form.houseNoStreet.trim());
+      formData.append("areaColony", form.areaColony.trim());
+      formData.append("city", form.city.trim());
+      // Delivery preferences
+      if (form.preferredDeliveryDate) {
+        formData.append("preferredDeliveryDate", form.preferredDeliveryDate);
+      }
+      if (form.preferredDeliveryTime.trim()) {
+        formData.append("preferredDeliveryTime", form.preferredDeliveryTime.trim());
       }
       if (recording) {
         // fieldname must be "voice" — matches uploadFields in controller
@@ -383,7 +410,12 @@ export default function CustomizeOrder() {
 
   const resetForm = () => {
     setSuccess(false);
-    setForm({ title: "", description: "", unit: "kg", quantity: 1, notes: "" });
+    setForm({
+      title: "", description: "", unit: "kg", quantity: 1, notes: "",
+      fullName: "", phoneNumber: "", whatsappNumber: "", email: "",
+      houseNoStreet: "", areaColony: "", city: "Rahim Yar Khan",
+      preferredDeliveryDate: "", preferredDeliveryTime: ""
+    });
     setRecording(null);
     setImages([]);
     setErrors({});
@@ -431,6 +463,134 @@ export default function CustomizeOrder() {
               <strong>Error:</strong> {serverError}
             </div>
           )}
+
+          {/* Customer Information Section */}
+          <div className="cor-section-divider">
+            <h3 className="cor-section-title">Customer Information</h3>
+          </div>
+
+          {/* Full Name */}
+          <div className={`cor-field${errors.fullName ? " cor-field--error" : ""}`}>
+            <label className="cor-label" htmlFor="cor-fullname">
+              Full Name <span className="cor-required">*</span>
+            </label>
+            <input
+              id="cor-fullname"
+              className="cor-input"
+              type="text"
+              placeholder="Enter your full name"
+              value={form.fullName}
+              onChange={(e) => set("fullName", e.target.value)}
+            />
+            {errors.fullName && <p className="cor-error-msg">{errors.fullName}</p>}
+          </div>
+
+          <div className="cor-field-row">
+            {/* Phone Number */}
+            <div className={`cor-field${errors.phoneNumber ? " cor-field--error" : ""}`}>
+              <label className="cor-label" htmlFor="cor-phone">
+                Phone Number <span className="cor-required">*</span>
+              </label>
+              <input
+                id="cor-phone"
+                className="cor-input"
+                type="tel"
+                placeholder="Enter your phone number"
+                value={form.phoneNumber}
+                onChange={(e) => set("phoneNumber", e.target.value)}
+              />
+              {errors.phoneNumber && <p className="cor-error-msg">{errors.phoneNumber}</p>}
+            </div>
+
+            {/* WhatsApp Number */}
+            <div className="cor-field">
+              <label className="cor-label" htmlFor="cor-whatsapp">
+                WhatsApp Number <span className="cor-optional">Optional</span>
+              </label>
+              <input
+                id="cor-whatsapp"
+                className="cor-input"
+                type="tel"
+                placeholder="Enter WhatsApp number (if different from phone)"
+                value={form.whatsappNumber}
+                onChange={(e) => set("whatsappNumber", e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Email */}
+          <div className="cor-field">
+            <label className="cor-label" htmlFor="cor-email">
+              Email <span className="cor-optional">Optional</span>
+            </label>
+            <input
+              id="cor-email"
+              className="cor-input"
+              type="email"
+              placeholder="Enter your email for order confirmation"
+              value={form.email}
+              onChange={(e) => set("email", e.target.value)}
+            />
+          </div>
+
+          {/* Delivery Address Section */}
+          <div className="cor-section-divider">
+            <h3 className="cor-section-title">Delivery Address</h3>
+          </div>
+
+          <div className="cor-field-row">
+            {/* House No./Street */}
+            <div className={`cor-field${errors.houseNoStreet ? " cor-field--error" : ""}`}>
+              <label className="cor-label" htmlFor="cor-house">
+                House No. / Street <span className="cor-required">*</span>
+              </label>
+              <input
+                id="cor-house"
+                className="cor-input"
+                type="text"
+                placeholder="House number and street"
+                value={form.houseNoStreet}
+                onChange={(e) => set("houseNoStreet", e.target.value)}
+              />
+              {errors.houseNoStreet && <p className="cor-error-msg">{errors.houseNoStreet}</p>}
+            </div>
+
+            {/* Area/Colony */}
+            <div className={`cor-field${errors.areaColony ? " cor-field--error" : ""}`}>
+              <label className="cor-label" htmlFor="cor-area">
+                Area / Colony <span className="cor-required">*</span>
+              </label>
+              <input
+                id="cor-area"
+                className="cor-input"
+                type="text"
+                placeholder="Area or colony name"
+                value={form.areaColony}
+                onChange={(e) => set("areaColony", e.target.value)}
+              />
+              {errors.areaColony && <p className="cor-error-msg">{errors.areaColony}</p>}
+            </div>
+          </div>
+
+          {/* City */}
+          <div className="cor-field">
+            <label className="cor-label" htmlFor="cor-city">
+              City
+            </label>
+            <input
+              id="cor-city"
+              className="cor-input"
+              type="text"
+              placeholder="City"
+              value={form.city}
+              onChange={(e) => set("city", e.target.value)}
+            />
+          </div>
+
+          {/* Order Details Section */}
+          <div className="cor-section-divider">
+            <h3 className="cor-section-title">Order Details</h3>
+          </div>
 
           {/* 1. Product Title */}
           <div className={`cor-field${errors.title ? " cor-field--error" : ""}`}>
@@ -532,6 +692,41 @@ export default function CustomizeOrder() {
               Upload reference images if you want a specific cut or product.
             </p>
             <ImageUploader images={images} onChange={setImages} />
+          </div>
+
+          {/* Delivery Preferences */}
+          <div className="cor-section-divider">
+            <h3 className="cor-section-title">Delivery Preferences</h3>
+          </div>
+
+          <div className="cor-field-row">
+            {/* Preferred Delivery Date */}
+            <div className="cor-field">
+              <label className="cor-label" htmlFor="cor-delivery-date">
+                Preferred Delivery Date <span className="cor-optional">Optional</span>
+              </label>
+              <input
+                id="cor-delivery-date"
+                className="cor-input"
+                type="date"
+                value={form.preferredDeliveryDate}
+                onChange={(e) => set("preferredDeliveryDate", e.target.value)}
+              />
+            </div>
+
+            {/* Preferred Delivery Time */}
+            <div className="cor-field">
+              <label className="cor-label" htmlFor="cor-delivery-time">
+                Preferred Delivery Time <span className="cor-optional">Optional</span>
+              </label>
+              <input
+                id="cor-delivery-time"
+                className="cor-input"
+                type="time"
+                value={form.preferredDeliveryTime}
+                onChange={(e) => set("preferredDeliveryTime", e.target.value)}
+              />
+            </div>
           </div>
 
           {/* 7. Notes */}
