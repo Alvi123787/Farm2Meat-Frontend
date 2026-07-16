@@ -464,6 +464,129 @@ export default function CustomizeOrder() {
             </div>
           )}
 
+          {/* Customer Information Section */}
+          <div className="cor-section-divider">
+            <h3 className="cor-section-title">Customer Information</h3>
+          </div>
+
+          {/* Full Name */}
+          <div className={`cor-field${errors.fullName ? " cor-field--error" : ""}`}>
+            <label className="cor-label" htmlFor="cor-fullname">
+              Full Name <span className="cor-required">*</span>
+            </label>
+            <input
+              id="cor-fullname"
+              className="cor-input"
+              type="text"
+              placeholder="Enter your full name"
+              value={form.fullName}
+              onChange={(e) => set("fullName", e.target.value)}
+            />
+            {errors.fullName && <p className="cor-error-msg">{errors.fullName}</p>}
+          </div>
+
+          <div className="cor-field-row">
+            {/* Phone Number */}
+            <div className={`cor-field${errors.phoneNumber ? " cor-field--error" : ""}`}>
+              <label className="cor-label" htmlFor="cor-phone">
+                Phone Number <span className="cor-required">*</span>
+              </label>
+              <input
+                id="cor-phone"
+                className="cor-input"
+                type="tel"
+                placeholder="Enter your phone number"
+                value={form.phoneNumber}
+                onChange={(e) => set("phoneNumber", e.target.value)}
+              />
+              {errors.phoneNumber && <p className="cor-error-msg">{errors.phoneNumber}</p>}
+            </div>
+
+            {/* WhatsApp Number */}
+            <div className="cor-field">
+              <label className="cor-label" htmlFor="cor-whatsapp">
+                WhatsApp Number <span className="cor-optional">Optional</span>
+              </label>
+              <input
+                id="cor-whatsapp"
+                className="cor-input"
+                type="tel"
+                placeholder="Enter WhatsApp number (if different from phone)"
+                value={form.whatsappNumber}
+                onChange={(e) => set("whatsappNumber", e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Email */}
+          <div className="cor-field">
+            <label className="cor-label" htmlFor="cor-email">
+              Email <span className="cor-optional">Optional</span>
+            </label>
+            <input
+              id="cor-email"
+              className="cor-input"
+              type="email"
+              placeholder="Enter your email for order confirmation"
+              value={form.email}
+              onChange={(e) => set("email", e.target.value)}
+            />
+          </div>
+
+          {/* Delivery Address Section */}
+          <div className="cor-section-divider">
+            <h3 className="cor-section-title">Delivery Address</h3>
+          </div>
+
+          <div className="cor-field-row">
+            {/* House No./Street */}
+            <div className={`cor-field${errors.houseNoStreet ? " cor-field--error" : ""}`}>
+              <label className="cor-label" htmlFor="cor-house">
+                House No. / Street <span className="cor-required">*</span>
+              </label>
+              <input
+                id="cor-house"
+                className="cor-input"
+                type="text"
+                placeholder="House number and street"
+                value={form.houseNoStreet}
+                onChange={(e) => set("houseNoStreet", e.target.value)}
+              />
+              {errors.houseNoStreet && <p className="cor-error-msg">{errors.houseNoStreet}</p>}
+            </div>
+
+            {/* Area/Colony */}
+            <div className={`cor-field${errors.areaColony ? " cor-field--error" : ""}`}>
+              <label className="cor-label" htmlFor="cor-area">
+                Area / Colony <span className="cor-required">*</span>
+              </label>
+              <input
+                id="cor-area"
+                className="cor-input"
+                type="text"
+                placeholder="Area or colony name"
+                value={form.areaColony}
+                onChange={(e) => set("areaColony", e.target.value)}
+              />
+              {errors.areaColony && <p className="cor-error-msg">{errors.areaColony}</p>}
+            </div>
+          </div>
+
+          {/* City */}
+          <div className="cor-field">
+            <label className="cor-label" htmlFor="cor-city">
+              City
+            </label>
+            <input
+              id="cor-city"
+              className="cor-input"
+              type="text"
+              placeholder="City"
+              value={form.city}
+              onChange={(e) => set("city", e.target.value)}
+            />
+          </div>
+
           {/* Order Details Section */}
           <div className="cor-section-divider">
             <h3 className="cor-section-title">Order Details</h3>
@@ -618,129 +741,6 @@ export default function CustomizeOrder() {
               value={form.notes}
               onChange={(e) => set("notes", e.target.value)}
               rows={3}
-            />
-          </div>
-
-          {/* Customer Information Section */}
-          <div className="cor-section-divider">
-            <h3 className="cor-section-title">Customer Information</h3>
-          </div>
-
-          {/* Full Name */}
-          <div className={`cor-field${errors.fullName ? " cor-field--error" : ""}`}>
-            <label className="cor-label" htmlFor="cor-fullname">
-              Full Name <span className="cor-required">*</span>
-            </label>
-            <input
-              id="cor-fullname"
-              className="cor-input"
-              type="text"
-              placeholder="Enter your full name"
-              value={form.fullName}
-              onChange={(e) => set("fullName", e.target.value)}
-            />
-            {errors.fullName && <p className="cor-error-msg">{errors.fullName}</p>}
-          </div>
-
-          <div className="cor-field-row">
-            {/* Phone Number */}
-            <div className={`cor-field${errors.phoneNumber ? " cor-field--error" : ""}`}>
-              <label className="cor-label" htmlFor="cor-phone">
-                Phone Number <span className="cor-required">*</span>
-              </label>
-              <input
-                id="cor-phone"
-                className="cor-input"
-                type="tel"
-                placeholder="Enter your phone number"
-                value={form.phoneNumber}
-                onChange={(e) => set("phoneNumber", e.target.value)}
-              />
-              {errors.phoneNumber && <p className="cor-error-msg">{errors.phoneNumber}</p>}
-            </div>
-
-            {/* WhatsApp Number */}
-            <div className="cor-field">
-              <label className="cor-label" htmlFor="cor-whatsapp">
-                WhatsApp Number <span className="cor-optional">Optional</span>
-              </label>
-              <input
-                id="cor-whatsapp"
-                className="cor-input"
-                type="tel"
-                placeholder="Enter WhatsApp number (if different from phone)"
-                value={form.whatsappNumber}
-                onChange={(e) => set("whatsappNumber", e.target.value)}
-              />
-            </div>
-          </div>
-
-          {/* Email */}
-          <div className="cor-field">
-            <label className="cor-label" htmlFor="cor-email">
-              Email <span className="cor-optional">Optional</span>
-            </label>
-            <input
-              id="cor-email"
-              className="cor-input"
-              type="email"
-              placeholder="Enter your email for order confirmation"
-              value={form.email}
-              onChange={(e) => set("email", e.target.value)}
-            />
-          </div>
-
-          {/* Delivery Address Section */}
-          <div className="cor-section-divider">
-            <h3 className="cor-section-title">Delivery Address</h3>
-          </div>
-
-          <div className="cor-field-row">
-            {/* House No./Street */}
-            <div className={`cor-field${errors.houseNoStreet ? " cor-field--error" : ""}`}>
-              <label className="cor-label" htmlFor="cor-house">
-                House No. / Street <span className="cor-required">*</span>
-              </label>
-              <input
-                id="cor-house"
-                className="cor-input"
-                type="text"
-                placeholder="House number and street"
-                value={form.houseNoStreet}
-                onChange={(e) => set("houseNoStreet", e.target.value)}
-              />
-              {errors.houseNoStreet && <p className="cor-error-msg">{errors.houseNoStreet}</p>}
-            </div>
-
-            {/* Area/Colony */}
-            <div className={`cor-field${errors.areaColony ? " cor-field--error" : ""}`}>
-              <label className="cor-label" htmlFor="cor-area">
-                Area / Colony <span className="cor-required">*</span>
-              </label>
-              <input
-                id="cor-area"
-                className="cor-input"
-                type="text"
-                placeholder="Area or colony name"
-                value={form.areaColony}
-                onChange={(e) => set("areaColony", e.target.value)}
-              />
-              {errors.areaColony && <p className="cor-error-msg">{errors.areaColony}</p>}
-            </div>
-          </div>
-
-          {/* City */}
-          <div className="cor-field">
-            <label className="cor-label" htmlFor="cor-city">
-              City
-            </label>
-            <input
-              id="cor-city"
-              className="cor-input"
-              type="text"
-              placeholder="City"
-              value={form.city}
-              onChange={(e) => set("city", e.target.value)}
             />
           </div>
 
