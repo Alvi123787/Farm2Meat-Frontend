@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import "../css/FAQSection.css";
 
 const faqs = [
@@ -23,107 +23,89 @@ const faqs = [
       "We stand behind every order with a return and replacement policy. If the weight is incorrect, the cut doesn't match your order, or you're unhappy with the quality for any reason, contact us within 24 hours of delivery and we'll make it right — no questions asked.",
   },
   {
-    question:
-      "How are your prices determined, and is negotiation possible?",
+    question: "How are your prices determined, and is negotiation possible?",
     answer:
       "Our prices are set per kilogram based on daily market rates and are updated regularly on the site. For bulk orders — such as weddings, events, or large family purchases — price negotiation is available. Reach out via WhatsApp and we'll work out a fair deal personally.",
   },
 ];
 
-const FAQSection = () => {
+const PlusIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+    <line x1="12" y1="5" x2="12" y2="19" />
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
+);
+
+const MinusIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
+);
+
+export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(null);
-  const [heights, setHeights] = useState({});
-  const answerRefs = useRef([]);
 
-  const toggle = (index) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
-
-  useEffect(() => {
-    // Calculate heights on mount
-    const calculateHeights = () => {
-      const newHeights = {};
-      answerRefs.current.forEach((ref, index) => {
-        if (ref) {
-          newHeights[index] = `${ref.scrollHeight}px`;
-        }
-      });
-      setHeights(newHeights);
-    };
-
-    calculateHeights();
-
-    // Recalculate on window resize to handle responsive changes
-    window.addEventListener('resize', calculateHeights);
-    return () => window.removeEventListener('resize', calculateHeights);
-  }, []);
-
-  const getMaxHeight = (index) => {
-    return openIndex === index ? heights[index] || "0px" : "0px";
-  };
+  const toggle = (i) => setOpenIndex(openIndex === i ? null : i);
 
   return (
-    <section className="faq">
-      <div className="faq__container">
-        {/* Section Header */}
-        <div className="faq__header">
-          <div className="faq__header-badge">
-            <span className="faq__header-line" />
-            <span className="faq__header-label">Got Questions?</span>
-            <span className="faq__header-line" />
-          </div>
-          <h2 className="faq__title">Frequently Asked Questions</h2>
-          <p className="faq__subtitle">
-            Everything you need to know about our meat, cuts, and delivery.
+    <section className="faq-section">
+      {/* Decorative blobs */}
+      <div className="faq-blob faq-blob--1" aria-hidden="true" />
+      <div className="faq-blob faq-blob--2" aria-hidden="true" />
+
+      <div className="container-fluid px-lg-5">
+        {/* Header */}
+        <div className="faq-header">
+          <span className="faq-eyebrow">Got Questions?</span>
+          <h2 className="faq-title">
+            Frequently Asked <span className="faq-title__accent">Questions</span>
+          </h2>
+          <div className="faq-rule" />
+          <p className="faq-subtitle">
+            Everything you need to know about ordering fresh, halal meat from MeatByAlvi.
           </p>
         </div>
 
         {/* Accordion */}
-        <div className="faq__list">
-          {faqs.map((faq, index) => (
-            <div
-              key={index}
-              className={`faq__item ${openIndex === index ? "faq__item--open" : ""}`}
-            >
-              <button
-                className="faq__question"
-                onClick={() => toggle(index)}
-                aria-expanded={openIndex === index}
-              >
-                <span className="faq__question-text">{faq.question}</span>
-                <span className="faq__icon">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M6 9l6 6 6-6" />
-                  </svg>
-                </span>
-              </button>
+        <div className="faq-list" role="list">
+          {faqs.map((faq, i) => {
+            const isOpen = openIndex === i;
+            return (
               <div
-                className="faq__answer-wrapper"
-                style={{
-                  maxHeight: getMaxHeight(index),
-                  opacity: openIndex === index ? 1 : 0,
-                }}
+                key={i}
+                className={`faq-item${isOpen ? " faq-item--open" : ""}`}
+                role="listitem"
               >
-                <div
-                  className="faq__answer"
-                  ref={(el) => (answerRefs.current[index] = el)}
+                <button
+                  className="faq-trigger"
+                  onClick={() => toggle(i)}
+                  aria-expanded={isOpen}
+                  aria-controls={`faq-panel-${i}`}
+                  id={`faq-btn-${i}`}
                 >
-                  {faq.answer}
+                  <span className="faq-trigger__num">0{i + 1}</span>
+                  <span className="faq-trigger__question">{faq.question}</span>
+                  <span className="faq-trigger__icon" aria-hidden="true">
+                    {isOpen ? <MinusIcon /> : <PlusIcon />}
+                  </span>
+                </button>
+
+                <div
+                  id={`faq-panel-${i}`}
+                  role="region"
+                  aria-labelledby={`faq-btn-${i}`}
+                  className="faq-panel"
+                  style={{ "--faq-panel-height": isOpen ? "var(--faq-natural-height)" : "0px" }}
+                >
+                  <p className="faq-answer">{faq.answer}</p>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
   );
-};
-
-export default FAQSection;
+}
