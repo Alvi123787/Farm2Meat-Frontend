@@ -12,6 +12,7 @@ import {
   FaHome,
   FaMapMarkerAlt,
   FaCalendarAlt,
+  FaClock,
   FaStickyNote,
   FaMoneyBillWave,
   FaCheckCircle,
@@ -59,6 +60,13 @@ const validatePhone = (phone) => {
     /^03\d{9}$/.test(cleaned) ||
     /^92\d{10}$/.test(cleaned)
   )
+}
+
+// ── Helper: today's date as YYYY-MM-DD using LOCAL date components ──
+// (avoids the UTC-vs-local mismatch that made "today" look like a past date)
+const getTodayLocalStr = () => {
+  const now = new Date()
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
 }
 
 const isMultiQuantityItem = (item) => {
@@ -143,6 +151,8 @@ const Checkout = () => {
   const emailRef = useRef(null)
   const cityRef = useRef(null)
   const addressRef = useRef(null)
+  const expectedDeliveryDateRef = useRef(null)
+  const expectedDeliveryTimeRef = useRef(null)
 
   const [expandedSection, setExpandedSection] = useState({
     review: true,
@@ -163,7 +173,9 @@ const Checkout = () => {
     city: '',
     address: '',
     landmark: '',
-    instructions: ''
+    instructions: '',
+    expectedDeliveryDate: '',
+    expectedDeliveryTime: ''
   })
   const [confirmations, setConfirmations] = useState({
     weightCheck: false,
@@ -257,6 +269,7 @@ const Checkout = () => {
   }, [loading, orderItems, grandTotal, totalItems])
 
   const allConfirmed = confirmations.weightCheck && confirmations.termsAgree
+  // NOTE: expectedDeliveryDate / expectedDeliveryTime are now OPTIONAL — removed from required validation
   const isFormValid = useMemo(() =>
     formData.fullName &&
     validatePhone(formData.phone) &&
@@ -291,6 +304,19 @@ const Checkout = () => {
         break
       case 'address':
         if (!value.trim()) error = 'Full address is required'
+        break
+      case 'expectedDeliveryDate':
+        // FIX: date/time are optional now — only validate "not in the past" if a date was actually chosen.
+        // Previously this compared `new Date(value)` (parsed as UTC midnight) against a LOCAL midnight
+        // `today`, which could make TODAY's own date register as "past" depending on timezone offset.
+        // Now we compare plain YYYY-MM-DD strings using local date components on both sides.
+        if (value.trim()) {
+          const todayStr = getTodayLocalStr()
+          if (value < todayStr) error = 'Cannot select a past date'
+        }
+        break
+      case 'expectedDeliveryTime':
+        // Optional — no required check anymore
         break
       default:
         break
@@ -353,7 +379,9 @@ const Checkout = () => {
       orderSource: 'checkout',
       notes: formData.instructions || '',
       animalCare: animalCareSelected,
-      butcher: selectedButcher?._id || null
+      butcher: selectedButcher?._id || null,
+      expectedDeliveryDate: formData.expectedDeliveryDate || '',
+      expectedDeliveryTime: formData.expectedDeliveryTime || ''
     }
   }
 
@@ -391,6 +419,9 @@ const Checkout = () => {
     msg += `Address: ${formData.address}%0A`
     if (formData.landmark) msg += `Landmark: ${formData.landmark}%0A`
     if (formData.instructions) msg += `Instructions: ${formData.instructions}%0A`
+    msg += `%0A📦 *Expected Delivery*%0A`
+    msg += `Date: ${formData.expectedDeliveryDate || 'Not specified'}%0A`
+    msg += `Time: ${formData.expectedDeliveryTime || 'Not specified'}%0A`
 
     if (selectedButcher) {
       msg += `%0A*Butcher Service*%0A`
@@ -415,9 +446,11 @@ const Checkout = () => {
       altPhone: altPhoneRef,
       email: emailRef,
       city: cityRef,
-      address: addressRef
+      address: addressRef,
+      expectedDeliveryDate: expectedDeliveryDateRef,
+      expectedDeliveryTime: expectedDeliveryTimeRef
     }
-    const fieldOrder = ['fullName', 'phone', 'altPhone', 'email', 'city', 'address']
+    const fieldOrder = ['fullName', 'phone', 'altPhone', 'email', 'city', 'address', 'expectedDeliveryDate', 'expectedDeliveryTime']
     for (const field of fieldOrder) {
       if (newErrors[field]) {
         refMap[field]?.current?.focus()
@@ -483,6 +516,8 @@ const Checkout = () => {
         address: formData.address,
         city: formData.city,
         email: formData.email,
+        expectedDeliveryDate: formData.expectedDeliveryDate,
+        expectedDeliveryTime: formData.expectedDeliveryTime,
         paymentMethod: 'Cash On Delivery',
         items: orderItemsRef.current.map((item) => ({
           _id: item._id || item.id,
@@ -594,6 +629,8 @@ const Checkout = () => {
         address: formData.address,
         city: formData.city,
         email: formData.email,
+        expectedDeliveryDate: formData.expectedDeliveryDate,
+        expectedDeliveryTime: formData.expectedDeliveryTime,
         paymentMethod: 'WhatsApp Inquiry',
         items: orderItemsRef.current.map((item) => ({
           _id: item._id || item.id,
@@ -1171,6 +1208,59 @@ const Checkout = () => {
                             onChange={handleChange}
                           />
                         </div>
+                      </div>
+
+                      {/* Expected Delivery Date and Time — now OPTIONAL */}
+                      <div className="co-form-grid">
+                        <div className="co-form-group">
+                          <label className="co-label" htmlFor="co-expectedDeliveryDate">
+                            <FaCalendarAlt className="co-label-icon" />
+                            Expected Delivery Date <span className="co-optional">(optional)</span>
+                          </label>
+                          <input
+                            ref={expectedDeliveryDateRef}
+                            type="date"
+                            id="co-expectedDeliveryDate"
+                            name="expectedDeliveryDate"
+                            className={`co-input${errors.expectedDeliveryDate ? ' co-input--error' : ''}`}
+                            value={formData.expectedDeliveryDate}
+                            onChange={handleChange}
+                          />
+                          {errors.expectedDeliveryDate && (
+                            <span className="co-field-error">
+                              <FaExclamationCircle className="co-field-error-icon" />
+                              {errors.expectedDeliveryDate}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="co-form-group">
+                          <label className="co-label" htmlFor="co-expectedDeliveryTime">
+                            <FaClock className="co-label-icon" />
+                            Expected Delivery Time <span className="co-optional">(optional)</span>
+                          </label>
+                          <input
+                            ref={expectedDeliveryTimeRef}
+                            type="time"
+                            id="co-expectedDeliveryTime"
+                            name="expectedDeliveryTime"
+                            className={`co-input${errors.expectedDeliveryTime ? ' co-input--error' : ''}`}
+                            value={formData.expectedDeliveryTime}
+                            onChange={handleChange}
+                          />
+                          {errors.expectedDeliveryTime && (
+                            <span className="co-field-error">
+                              <FaExclamationCircle className="co-field-error-icon" />
+                              {errors.expectedDeliveryTime}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Helper text */}
+                      <div className="co-delivery-note" style={{ marginTop: '8px' }}>
+                        <FaInfoCircle className="co-delivery-note-icon" />
+                        <span>Choose your preferred delivery date and time if you have one — otherwise our team will coordinate with you directly.</span>
                       </div>
 
                       {orderItems.some(it => normalize(it.itemType) !== 'meat') && (

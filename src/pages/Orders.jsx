@@ -129,6 +129,8 @@ const Orders = () => {
       orderStatus: orderStatus,
       orderDate: orderGroup.createdAt ? orderGroup.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
       deliveryDate: orderGroup.deliveryDate || '',
+      expectedDeliveryDate: orderGroup.expectedDeliveryDate || '',
+      expectedDeliveryTime: orderGroup.expectedDeliveryTime || '',
       timeline: [
         { status: 'pending', date: orderGroup.createdAt, note: 'Order placed' },
       ],
@@ -457,7 +459,7 @@ const Orders = () => {
     const data = getExportData(scope);
     const headers = [
       'Order ID', 'Customer Name', 'Phone', 'City', 'Animal Name', 'Category', 'Breed',
-      'Weight (Zinda)', 'Animal Price (Rs.)', 'Delivery Charges (Rs.)', 'Total Amount (Rs.)',
+      'Weight (Zinda)', 'Item Price (Rs.)', 'Delivery Charges (Rs.)', 'Total Amount (Rs.)',
       'Advance Paid (Rs.)', 'Remaining (Rs.)', 'Payment Method', 'Payment Status',
       'Order Status', 'Order Date', 'Delivery Date', 'Notes',
     ];
@@ -902,6 +904,8 @@ const Orders = () => {
                       Delivery <OrdersSortIcon sortConfig={sortConfig} field="deliveryDate" />
                     </button>
                   </th>
+                  <th className="om-th">Expected Delivery Date</th>
+                  <th className="om-th">Expected Delivery Time</th>
                   <th className="om-th om-th--center">Actions</th>
                 </tr>
               </thead>
@@ -972,11 +976,21 @@ const Orders = () => {
                     </td>
 
                     {/* Delivery Date */}
-                    <td className="om-td">
-                      <span className="om-delivery-date">{formatDate(order.deliveryDate)}</span>
-                    </td>
+                      <td className="om-td">
+                        <span className="om-delivery-date">{formatDate(order.deliveryDate)}</span>
+                      </td>
 
-                    {/* Actions */}
+                      {/* Expected Delivery Date */}
+                      <td className="om-td">
+                        <span className="om-delivery-date">{formatDate(order.expectedDeliveryDate)}</span>
+                      </td>
+
+                      {/* Expected Delivery Time */}
+                      <td className="om-td">
+                        <span className="om-delivery-time">{order.expectedDeliveryTime}</span>
+                      </td>
+
+                      {/* Actions */}
                     <td className="om-td om-td--actions">
                       <div className="om-actions">
                         <button className="om-act om-act--view" title="View Details" onClick={() => handleViewOrder(order)}>
@@ -1076,7 +1090,7 @@ const Orders = () => {
                   <h3><FaFileInvoiceDollar /> Payment &amp; Pricing</h3>
                   <div className="om-detail-pricing">
                     <div className="om-price-row">
-                      <span>Animal Price</span>
+                      <span>Item Price</span>
                       <span>Rs. {selectedOrder.pricing.animalPrice.toLocaleString()}</span>
                     </div>
                     <div className="om-price-row">
@@ -1164,6 +1178,14 @@ const Orders = () => {
                   <div className="om-animal-detail-item" style={{ justifyContent: 'flex-end' }}>
                     <span className="om-animal-detail-label">Delivery Date</span>
                     <span className="om-animal-detail-val">{formatDate(selectedOrder.deliveryDate)}</span>
+                  </div>
+                  <div className="om-animal-detail-item" style={{ justifyContent: 'flex-end' }}>
+                    <span className="om-animal-detail-label">Expected Delivery Date</span>
+                    <span className="om-animal-detail-val">{formatDate(selectedOrder.expectedDeliveryDate)}</span>
+                  </div>
+                  <div className="om-animal-detail-item" style={{ justifyContent: 'flex-end' }}>
+                    <span className="om-animal-detail-label">Expected Delivery Time</span>
+                    <span className="om-animal-detail-val">{selectedOrder.expectedDeliveryTime}</span>
                   </div>
                 </div>
               </div>

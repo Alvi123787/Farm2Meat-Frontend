@@ -144,6 +144,8 @@ export default function RecentInquiriesTable() {
       orderStatus: orderStatus,
       orderDate: orderGroup.createdAt ? orderGroup.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
       deliveryDate: orderGroup.deliveryDate || '',
+      expectedDeliveryDate: orderGroup.expectedDeliveryDate || '',
+      expectedDeliveryTime: orderGroup.expectedDeliveryTime || '',
       timeline: [
         { status: 'pending', date: orderGroup.createdAt, note: 'Order placed' },
       ],
@@ -1051,6 +1053,14 @@ export default function RecentInquiriesTable() {
                       <div className="om-animal-detail-item" style={{ justifyContent: 'flex-end' }}>
                         <span className="om-animal-detail-label">Delivery Date</span>
                         <span className="om-animal-detail-val">{formatDate(selectedOrder.deliveryDate)}</span>
+                      </div>
+                      <div className="om-animal-detail-item" style={{ justifyContent: 'flex-end' }}>
+                        <span className="om-animal-detail-label">Expected Delivery Date</span>
+                        <span className="om-animal-detail-val">{formatDate(selectedOrder.expectedDeliveryDate)}</span>
+                      </div>
+                      <div className="om-animal-detail-item" style={{ justifyContent: 'flex-end' }}>
+                        <span className="om-animal-detail-label">Expected Delivery Time</span>
+                        <span className="om-animal-detail-val">{selectedOrder.expectedDeliveryTime}</span>
                       </div>
                     </div>
                   </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import '../css/Confirmation.css';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { FaCalendarAlt } from 'react-icons/fa';
 import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl';
 import { WHATSAPP_LINK } from '../constants/contact';
 import { formatPrice } from '../utils/priceUtils';
@@ -97,7 +98,8 @@ const Confirmation = () => {
       city: s.city || '',
     },
     delivery: {
-      expectedDate: '2-3 hours',
+      expectedDate: s.expectedDeliveryDate || '2-3 hours',
+      expectedTime: s.expectedDeliveryTime,
       message: 'Our team will contact you for delivery confirmation.',
     },
     products: s.items || [],
@@ -202,6 +204,7 @@ const Confirmation = () => {
                   <path d="M12 7V12L15 14" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
                 </svg>
                 {orderData.delivery.expectedDate}
+                {orderData.delivery.expectedTime && ` at ${orderData.delivery.expectedTime}`}
               </p>
             </div>
           </div>
@@ -255,10 +258,21 @@ const Confirmation = () => {
                 <span className="conf-meta-key">Phone</span>
                 <span className="conf-meta-val">{orderData.customer.phone}</span>
               </div>
-              <div className="conf-meta-row conf-meta-row--last">
+              <div className="conf-meta-row">
                 <span className="conf-meta-key">Address</span>
                 <span className="conf-meta-val conf-meta-val--address">{orderData.customer.address}</span>
               </div>
+              {orderData.delivery.expectedDate && (
+                <div className="conf-meta-row conf-meta-row--last">
+                  <span className="conf-meta-key">
+                    <FaCalendarAlt /> Expected Delivery
+                  </span>
+                  <span className="conf-meta-val">
+                    {orderData.delivery.expectedDate}
+                    {orderData.delivery.expectedTime && ` at ${orderData.delivery.expectedTime}`}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
