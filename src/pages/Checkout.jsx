@@ -385,57 +385,77 @@ const Checkout = () => {
     }
   }
 
+  // FIX: Build the WhatsApp message using REAL newline characters (\n), not the
+  // literal text "%0A". Previously "%0A" was embedded directly in the string and
+  // then the whole string was passed through encodeURIComponent(), which encodes
+  // the "%" character itself — turning "%0A" into "%250A" in the final URL.
+  // WhatsApp then decoded that back to the literal text "%0A" instead of a line
+  // break, which is exactly the unreadable message shown in the screenshot.
+  // encodeURIComponent() already converts \n to %0A correctly on its own, so we
+  // just build a normal multi-line string here and let it do that job.
   const buildWhatsAppOrder = (orderId) => {
     const currentItems = orderItemsRef.current
-    let msg = `Assalam o Alaikum!%0A%0A✅ *ORDER CONFIRMATION — MeatByAlvi*%0A%0A`
-    if (orderId) msg += `*Order ID: ${orderId}*%0A`
-    msg += `━━━━━━━━━━━━━━━%0A`
+    const DIVIDER = '━━━━━━━━━━━━━━━'
+
+    const lines = []
+    lines.push('Assalam o Alaikum!')
+    lines.push('')
+    lines.push('✅ *ORDER CONFIRMATION — MeatByAlvi*')
+    lines.push('')
+    if (orderId) lines.push(`*Order ID: ${orderId}*`)
+    lines.push(DIVIDER)
 
     currentItems.forEach((item, i) => {
       const qty = getEffectiveQuantity(item)
       const unitText = item.unit ? ` ${item.unit}` : ''
       const itemTotal = priceToNumber(item.price) * qty
-      msg += `${i + 1}. *${item.name}*%0A`
-      msg += `   Breed: ${item.breed || 'N/A'}`
-      if (item.weight) msg += ` | Weight (Zinda): ${item.weight}`
-      msg += `%0A`
-      msg += `   Price: Rs ${formatPrice(item.price)} x ${qty}${unitText}%0A`
-      msg += `   Subtotal: Rs ${formatPrice(itemTotal)}%0A%0A`
+      lines.push(`${i + 1}. *${item.name}*`)
+      let breedLine = `   Breed: ${item.breed || 'N/A'}`
+      if (item.weight) breedLine += ` | Weight (Zinda): ${item.weight}`
+      lines.push(breedLine)
+      lines.push(`   Price: Rs ${formatPrice(item.price)} x ${qty}${unitText}`)
+      lines.push(`   Subtotal: Rs ${formatPrice(itemTotal)}`)
+      lines.push('')
     })
 
-    msg += `━━━━━━━━━━━━━━━%0A`
-    msg += `Total Items: ${totalItems}%0A`
-    msg += `Product Total: Rs ${formatPrice(subtotal)}%0A`
-    msg += `Delivery: Rs. ${DELIVERY_CHARGE}%0A`
-    msg += `*Grand Total: Rs ${formatPrice(grandTotal)}*%0A`
-    msg += `Payment: Cash On Delivery%0A%0A`
+    lines.push(DIVIDER)
+    lines.push(`Total Items: ${totalItems}`)
+    lines.push(`Product Total: Rs ${formatPrice(subtotal)}`)
+    lines.push(`Delivery: Rs. ${DELIVERY_CHARGE}`)
+    lines.push(`*Grand Total: Rs ${formatPrice(grandTotal)}*`)
+    lines.push('Payment: Cash On Delivery')
+    lines.push('')
 
-    msg += `👤 *Customer Details*%0A`
-    msg += `Name: ${formData.fullName}%0A`
-    msg += `Phone: ${formData.phone}%0A`
-    if (formData.altPhone) msg += `Alt Phone: ${formData.altPhone}%0A`
-    msg += `Email: ${formData.email}%0A`
-    msg += `City: ${formData.city}%0A`
-    msg += `Address: ${formData.address}%0A`
-    if (formData.landmark) msg += `Landmark: ${formData.landmark}%0A`
-    if (formData.instructions) msg += `Instructions: ${formData.instructions}%0A`
-    msg += `%0A📦 *Expected Delivery*%0A`
-    msg += `Date: ${formData.expectedDeliveryDate || 'Not specified'}%0A`
-    msg += `Time: ${formData.expectedDeliveryTime || 'Not specified'}%0A`
+    lines.push('👤 *Customer Details*')
+    lines.push(`Name: ${formData.fullName}`)
+    lines.push(`Phone: ${formData.phone}`)
+    if (formData.altPhone) lines.push(`Alt Phone: ${formData.altPhone}`)
+    if (formData.email) lines.push(`Email: ${formData.email}`)
+    lines.push(`City: ${formData.city}`)
+    lines.push(`Address: ${formData.address}`)
+    if (formData.landmark) lines.push(`Landmark: ${formData.landmark}`)
+    if (formData.instructions) lines.push(`Instructions: ${formData.instructions}`)
+
+    lines.push('')
+    lines.push('📦 *Expected Delivery*')
+    lines.push(`Date: ${formData.expectedDeliveryDate || 'Not specified'}`)
+    lines.push(`Time: ${formData.expectedDeliveryTime || 'Not specified'}`)
 
     if (selectedButcher) {
-      msg += `%0A*Butcher Service*%0A`
-      msg += `Selected Butcher: ${selectedButcher.name}%0A`
-      msg += `Location: ${selectedButcher.location || 'Rahim Yar Khan'}%0A`
+      lines.push('')
+      lines.push('*Butcher Service*')
+      lines.push(`Selected Butcher: ${selectedButcher.name}`)
+      lines.push(`Location: ${selectedButcher.location || 'Rahim Yar Khan'}`)
     }
 
     if (animalCareSelected) {
-      msg += `%0A*Animal Care Service*%0A`
-      msg += `Service: Enabled ✅%0A`
-      msg += `Rate: Rs. 100/day%0A`
+      lines.push('')
+      lines.push('*Animal Care Service*')
+      lines.push('Service: Enabled ✅')
+      lines.push('Rate: Rs. 100/day')
     }
 
-    return msg
+    return lines.join('\n')
   }
 
   // FIX 2: focusFirstInvalid now uses the freshly-set newErrors from validateForm
