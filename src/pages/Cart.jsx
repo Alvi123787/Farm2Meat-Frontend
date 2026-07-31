@@ -8,7 +8,6 @@ import {
   FaWeightHanging,
   FaDna,
   FaTag,
-  FaWhatsapp,
   FaArrowRight,
   FaShieldAlt,
   FaTruck,
@@ -25,7 +24,6 @@ import '../css/Cart.css'
 import { animalsService } from '../services/animalsService'
 import { useCart } from '../contexts/cartContextCore'
 import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl'
-import { WHATSAPP_NUMBER } from '../constants/contact'
 import { formatPrice } from '../utils/priceUtils'
 
 // ── Config ──
@@ -115,7 +113,6 @@ const Cart = () => {
   const [notices, setNotices] = useState([])
 
   // FIX: Loading states for buttons (double-click prevention)
-  const [whatsappLoading, setWhatsappLoading] = useState(false)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
 
   // ── Entrance animation ──
@@ -337,82 +334,6 @@ const Cart = () => {
     window.addEventListener('cart-expired', handleExpired)
     return () => window.removeEventListener('cart-expired', handleExpired)
   }, [])
-
-  // FIX: Extracted message builder (was previously inlined and called handleCheckoutWhatsApp)
-  const buildWhatsAppMessage = () => {
-    let msg = `Assalam o Alaikum!%0A%0A🛒 *New Order from MeatByAlvi Website*%0A%0A`
-    cartItems.forEach((item, i) => {
-      const qty = getEffectiveQuantity(item)
-      const unitText = item.unit ? ` ${item.unit}` : ''
-      msg += `${i + 1}. *${item.name}*%0A`
-      msg += `   Breed: ${item.breed}`
-      if (item.weight) msg += ` | Weight (Zinda): ${item.weight}`
-      msg += `%0A`
-      msg += `   Price: ${formatPrice(item.price)} x ${qty}${unitText}%0A`
-      msg += `   Subtotal: ${formatPrice(priceToNumber(item.price) * qty)}%0A%0A`
-    })
-    msg += `━━━━━━━━━━━━━━━%0A`
-    msg += `Items: ${totalItems}%0A`
-    msg += `Subtotal:  ${formatPrice(subtotal)}%0A`
-    msg += `*Total:  ${formatPrice(total)}*%0A`
-    return msg
-  }
-
-  const handleWhatsAppOrder = async () => {
-    if (whatsappLoading) return
-    setWhatsappLoading(true)
-
-    try {
-      await api.post('/api/inquiries/bulk', {
-        customerName: 'WhatsApp User',
-        phone: WHATSAPP_NUMBER,
-        email: '',
-        items: cartItems.map((item) => ({
-          _id: item._id || item.id,
-          name: item.name,
-          tagId: item.tagId || item._id || '',
-          breed: item.breed || '',
-          weight: item.weight || '',
-          unit: item.unit || '',
-          price: item.price,
-          quantity: getEffectiveQuantity(item),
-          itemType: item.itemType || 'livestock',
-          purchaseMode: item.purchaseMode || 'single'
-        })),
-        deliveryAddress: 'WhatsApp Inquiry',
-        city: 'Unknown',
-        deliveryCharge: 0,
-        paymentMethod: 'whatsapp',
-        orderSource: 'cart',
-        notes: 'Customer inquiring via WhatsApp'
-      })
-    } catch (err) {
-      if (err.response?.status === 409) {
-        // Atomic conflict: Animal already sold or reserved
-        navigate('/unavailable-item', { replace: true })
-        setWhatsappLoading(false)
-        return
-      }
-      // FIX: Non-409 errors — show notice but still allow WhatsApp redirect
-      console.error('Error saving inquiry:', err)
-      setNotices((prev) =>
-        [
-          {
-            type: 'warning',
-            text: 'Could not save your order record, but you can still place your order via WhatsApp.'
-          },
-          ...prev
-        ].slice(0, 3)
-      )
-    }
-
-    // FIX: Clear cart after WhatsApp order is initiated
-    await updateCart([])
-
-    const msg = buildWhatsAppMessage()
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank')
-    setWhatsappLoading(false)
-  }
 
   const handleCheckout = () => {
     if (checkoutLoading) return
@@ -686,20 +607,8 @@ const Cart = () => {
                       </div>
 
                       <div className="cart-cta-group">
-                        {/* FIX: WhatsApp button with loading state */}
-                        <button
-                          className="cart-btn cart-btn--whatsapp"
-                          onClick={handleWhatsAppOrder}
-                          disabled={whatsappLoading}
-                        >
-                          {whatsappLoading
-                            ? <FaSpinner className="cart-btn-icon cart-btn-icon--spin" />
-                            : <FaWhatsapp className="cart-btn-icon" />
-                          }
-                          <span>{whatsappLoading ? 'Processing...' : 'Order via WhatsApp'}</span>
-                        </button>
-
-                        {/* FIX: Checkout button with loading state */}
+                        {/* WhatsApp quick-order button removed — all orders now go through
+                            the Checkout form so customer details are always captured. */}
                         <button
                           className="cart-btn cart-btn--checkout"
                           onClick={handleCheckout}
@@ -750,6 +659,7 @@ const Cart = () => {
             <span className="cart-sticky-total-value"> {formatPrice(total)}</span>
           </div>
           <div className="cart-sticky-actions">
+            {/* WhatsApp quick-order button removed — Checkout is now the only order path */}
             <button
               type="button"
               className="cart-sticky-btn cart-sticky-btn--checkout"
@@ -761,18 +671,6 @@ const Cart = () => {
                 : <FaArrowRight className="cart-sticky-btn-icon" />
               }
               <span>Checkout</span>
-            </button>
-            <button
-              type="button"
-              className="cart-sticky-btn cart-sticky-btn--whatsapp"
-              onClick={handleWhatsAppOrder}
-              disabled={whatsappLoading}
-            >
-              {whatsappLoading
-                ? <FaSpinner className="cart-sticky-btn-icon cart-btn-icon--spin" />
-                : <FaWhatsapp className="cart-sticky-btn-icon" />
-              }
-              <span>WhatsApp</span>
             </button>
           </div>
         </div>
