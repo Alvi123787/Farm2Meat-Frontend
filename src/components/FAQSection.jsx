@@ -15,7 +15,7 @@ const faqs = [
   {
     question: "What is your delivery area and how long does it take?",
     answer:
-      "We currently deliver for Rs. 49 within Rahim Yar Khan city. Orders placed before 12 PM are typically delivered the same day. For areas outside RYK, delivery is available with a small charge — contact us on WhatsApp to confirm your location and timing.",
+      "We currently deliver for Rs. 99 within Rahim Yar Khan city. Orders placed before 8 PM are typically delivered the same day. For areas outside RYK, delivery is available with a small charge — contact us on WhatsApp to confirm your location and timing.",
   },
   {
     question: "What if I'm not satisfied with the quality after delivery?",

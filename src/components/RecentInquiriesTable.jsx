@@ -134,10 +134,10 @@ export default function RecentInquiriesTable() {
       },
       pricing: {
         animalPrice: orderGroup.items.reduce((sum, i) => sum + i.price, 0),
-        deliveryCharges: 49,
-        totalAmount: orderGroup.totalAmount + 49, // Add delivery charge
+        deliveryCharges: 99,
+        totalAmount: orderGroup.totalAmount + 99, // Add delivery charge
         advancePaid: orderGroup.items.reduce((sum, i) => sum + (i.animalCarePrice || 0), 0),
-        remainingBalance: (orderGroup.totalAmount + 49) - orderGroup.items.reduce((sum, i) => sum + (i.animalCarePrice || 0), 0),
+        remainingBalance: (orderGroup.totalAmount + 99) - orderGroup.items.reduce((sum, i) => sum + (i.animalCarePrice || 0), 0),
       },
       paymentStatus: paymentStatus,
       paymentScreenshot: null,
@@ -983,7 +983,7 @@ export default function RecentInquiriesTable() {
                         </div>
                         <div className="om-price-row">
                           <span>Delivery Charges</span>
-                          <span>Rs. 49</span>
+                          <span>Rs. 99</span>
                         </div>
                         <div className="om-price-row om-price-row--total">
                           <span>Total Amount</span>

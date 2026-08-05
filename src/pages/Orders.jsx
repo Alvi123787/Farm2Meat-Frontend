@@ -88,7 +88,7 @@ const Orders = () => {
 
     const orderStatus = orderStatusMap[orderGroup.status] || 'pending';
     
-    const totalAmountWithDelivery = orderGroup.totalAmount + 49; // Add delivery charge
+    const totalAmountWithDelivery = orderGroup.totalAmount + 99; // Add delivery charge
     const advancePaid = orderGroup.items.reduce((sum, i) => sum + (i.animalCarePrice || 0), 0);
     const remainingBalance = Math.max(0, totalAmountWithDelivery - advancePaid);
     
@@ -119,7 +119,7 @@ const Orders = () => {
       },
       pricing: {
         animalPrice: orderGroup.items.reduce((sum, i) => sum + i.price, 0),
-        deliveryCharges: 49,
+        deliveryCharges: 99,
         totalAmount: totalAmountWithDelivery,
         advancePaid: advancePaid,
         remainingBalance: remainingBalance,
@@ -1095,7 +1095,7 @@ const Orders = () => {
                     </div>
                     <div className="om-price-row">
                       <span>Delivery Charges</span>
-                      <span>Rs. 49</span>
+                      <span>Rs. 99</span>
                     </div>
                     <div className="om-price-row om-price-row--total">
                       <span>Total Amount</span>

@@ -44,7 +44,7 @@ import { WHATSAPP_NUMBER } from '../constants/contact'
 import { formatPrice } from '../utils/priceUtils'
 
 // ── Config ──
-const DELIVERY_CHARGE = 49
+const DELIVERY_CHARGE = 99
 const PURCHASE_STATE_KEY = 'postPurchaseConfirmationState'
 
 const normalize = (v) => String(v || '').trim().toLowerCase()
@@ -882,7 +882,7 @@ const Checkout = () => {
                     <h1 className="co-header-title">Secure Checkout</h1>
                     <div className="co-free-delivery-badge">
                       <FaTruck />
-                      <span>Flat Rate Delivery: Rs. 49</span>
+                      <span>Flat Rate Delivery: Rs. 99</span>
                     </div>
                   </div>
                 </div>
@@ -1306,7 +1306,7 @@ const Checkout = () => {
                       <div className="co-delivery-note">
                         <FaInfoCircle className="co-delivery-note-icon" />
                         <span>
-                          Standard delivery charge of Rs. 49 applies to all orders. Our team will coordinate delivery time on call/WhatsApp.
+                          Standard delivery charge of Rs. 99 applies to all orders. Our team will coordinate delivery time on call/WhatsApp.
                         </span>
                       </div>
                     </div>
