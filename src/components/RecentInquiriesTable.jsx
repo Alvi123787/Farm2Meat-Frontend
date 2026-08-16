@@ -132,13 +132,23 @@ export default function RecentInquiriesTable() {
         breed: orderGroup.items.map(i => i.breed).filter(Boolean).join(', '),
         weight: orderGroup.items.map(i => i.weight).filter(Boolean).join(', '),
       },
-      pricing: {
-        animalPrice: orderGroup.items.reduce((sum, i) => sum + i.price, 0),
-        deliveryCharges: 99,
-        totalAmount: orderGroup.totalAmount + 99, // Add delivery charge
-        advancePaid: orderGroup.items.reduce((sum, i) => sum + (i.animalCarePrice || 0), 0),
-        remainingBalance: (orderGroup.totalAmount + 99) - orderGroup.items.reduce((sum, i) => sum + (i.animalCarePrice || 0), 0),
-      },
+      pricing: (() => {
+        const hasMutton = (orderGroup.items || []).some(item => 
+          (item.category && item.category.toLowerCase() === 'mutton') ||
+          (item.animalName && item.animalName.toLowerCase().includes('mutton')) ||
+          (item.name && item.name.toLowerCase().includes('mutton'))
+        );
+        const calcDel = orderGroup.deliveryCharge !== undefined ? orderGroup.deliveryCharge : (hasMutton ? 0 : 99);
+        const tAmount = orderGroup.totalAmount + calcDel;
+        const advPaid = orderGroup.items.reduce((sum, i) => sum + (i.animalCarePrice || 0), 0);
+        return {
+          animalPrice: orderGroup.items.reduce((sum, i) => sum + i.price, 0),
+          deliveryCharges: calcDel,
+          totalAmount: tAmount,
+          advancePaid: advPaid,
+          remainingBalance: tAmount - advPaid,
+        };
+      })(),
       paymentStatus: paymentStatus,
       paymentScreenshot: null,
       orderStatus: orderStatus,
@@ -983,7 +993,7 @@ export default function RecentInquiriesTable() {
                         </div>
                         <div className="om-price-row">
                           <span>Delivery Charges</span>
-                          <span>Rs. 99</span>
+                          <span>Rs. {selectedOrder.pricing?.deliveryCharges || 0}</span>
                         </div>
                         <div className="om-price-row om-price-row--total">
                           <span>Total Amount</span>

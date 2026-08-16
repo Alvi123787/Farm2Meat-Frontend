@@ -87,8 +87,14 @@ const Orders = () => {
     };
 
     const orderStatus = orderStatusMap[orderGroup.status] || 'pending';
+    const hasMutton = (orderGroup.items || []).some(item => 
+      (item.category && item.category.toLowerCase() === 'mutton') ||
+      (item.animalName && item.animalName.toLowerCase().includes('mutton')) ||
+      (item.name && item.name.toLowerCase().includes('mutton'))
+    );
+    const calculatedDelivery = orderGroup.deliveryCharge !== undefined ? orderGroup.deliveryCharge : (hasMutton ? 0 : 99);
     
-    const totalAmountWithDelivery = orderGroup.totalAmount + 99; // Add delivery charge
+    const totalAmountWithDelivery = orderGroup.totalAmount + calculatedDelivery; // Add delivery charge
     const advancePaid = orderGroup.items.reduce((sum, i) => sum + (i.animalCarePrice || 0), 0);
     const remainingBalance = Math.max(0, totalAmountWithDelivery - advancePaid);
     
@@ -119,7 +125,7 @@ const Orders = () => {
       },
       pricing: {
         animalPrice: orderGroup.items.reduce((sum, i) => sum + i.price, 0),
-        deliveryCharges: 99,
+        deliveryCharges: calculatedDelivery,
         totalAmount: totalAmountWithDelivery,
         advancePaid: advancePaid,
         remainingBalance: remainingBalance,
@@ -1095,7 +1101,7 @@ const Orders = () => {
                     </div>
                     <div className="om-price-row">
                       <span>Delivery Charges</span>
-                      <span>Rs. 99</span>
+                      <span>Rs. {selectedOrder.pricing?.deliveryCharges || 0}</span>
                     </div>
                     <div className="om-price-row om-price-row--total">
                       <span>Total Amount</span>

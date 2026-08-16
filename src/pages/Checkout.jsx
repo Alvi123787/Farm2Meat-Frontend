@@ -44,7 +44,7 @@ import { WHATSAPP_NUMBER } from '../constants/contact'
 import { formatPrice } from '../utils/priceUtils'
 
 // ── Config ──
-const DELIVERY_CHARGE = 99
+const BASE_DELIVERY_CHARGE = 99
 const PURCHASE_STATE_KEY = 'postPurchaseConfirmationState'
 
 const normalize = (v) => String(v || '').trim().toLowerCase()
@@ -251,7 +251,15 @@ const Checkout = () => {
     ), [orderItems]
   )
 
-  const delivery = useMemo(() => (orderItems.length > 0 ? DELIVERY_CHARGE : 0), [orderItems.length])
+  const delivery = useMemo(() => {
+    if (orderItems.length === 0) return 0;
+    const hasMutton = orderItems.some(item => 
+      (item.category && item.category.toLowerCase() === 'mutton') ||
+      (item.title && item.title.toLowerCase().includes('mutton')) ||
+      (item.name && item.name.toLowerCase().includes('mutton'))
+    );
+    return hasMutton ? 0 : BASE_DELIVERY_CHARGE;
+  }, [orderItems]);
   const grandTotal = useMemo(() => subtotal + delivery, [subtotal, delivery])
 
   // Meta Pixel - InitiateCheckout event
@@ -353,7 +361,7 @@ const Checkout = () => {
     setExpandedSection((prev) => ({ ...prev, [key]: !prev[key] }))
   }
 
-  // FIX 4: deliveryCharge now correctly sends DELIVERY_CHARGE instead of 0
+  // FIX 4: deliveryCharge now correctly sends delivery instead of 0
   const createOrderPayload = (paymentMethod) => {
     const currentItems = orderItemsRef.current
     return {
@@ -374,7 +382,7 @@ const Checkout = () => {
       })),
       deliveryAddress: formData.address,
       city: formData.city,
-      deliveryCharge: DELIVERY_CHARGE,   // FIX 4: was hardcoded 0
+      deliveryCharge: delivery,   // FIX 4: was hardcoded 0
       paymentMethod: paymentMethod || 'cod',
       orderSource: 'checkout',
       notes: formData.instructions || '',
@@ -421,7 +429,7 @@ const Checkout = () => {
     lines.push(DIVIDER)
     lines.push(`Total Items: ${totalItems}`)
     lines.push(`Product Total: Rs ${formatPrice(subtotal)}`)
-    lines.push(`Delivery: Rs. ${DELIVERY_CHARGE}`)
+    lines.push(`Delivery: Rs. ${delivery}`)
     lines.push(`*Grand Total: Rs ${formatPrice(grandTotal)}*`)
     lines.push('Payment: Cash On Delivery')
     lines.push('')
@@ -529,7 +537,7 @@ const Checkout = () => {
         grandTotal,
         totalItems,
         subtotal,
-        deliveryCharge: DELIVERY_CHARGE,
+        deliveryCharge: delivery,
         animalCareSelected,
         customerName: formData.fullName,
         phone: formData.phone,
@@ -882,7 +890,7 @@ const Checkout = () => {
                     <h1 className="co-header-title">Secure Checkout</h1>
                     <div className="co-free-delivery-badge">
                       <FaTruck />
-                      <span>Flat Rate Delivery: Rs. 99</span>
+                      {delivery === 0 ? <span>Free Delivery (Mutton Special)</span> : <span>Flat Rate Delivery: Rs. {delivery}</span>}
                     </div>
                   </div>
                 </div>
@@ -1392,7 +1400,7 @@ const Checkout = () => {
                       <span className="co-summary-row-label">
                         <FaTruck className="co-summary-row-icon" /> Delivery
                       </span>
-                      <span className="co-summary-value"> {formatPrice(DELIVERY_CHARGE)}</span>
+                      <span className="co-summary-value"> {formatPrice(delivery)}</span>
                     </div>
 
                     <div className="co-summary-divider co-summary-divider--total"></div>
