@@ -138,7 +138,7 @@ export default function RecentInquiriesTable() {
           (item.animalName && item.animalName.toLowerCase().includes('mutton')) ||
           (item.name && item.name.toLowerCase().includes('mutton'))
         );
-        const calcDel = orderGroup.deliveryCharge !== undefined ? orderGroup.deliveryCharge : (hasMutton ? 0 : 99);
+        const calcDel = orderGroup.deliveryCharge !== undefined ? orderGroup.deliveryCharge : (hasMutton ? 0 : 49);
         const tAmount = orderGroup.totalAmount + calcDel;
         const advPaid = orderGroup.items.reduce((sum, i) => sum + (i.animalCarePrice || 0), 0);
         return {

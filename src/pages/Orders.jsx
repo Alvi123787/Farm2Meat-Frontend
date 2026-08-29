@@ -92,7 +92,7 @@ const Orders = () => {
       (item.animalName && item.animalName.toLowerCase().includes('mutton')) ||
       (item.name && item.name.toLowerCase().includes('mutton'))
     );
-    const calculatedDelivery = orderGroup.deliveryCharge !== undefined ? orderGroup.deliveryCharge : (hasMutton ? 0 : 99);
+    const calculatedDelivery = orderGroup.deliveryCharge !== undefined ? orderGroup.deliveryCharge : (hasMutton ? 0 : 49);
     
     const totalAmountWithDelivery = orderGroup.totalAmount + calculatedDelivery; // Add delivery charge
     const advancePaid = orderGroup.items.reduce((sum, i) => sum + (i.animalCarePrice || 0), 0);

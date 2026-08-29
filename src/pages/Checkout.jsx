@@ -44,7 +44,7 @@ import { WHATSAPP_NUMBER } from '../constants/contact'
 import { formatPrice } from '../utils/priceUtils'
 
 // ── Config ──
-const BASE_DELIVERY_CHARGE = 99
+const BASE_DELIVERY_CHARGE = 49
 const PURCHASE_STATE_KEY = 'postPurchaseConfirmationState'
 
 const normalize = (v) => String(v || '').trim().toLowerCase()
@@ -1314,7 +1314,7 @@ const Checkout = () => {
                       <div className="co-delivery-note">
                         <FaInfoCircle className="co-delivery-note-icon" />
                         <span>
-                          Standard delivery charge of Rs. 99 applies to all orders. Our team will coordinate delivery time on call/WhatsApp.
+                          Standard delivery charge of Rs. 49 applies to all orders. Our team will coordinate delivery time on call/WhatsApp.
                         </span>
                       </div>
                     </div>
