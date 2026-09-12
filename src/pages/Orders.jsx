@@ -133,12 +133,12 @@ const Orders = () => {
       paymentStatus: paymentStatus,
       paymentScreenshot: null,
       orderStatus: orderStatus,
-      orderDate: orderGroup.createdAt ? orderGroup.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
+      orderDate: orderGroup.createdAt || orderGroup.date || (orderGroup.items?.[0] && (orderGroup.items[0].createdAt || orderGroup.items[0].date)) || null,
       deliveryDate: orderGroup.deliveryDate || '',
       expectedDeliveryDate: orderGroup.expectedDeliveryDate || '',
       expectedDeliveryTime: orderGroup.expectedDeliveryTime || '',
       timeline: [
-        { status: 'pending', date: orderGroup.createdAt, note: 'Order placed' },
+        { status: 'pending', date: orderGroup.createdAt || orderGroup.date, note: 'Order placed' },
       ],
       items: orderGroup.items.map(item => ({
         ...item,
@@ -260,8 +260,16 @@ const Orders = () => {
 
     // Applied filters
     const f = appliedFilters;
-    if (f.dateFrom) result = result.filter((o) => o.orderDate >= f.dateFrom);
-    if (f.dateTo) result = result.filter((o) => o.orderDate <= f.dateTo);
+    if (f.dateFrom) result = result.filter((o) => {
+      if (!o.orderDate) return false;
+      const d = String(o.orderDate).slice(0, 10);
+      return d >= f.dateFrom;
+    });
+    if (f.dateTo) result = result.filter((o) => {
+      if (!o.orderDate) return false;
+      const d = String(o.orderDate).slice(0, 10);
+      return d <= f.dateTo;
+    });
     if (f.orderStatus) result = result.filter((o) => o.orderStatus === f.orderStatus);
     if (f.paymentStatus) result = result.filter((o) => o.paymentStatus === f.paymentStatus);
     if (f.deliveryDateFrom) result = result.filter((o) => o.deliveryDate >= f.deliveryDateFrom);
@@ -289,8 +297,8 @@ const Orders = () => {
       let aVal, bVal;
       switch (sortConfig.field) {
         case 'orderDate':
-          aVal = new Date(a.orderDate);
-          bVal = new Date(b.orderDate);
+          aVal = a.orderDate ? new Date(a.orderDate).getTime() : 0;
+          bVal = b.orderDate ? new Date(b.orderDate).getTime() : 0;
           break;
         case 'deliveryDate':
           aVal = new Date(a.deliveryDate);
@@ -475,7 +483,7 @@ const Orders = () => {
       o.pricing.animalPrice, o.pricing.deliveryCharges, o.pricing.totalAmount,
       o.pricing.advancePaid, o.pricing.remainingBalance,
       o.paymentMethod, PAYMENT_STATUSES[o.paymentStatus].label,
-      ORDER_STATUSES[o.orderStatus].label, o.orderDate, o.deliveryDate, o.notes,
+      ORDER_STATUSES[o.orderStatus].label, formatDateTime(o.orderDate), o.deliveryDate, o.notes,
     ]);
     const totalRevenue = data.reduce((s, o) => s + o.pricing.totalAmount, 0);
     const totalAdvance = data.reduce((s, o) => s + o.pricing.advancePaid, 0);
@@ -511,7 +519,7 @@ const Orders = () => {
         <td style="text-align:right;">${o.pricing.remainingBalance.toLocaleString()}</td>
         <td>${PAYMENT_STATUSES[o.paymentStatus].label}</td>
         <td>${ORDER_STATUSES[o.orderStatus].label}</td>
-        <td>${o.orderDate}</td><td>${o.deliveryDate}</td>
+        <td>${formatDateTime(o.orderDate)}</td><td>${o.deliveryDate}</td>
       </tr>`;
     });
     html += `<tr><td colspan="7" style="font-weight:bold;padding:8px;">Total: ${data.length} orders</td><td style="font-weight:bold;padding:8px;text-align:right;">Rs. ${totalRevenue.toLocaleString()}</td><td style="font-weight:bold;padding:8px;text-align:right;">Rs. ${totalAdvance.toLocaleString()}</td><td colspan="5"></td></tr>`;
@@ -558,7 +566,7 @@ const Orders = () => {
     ['#','Order ID','Customer','Phone','City','Animal','Weight (Zinda)','Total','Advance','Remaining','Payment','Status','Order Date','Delivery'].forEach(h=>{html+=`<th>${h}</th>`;});
     html += '</tr></thead><tbody>';
     data.forEach((o,i)=>{
-      html+=`<tr><td>${i+1}</td><td>${o.id}</td><td>${o.customer.name}</td><td>${o.customer.phone}</td><td>${o.customer.city}</td><td>${o.animal.name}</td><td class="amt">${o.animal.weight}kg</td><td class="amt">Rs.${o.pricing.totalAmount.toLocaleString()}</td><td class="amt">Rs.${o.pricing.advancePaid.toLocaleString()}</td><td class="amt">Rs.${o.pricing.remainingBalance.toLocaleString()}</td><td>${PAYMENT_STATUSES[o.paymentStatus].label}</td><td>${ORDER_STATUSES[o.orderStatus].label}</td><td>${o.orderDate}</td><td>${o.deliveryDate}</td></tr>`;
+      html+=`<tr><td>${i+1}</td><td>${o.id}</td><td>${o.customer.name}</td><td>${o.customer.phone}</td><td>${o.customer.city}</td><td>${o.animal.name}</td><td class="amt">${o.animal.weight}kg</td><td class="amt">Rs.${o.pricing.totalAmount.toLocaleString()}</td><td class="amt">Rs.${o.pricing.advancePaid.toLocaleString()}</td><td class="amt">Rs.${o.pricing.remainingBalance.toLocaleString()}</td><td>${PAYMENT_STATUSES[o.paymentStatus].label}</td><td>${ORDER_STATUSES[o.orderStatus].label}</td><td>${formatDateTime(o.orderDate)}</td><td>${o.deliveryDate}</td></tr>`;
     });
     html += '</tbody></table>';
     html += `<div class="ft"><strong>Summary:</strong> ${data.length} orders | Revenue: Rs. ${totalRevenue.toLocaleString()} | Advance: Rs. ${totalAdvance.toLocaleString()}</div>`;
@@ -588,7 +596,20 @@ const Orders = () => {
     if (isNaN(date.getTime())) return 'TBD';
     return date.toLocaleDateString('en-PK', { year: 'numeric', month: 'short', day: 'numeric' });
   };
-  const formatDateTime = (d) => new Date(d).toLocaleString('en-PK', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+  const formatDateTime = (d) => {
+    if (!d) return 'TBD';
+    const date = new Date(d);
+    if (isNaN(date.getTime())) return 'TBD';
+    return date.toLocaleString('en-PK', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
 
   const getPageNumbers = () => {
     const pages = [];
@@ -921,7 +942,10 @@ const Orders = () => {
                     {/* Order ID */}
                     <td className="om-td">
                       <span className="om-order-id">{order.id}</span>
-                      <span className="om-td-sub">{formatDate(order.orderDate)}</span>
+                      <span className="om-td-sub" title={formatDateTime(order.orderDate)}>
+                        <FaClock style={{ display: 'inline', marginRight: '4px', fontSize: '0.85em', opacity: 0.7 }} />
+                        {formatDateTime(order.orderDate)}
+                      </span>
                     </td>
 
                     {/* Customer */}
@@ -1059,7 +1083,7 @@ const Orders = () => {
               <div className="om-detail-top">
                 <div className="om-detail-top__left">
                   <span className="om-detail-oid">{selectedOrder.id}</span>
-                  <span className="om-detail-odate">Placed on {formatDate(selectedOrder.orderDate)}</span>
+                  <span className="om-detail-odate">Placed on {formatDateTime(selectedOrder.orderDate)}</span>
                 </div>
                 <div className="om-detail-top__badges">
                   <span className={`om-badge om-badge--os-${selectedOrder.orderStatus}`}>

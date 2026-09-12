@@ -648,7 +648,14 @@ function OrdersSection({ onStatusUpdate }) {
                     <td>
                       <div className="ad-order-cell">
                         <span className="ad-order-id">#{order.inquiryId}</span>
-                        <span className="ad-order-date">{new Date(order.date).toLocaleDateString()}</span>
+                        <span className="ad-order-date">
+                          {(() => {
+                            const raw = order.createdAt || order.date;
+                            if (!raw) return 'TBD';
+                            const d = new Date(raw);
+                            return isNaN(d.getTime()) ? 'TBD' : d.toLocaleString('en-PK', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
+                          })()}
+                        </span>
                       </div>
                     </td>
                     <td>

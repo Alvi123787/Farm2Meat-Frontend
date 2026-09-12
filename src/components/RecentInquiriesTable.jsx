@@ -53,22 +53,23 @@ const PAYMENT_STATUSES = {
 }
 
 const formatDate = (dateStr) => {
-  if (!dateStr) return 'Not scheduled yet'
+  if (!dateStr) return 'TBD'
   const date = new Date(dateStr)
-  if (isNaN(date.getTime())) return 'Not scheduled yet'
-  return date.toLocaleDateString('en-PK', {
+  if (isNaN(date.getTime())) return 'TBD'
+  return date.toLocaleString('en-PK', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
+    hour12: true
   })
 }
 
 const formatDateWithoutTime = (dateStr) => {
-  if (!dateStr) return 'Not scheduled yet'
+  if (!dateStr) return 'TBD'
   const date = new Date(dateStr)
-  if (isNaN(date.getTime())) return 'Not scheduled yet'
+  if (isNaN(date.getTime())) return 'TBD'
   return date.toLocaleDateString('en-PK', {
     day: '2-digit',
     month: 'short',
@@ -152,12 +153,12 @@ export default function RecentInquiriesTable() {
       paymentStatus: paymentStatus,
       paymentScreenshot: null,
       orderStatus: orderStatus,
-      orderDate: orderGroup.createdAt ? orderGroup.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
+      orderDate: orderGroup.createdAt || orderGroup.date || (orderGroup.items?.[0] && (orderGroup.items[0].date || orderGroup.items[0].createdAt)) || null,
       deliveryDate: orderGroup.deliveryDate || '',
       expectedDeliveryDate: orderGroup.expectedDeliveryDate || '',
       expectedDeliveryTime: orderGroup.expectedDeliveryTime || '',
       timeline: [
-        { status: 'pending', date: orderGroup.createdAt, note: 'Order placed' },
+        { status: 'pending', date: orderGroup.createdAt || orderGroup.date, note: 'Order placed' },
       ],
       items: orderGroup.items.map(item => ({
         ...item,
@@ -324,6 +325,11 @@ export default function RecentInquiriesTable() {
   const sortedData = useMemo(() => {
     if (!sortConfig.key) return filteredData
     const sorted = [...filteredData].sort((a, b) => {
+      if (sortConfig.key === 'date') {
+        const aTime = new Date(a.date || a.createdAt || 0).getTime()
+        const bTime = new Date(b.date || b.createdAt || 0).getTime()
+        return sortConfig.direction === 'asc' ? aTime - bTime : bTime - aTime
+      }
       let aVal = a[sortConfig.key]
       let bVal = b[sortConfig.key]
       if (typeof aVal === 'string') aVal = aVal.toLowerCase()
@@ -348,14 +354,17 @@ export default function RecentInquiriesTable() {
       return
     }
 
-    const headers = ['Inquiry ID', 'Customer', 'Phone', 'Animal/Item', 'Price', 'Date', 'Status']
+    const headers = ['Inquiry ID', 'Customer', 'Phone', 'Ordered Item', 'Quantity/Unit', 'Category', 'Price', 'Total', 'Date', 'Status']
     const rows = filteredData.map((inquiry) => [
       inquiry.inquiryId,
       inquiry.customerName,
       inquiry.phone,
       inquiry.animalName,
+      `${inquiry.quantity || 1} ${inquiry.unit || ''}`.trim(),
+      inquiry.category || '',
       formatPrice(inquiry.price),
-      formatDate(inquiry.date),
+      formatPrice(inquiry.totalAmount || inquiry.price),
+      formatDate(inquiry.date || inquiry.createdAt),
       inquiry.status
     ])
 
@@ -623,7 +632,7 @@ export default function RecentInquiriesTable() {
                     className="th-sortable"
                     onClick={() => handleSort('animalName')}
                   >
-                    <span>Animal</span>
+                    <span>Ordered Item / Product</span>
                     <i
                       className={`fa-solid ${getSortIcon('animalName')} sort-icon`}
                     />
@@ -632,7 +641,7 @@ export default function RecentInquiriesTable() {
                     className="th-sortable"
                     onClick={() => handleSort('price')}
                   >
-                    <span>Price</span>
+                    <span>Price / Total</span>
                     <i
                       className={`fa-solid ${getSortIcon('price')} sort-icon`}
                     />
@@ -694,16 +703,43 @@ export default function RecentInquiriesTable() {
                           <span className="animal-name">
                             {inquiry.animalName}
                           </span>
+                          <div className="inquiry-item-meta">
+                            <span className="inquiry-item-qty">
+                              {inquiry.quantity ? `${inquiry.quantity} ${inquiry.unit || ''}`.trim() : (inquiry.unit || '1 unit')}
+                            </span>
+                            {inquiry.category && (
+                              <span className="inquiry-item-category">
+                                {inquiry.category}
+                              </span>
+                            )}
+                            {inquiry.weight && inquiry.itemType !== 'meat' && (
+                              <span className="inquiry-item-weight">
+                                {inquiry.weight} kg
+                              </span>
+                            )}
+                            {inquiry.orderGroupId && inquiry.orderGroupId !== inquiry.inquiryId && (
+                              <span className="inquiry-item-group" title={`Group Order: ${inquiry.orderGroupId}`}>
+                                • Multi-item
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </td>
                       <td>
-                        <span className="price-text">
-                          {formatPrice(inquiry.price)}
-                        </span>
+                        <div className="price-cell">
+                          <span className="price-text">
+                            {formatPrice(inquiry.totalAmount || inquiry.price)}
+                          </span>
+                          {inquiry.quantity > 1 && (
+                            <span className="price-unit-subtext">
+                              ({formatPrice(inquiry.price)}/{inquiry.unit || 'unit'})
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td>
-                        <span className="date-text">
-                          {formatDateWithoutTime(inquiry.date)}
+                        <span className="date-text" title={formatDate(inquiry.date || inquiry.createdAt)}>
+                          {formatDate(inquiry.date || inquiry.createdAt)}
                         </span>
                       </td>
                       <td>
@@ -823,21 +859,45 @@ export default function RecentInquiriesTable() {
 
                   <div className="mobile-card-body">
                     <div className="mobile-detail-row">
-                      <div className="mobile-detail">
+                      <div className="mobile-detail" style={{ flex: 1.5 }}>
                         <span className="detail-label">
-                          <i className="fa-solid fa-cow" /> Animal
+                          <i className="fa-solid fa-box-open" /> Ordered Item
                         </span>
-                        <span className="detail-value">
-                          {inquiry.animalName}
-                        </span>
+                        <div className="detail-value animal-cell">
+                          <span className="animal-name" style={{ fontWeight: 600 }}>
+                            {inquiry.animalName}
+                          </span>
+                          <div className="inquiry-item-meta">
+                            <span className="inquiry-item-qty">
+                              {inquiry.quantity ? `${inquiry.quantity} ${inquiry.unit || ''}`.trim() : (inquiry.unit || '1 unit')}
+                            </span>
+                            {inquiry.category && (
+                              <span className="inquiry-item-category">
+                                {inquiry.category}
+                              </span>
+                            )}
+                            {inquiry.weight && inquiry.itemType !== 'meat' && (
+                              <span className="inquiry-item-weight">
+                                {inquiry.weight} kg
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </div>
                       <div className="mobile-detail">
                         <span className="detail-label">
-                          <i className="fa-solid fa-tag" /> Price
+                          <i className="fa-solid fa-tag" /> Total
                         </span>
-                        <span className="detail-value price-text">
-                          {formatPrice(inquiry.price)}
-                        </span>
+                        <div className="detail-value price-text">
+                          <span style={{ fontWeight: 600 }}>
+                            {formatPrice(inquiry.totalAmount || inquiry.price)}
+                          </span>
+                          {inquiry.quantity > 1 && (
+                            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
+                              {formatPrice(inquiry.price)}/{inquiry.unit || 'unit'}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <div className="mobile-detail-row">
@@ -852,7 +912,7 @@ export default function RecentInquiriesTable() {
                           <i className="fa-solid fa-calendar" /> Date
                         </span>
                         <span className="detail-value">
-                          {formatDate(inquiry.date)}
+                          {formatDate(inquiry.date || inquiry.createdAt)}
                         </span>
                       </div>
                     </div>
