@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { FaQuoteLeft, FaRegStar, FaStar, FaStarHalfAlt, FaMapMarkerAlt, FaArrowRight, FaSpinner } from 'react-icons/fa'
+import { FaQuoteLeft, FaRegStar, FaStar, FaStarHalfAlt, FaMapMarkerAlt, FaArrowRight, FaSpinner, FaCheckCircle } from 'react-icons/fa'
 import '../css/ReviewsSection.css'
 import { reviewsService } from '../services/reviewsService'
 
@@ -154,7 +154,15 @@ const ReviewsSection = ({ mode = 'home', limit = 4, hideWhenEmpty = true } = {})
                         <span>{getInitials(review.name)}</span>
                       </div>
                       <div className="rv-info">
-                        <h4 className="rv-name">{review.name}</h4>
+                        <div className="rv-name-row">
+                          <h4 className="rv-name">{review.name}</h4>
+                          {review.isVerifiedPurchase && (
+                            <span className="rv-verified-badge" title="Verified Customer Purchase">
+                              <FaCheckCircle className="rv-verified-icon" />
+                              Verified
+                            </span>
+                          )}
+                        </div>
                         {review.location && (
                           <p className="rv-location">
                             <FaMapMarkerAlt className="rv-loc-icon" />

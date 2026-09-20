@@ -649,7 +649,11 @@ const ProductDetail = () => {
           </button>
         </div>
 
-        <CustomerReviewSection />
+        <CustomerReviewSection
+          productId={productData?._id || id}
+          productType="livestock"
+          productName={productData?.name || ''}
+        />
       </div>
 
       {/* ── Mobile sticky bar ── */}

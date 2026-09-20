@@ -231,12 +231,38 @@
   gap: 2px;
 }
 
+.rv-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .rv-name {
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
   line-height: 1.3;
+}
+
+.rv-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 999px;
+  letter-spacing: 0.2px;
+}
+
+.rv-verified-icon {
+  font-size: 0.62rem;
+  color: #059669;
 }
 
 .rv-location {

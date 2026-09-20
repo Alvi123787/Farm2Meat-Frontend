@@ -438,3 +438,195 @@
   .cr-rc, .cr-spin { animation: none; opacity: 1; transform: none; }
   .cr-sstar, .cr-submit { transition: none; }
 }
+
+/* ── Verified Purchase Badge & Rating Summary Enhancements ── */
+.cr-summary-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--cr-white);
+  border: 1px solid var(--cr-ink-12);
+  padding: 8px 20px;
+  border-radius: 999px;
+  margin-top: 18px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.cr-summary-score {
+  font-family: var(--cr-ff-d);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--cr-ink);
+  line-height: 1;
+}
+
+.cr-summary-stars {
+  display: flex;
+  align-items: center;
+}
+
+.cr-summary-counts {
+  font-size: 13px;
+  color: var(--cr-ink-55);
+  font-weight: 500;
+}
+
+.cr-summary-verified-tag {
+  color: #15803d;
+  font-weight: 600;
+}
+
+.cr-rc-header-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 2px;
+}
+
+.cr-rc-rating-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+/* Verified Purchase Badge */
+.cr-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.2px;
+  box-shadow: 0 1px 2px rgba(4, 120, 87, 0.06);
+}
+
+.cr-verified-badge svg {
+  stroke: #047857;
+  stroke-width: 3;
+}
+
+.cr-verified-prompt-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  font-size: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.cr-verified-prompt-badge svg {
+  stroke: #166534;
+  flex-shrink: 0;
+}
+
+.cr-select {
+  cursor: pointer;
+  background-color: #ffffff;
+}
+
+.cr-req {
+  color: #b91c1c;
+}
+
+.cr-char-count {
+  font-size: 11px;
+  color: var(--cr-ink-55);
+  text-align: right;
+  margin-top: 4px;
+}
+
+/* Eligibility Prompt Box */
+.cr-eligibility-box {
+  padding: 24px;
+}
+
+.cr-elig-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 32px 20px;
+  background: #ffffff;
+  border: 1px solid var(--cr-ink-12);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.cr-elig-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.cr-elig-icon--shield {
+  background: rgba(200, 169, 110, 0.12);
+  color: var(--cr-gold);
+}
+
+.cr-elig-icon--lock {
+  background: rgba(13, 13, 13, 0.06);
+  color: var(--cr-ink);
+}
+
+.cr-elig-icon--truck {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.cr-elig-icon--check {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.cr-elig-card h4 {
+  font-family: var(--cr-ff-d);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--cr-ink);
+  margin-bottom: 8px;
+}
+
+.cr-elig-card p {
+  font-size: 13.5px;
+  color: var(--cr-ink-55);
+  line-height: 1.6;
+  max-width: 320px;
+  margin-bottom: 20px;
+}
+
+.cr-login-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cr-ink);
+  color: #ffffff;
+  border: none;
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.cr-login-btn:hover {
+  background: #262626;
+  transform: translateY(-1px);
+}
