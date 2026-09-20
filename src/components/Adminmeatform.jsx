@@ -30,7 +30,6 @@ const INITIAL = {
   category: '',
   badge: '',
   price: '',
-  stock: '',
   unit: 'kg',
   description: '',
   isBestseller: false,
@@ -119,12 +118,10 @@ export default function Adminmeatform() {
     e.preventDefault()
 
     const priceNum = parseFloat(form.price)
-    const stockNum = parseInt(form.stock, 10)
 
     if (!form.name.trim())              return showToast('error', 'Item name is required.')
     if (!form.category)                 return showToast('error', 'Please select a category.')
     if (isNaN(priceNum) || priceNum <= 0) return showToast('error', 'Please enter a valid price.')
-    if (form.stock === '' || isNaN(stockNum) || stockNum < 0) return showToast('error', 'Please enter a valid stock quantity.')
     if (!form.description.trim())       return showToast('error', 'Description is required.')
     if (form.showInHeader && !form.imageUrl) return showToast('error', 'Image is required for Home Header Slider.')
     if (form.showInHeader && (!form.titleTop.trim() || !form.titleBottom.trim())) {
@@ -135,8 +132,7 @@ export default function Adminmeatform() {
     try {
       await createItem({
         ...form,
-        price:        priceNum,
-        stock:        stockNum,
+        price: priceNum,
       })
       showToast('success', `"${form.name}" added successfully! 🥩`)
       handleReset()
@@ -254,19 +250,6 @@ export default function Adminmeatform() {
                     ))}
                   </select>
                 </div>
-              </div>
-
-              <div className="amf-field">
-                <label className="amf-label">Stock <span>*</span></label>
-                <input
-                  className="amf-input"
-                  type="number"
-                  min="0"
-                  placeholder="0"
-                  value={form.stock}
-                  onChange={e => set('stock', e.target.value)}
-                  required
-                />
               </div>
             </div>
           </div>
