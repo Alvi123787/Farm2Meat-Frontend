@@ -32,9 +32,11 @@ export const reviewsService = {
 
   /** Check eligibility for verified customer review */
   checkEligibility: async (productId, { signal } = {}) => {
+    const params = {}
+    if (productId) params.productId = productId
     const response = await api.get('/api/reviews/eligibility', {
       signal,
-      params: { productId }
+      params
     })
     const payload = response.data
     if (payload?.success === false) {

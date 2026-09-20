@@ -64,9 +64,14 @@ export default function CustomerReviewSection({
 
   // Review Form
   const [selectedOrderId, setSelectedOrderId] = useState('');
+  const [selectedProductId, setSelectedProductId] = useState(productId || '');
   const [form, setForm] = useState({ rating: 0, text: '' });
   const [hoverRating, setHoverRating] = useState(0);
   const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    setSelectedProductId(productId || '');
+  }, [productId]);
 
   // 1. Fetch Reviews (Product-specific if productId provided, else all)
   const fetchReviews = async (signal) => {
@@ -99,18 +104,15 @@ export default function CustomerReviewSection({
     }
   };
 
-  // 2. Check Eligibility if user is logged in & viewing a product
+  // 2. Check Eligibility if user is logged in (both product-specific and general)
   const checkUserEligibility = async (signal) => {
-    if (!productId) {
-      setEligibility({ canReview: false, reason: null, message: '', eligibleOrders: [] });
-      return;
-    }
-
     if (!token) {
       setEligibility({
         canReview: false,
         reason: 'not_logged_in',
-        message: 'Only verified customers who have purchased this product can leave a review.',
+        message: productId
+          ? 'Only verified customers who have purchased this product can leave a review.'
+          : 'Only verified customers with a delivered order can leave a review.',
         eligibleOrders: []
       });
       return;
@@ -119,21 +121,26 @@ export default function CustomerReviewSection({
     try {
       setEligibilityLoading(true);
       const res = await reviewsService.checkEligibility(productId, { signal });
-      if (res.canReview) {
+      if (res?.canReview) {
+        const eligible = Array.isArray(res.eligibleOrders) ? res.eligibleOrders : [];
         setEligibility({
           canReview: true,
           reason: null,
           message: res.message || 'You are eligible to review this verified purchase.',
-          eligibleOrders: res.eligibleOrders || []
+          eligibleOrders: eligible
         });
-        if (res.eligibleOrders?.length > 0) {
-          setSelectedOrderId(res.eligibleOrders[0].inquiryId || res.eligibleOrders[0]._id);
+        if (eligible.length > 0) {
+          const first = eligible[0];
+          setSelectedOrderId(first.inquiryId || first._id);
+          setSelectedProductId(first.productId || productId || '');
         }
       } else {
         setEligibility({
           canReview: false,
-          reason: res.reason || 'not_purchased',
-          message: res.message || 'Only verified customers who have purchased this product can leave a review.',
+          reason: res?.reason || 'not_purchased',
+          message: res?.message || (productId
+            ? 'Only verified customers who have purchased this product can leave a review.'
+            : 'Only verified customers with a delivered order can leave a review.'),
           eligibleOrders: []
         });
       }
@@ -164,6 +171,16 @@ export default function CustomerReviewSection({
     [reviews]
   );
 
+  const selectedOrder = useMemo(() => {
+    if (!eligibility.eligibleOrders?.length) return null;
+    return (
+      eligibility.eligibleOrders.find(
+        (o) => String(o.inquiryId || o._id) === String(selectedOrderId)
+      ) || eligibility.eligibleOrders[0]
+    );
+  }, [eligibility.eligibleOrders, selectedOrderId]);
+
+  const currentItemName = selectedOrder?.productName || productName || 'this item';
   const visibleRating = hoverRating || form.rating;
 
   const handleSubmit = async (e) => {
@@ -179,9 +196,17 @@ export default function CustomerReviewSection({
     if (!text || text.length < 3) {
       return setError('Please write a review message (at least 3 characters).');
     }
-    if (productId && !selectedOrderId) {
+
+    const currentOrderId = selectedOrderId || (eligibility.eligibleOrders[0]?.inquiryId || eligibility.eligibleOrders[0]?._id);
+    if (!currentOrderId) {
       return setError('Please select your delivered order.');
     }
+
+    const matchedOrder = eligibility.eligibleOrders.find(
+      (o) => String(o.inquiryId || o._id) === String(currentOrderId)
+    ) || eligibility.eligibleOrders[0];
+
+    const targetProduct = selectedProductId || matchedOrder?.productId || productId;
 
     setSubmitting(true);
     setError('');
@@ -189,8 +214,8 @@ export default function CustomerReviewSection({
 
     try {
       const result = await reviewsService.submitVerifiedReview({
-        productId,
-        orderId: selectedOrderId,
+        productId: targetProduct,
+        orderId: currentOrderId,
         rating,
         comment: text
       });
@@ -208,12 +233,30 @@ export default function CustomerReviewSection({
       setForm({ rating: 0, text: '' });
       setHoverRating(0);
       setSuccess('Thank you! Your verified purchase review has been published.');
-      setEligibility((prev) => ({
-        ...prev,
-        canReview: false,
-        reason: 'already_reviewed',
-        message: 'You have submitted a verified review for this purchase.'
-      }));
+
+      // Update remaining eligible orders
+      setEligibility((prev) => {
+        const remaining = (prev.eligibleOrders || []).filter(
+          (o) => String(o.inquiryId || o._id) !== String(currentOrderId)
+        );
+        if (remaining.length > 0) {
+          const nextOrd = remaining[0];
+          setSelectedOrderId(nextOrd.inquiryId || nextOrd._id);
+          setSelectedProductId(nextOrd.productId || productId || '');
+          return {
+            ...prev,
+            eligibleOrders: remaining,
+            message: 'You have another delivered item available to review!'
+          };
+        }
+        return {
+          ...prev,
+          canReview: false,
+          reason: 'already_reviewed',
+          message: 'You have submitted a verified review for your purchase.',
+          eligibleOrders: []
+        };
+      });
     } catch (err) {
       setError(err?.response?.data?.message || err?.message || 'Failed to submit review');
     } finally {
@@ -274,21 +317,30 @@ export default function CustomerReviewSection({
             {/* Case A: User has eligible delivered order -> Show form */}
             {eligibility.canReview ? (
               <form className="cr-form" onSubmit={handleSubmit} noValidate>
-                {/* Order Selector (if customer purchased product multiple times) */}
-                {eligibility.eligibleOrders.length > 1 && (
+                {/* Order Selector (if customer purchased multiple items or browsing meat catalog page) */}
+                {(eligibility.eligibleOrders.length > 1 || !productId) && (
                   <div className="cr-field">
                     <label className="cr-label" htmlFor="cr-order-select">
-                      Select Delivered Order
+                      Select Delivered Item / Order <span className="cr-req">*</span>
                     </label>
                     <select
                       id="cr-order-select"
                       className="cr-input cr-select"
                       value={selectedOrderId}
-                      onChange={(e) => setSelectedOrderId(e.target.value)}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setSelectedOrderId(val);
+                        const matched = eligibility.eligibleOrders.find(
+                          (o) => String(o.inquiryId || o._id) === String(val)
+                        );
+                        if (matched?.productId) {
+                          setSelectedProductId(matched.productId);
+                        }
+                      }}
                     >
                       {eligibility.eligibleOrders.map((ord) => (
                         <option key={ord._id} value={ord.inquiryId || ord._id}>
-                          Order {ord.inquiryId || ord.orderGroupId} ({formatDate(ord.date)}) — Delivered
+                          {ord.productName ? `${ord.productName} — ` : ''}Order #{ord.inquiryId || ord.orderGroupId} ({formatDate(ord.date)})
                         </option>
                       ))}
                     </select>
@@ -337,7 +389,7 @@ export default function CustomerReviewSection({
                       if (error) setError('');
                       if (success) setSuccess('');
                     }}
-                    placeholder={`Tell us about your experience with ${productName || 'this product'}...`}
+                    placeholder={`Tell us about your experience with ${currentItemName}...`}
                     maxLength={1000}
                   />
                   <div className="cr-char-count">
@@ -350,7 +402,7 @@ export default function CustomerReviewSection({
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                   </svg>
-                  <span>This review will be published with a <strong>Verified Purchase</strong> badge.</span>
+                  <span>This review will be published with a <strong>Verified Purchase</strong> badge for <strong>{currentItemName}</strong>.</span>
                 </div>
 
                 {error && <div className="cr-alert cr-alert--err" role="alert">{error}</div>}
@@ -382,7 +434,7 @@ export default function CustomerReviewSection({
                       </svg>
                     </div>
                     <h4>Verified Customers Only</h4>
-                    <p>Only customers who have purchased and received this product can leave a review. Please log in to your account to review your purchase.</p>
+                    <p>{productId ? 'Only customers who have purchased and received this product can leave a review. Please log in to your account to review your purchase.' : 'Only customers who have received a delivered order can leave a review. Please log in to your account to review your purchase.'}</p>
                     <button
                       type="button"
                       className="cr-login-btn"
@@ -396,13 +448,13 @@ export default function CustomerReviewSection({
                     <div className="cr-elig-icon cr-elig-icon--truck">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <rect x="1" y="3" width="15" height="13"/>
-                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                        <polygon points="16 8 20 8 23 11 23 16 16 16 8"/>
                         <circle cx="5.5" cy="18.5" r="2.5"/>
                         <circle cx="18.5" cy="18.5" r="2.5"/>
                       </svg>
                     </div>
                     <h4>Order In Progress</h4>
-                    <p>We found your order for this item, but it has not been delivered yet. You will be able to review this product once your order is delivered!</p>
+                    <p>{productId ? 'We found your order for this item, but it has not been delivered yet. You will be able to review this product once your order is delivered!' : 'We found your order, but it has not been delivered yet. You will be able to review your purchase once your order is delivered!'}</p>
                   </div>
                 ) : eligibility.reason === 'already_reviewed' ? (
                   <div className="cr-elig-card cr-elig-card--success">
@@ -413,7 +465,7 @@ export default function CustomerReviewSection({
                       </svg>
                     </div>
                     <h4>Review Published</h4>
-                    <p>Thank you! You have already submitted a verified review for this purchase.</p>
+                    <p>Thank you! You have already submitted a verified review for your purchase.</p>
                   </div>
                 ) : (
                   <div className="cr-elig-card">
@@ -425,7 +477,7 @@ export default function CustomerReviewSection({
                       </svg>
                     </div>
                     <h4>Verified Purchase Required</h4>
-                    <p>Only verified customers who have purchased this product can leave a review. To maintain honest reviews, spam or unverified submissions are not accepted.</p>
+                    <p>{productId ? 'Only verified customers who have purchased this product can leave a review. To maintain honest reviews, spam or unverified submissions are not accepted.' : 'Only verified customers with a delivered order can leave a review. To maintain honest reviews, spam or unverified submissions are not accepted.'}</p>
                   </div>
                 )}
               </div>
