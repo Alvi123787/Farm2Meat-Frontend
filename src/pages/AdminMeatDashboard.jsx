@@ -485,6 +485,7 @@ function MeatItemsManager({
             <option value="beef">Beef</option>
             <option value="chicken">Chicken</option>
             <option value="fish">Fish</option>
+            <option value="seafood">Seafood</option>
           </select>
           <a href="/admin/add-animal/meat" className="ad-btn ad-btn-primary">
             <FontAwesomeIcon icon={faPlus} /> Add New Item

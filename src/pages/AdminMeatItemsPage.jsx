@@ -36,6 +36,7 @@ const CATEGORIES = [
   { value: 'beef',    label: 'Beef' },
   { value: 'chicken', label: 'Chicken' },
   { value: 'fish',    label: 'Fish' },
+  { value: 'seafood', label: 'Seafood' },
 ]
 
 const FORM_CATEGORIES = CATEGORIES.filter(c => c.value !== 'all')

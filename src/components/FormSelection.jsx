@@ -20,7 +20,7 @@ export default function FormSelection() {
     {
       id: 'meat',
       title: 'Meat Item Form',
-      desc: 'Add new meat products (Mutton, Beef, Chicken, Fish) to the menu.',
+      desc: 'Add new meat products (Mutton, Beef, Chicken, Fish, Seafood) to the menu.',
       icon: faUtensils,
       color: '#800000',
       path: '/admin/add-animal/meat',

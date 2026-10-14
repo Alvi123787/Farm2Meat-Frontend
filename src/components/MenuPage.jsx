@@ -20,6 +20,7 @@ const FILTERS = [
   { id: 'beef',    label: 'Beef' },
   { id: 'chicken', label: 'Chicken' },
   { id: 'fish',    label: 'Fish' },
+  { id: 'seafood', label: 'Seafood' },
 ]
 
 const CATEGORY_META = {
@@ -27,6 +28,7 @@ const CATEGORY_META = {
   beef:    { label: 'Premium Grade', number: '02', accent: 'B' },
   chicken: { label: 'Free Range',    number: '03', accent: 'C' },
   fish:    { label: 'Ocean Catch',   number: '04', accent: 'F' },
+  seafood: { label: 'Ocean Fresh',   number: '05', accent: 'S' },
 }
 
 /* ── Skeleton ─────────────────────────────────── */
@@ -208,8 +210,10 @@ export default function MenuPage() {
 
   const categoriesToRender = useMemo(() => {
     if (activeFilter !== 'all') return [activeFilter]
-    return ['mutton', 'beef', 'chicken', 'fish']
-  }, [activeFilter])
+    const base = ['mutton', 'beef', 'chicken', 'fish', 'seafood']
+    const extra = Object.keys(grouped || {}).filter(k => !base.includes(k))
+    return [...base, ...extra]
+  }, [activeFilter, grouped])
 
   const countOf = (cat) => (grouped[cat] || []).length
 
@@ -229,7 +233,7 @@ export default function MenuPage() {
             The&nbsp;<em>Finest</em><br />Cuts, Daily.
           </h1>
           <p className="mp-hero__body">
-            Handpicked mutton, beef, chicken &amp; fish — sourced fresh every morning and delivered to your door.
+            Handpicked mutton, beef, chicken, fish &amp; seafood — sourced fresh every morning and delivered to your door.
           </p>
           <div className="mp-hero__ornament" aria-hidden="true">
             <span /><svg viewBox="0 0 16 16" width="10" height="10"><path d="M8 0 L16 8 L8 16 L0 8 Z" fill="#c8a96e"/></svg><span />
