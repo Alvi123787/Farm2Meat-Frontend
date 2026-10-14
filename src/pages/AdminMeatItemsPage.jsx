@@ -46,6 +46,21 @@ const UNITS = [
   { value: 'piece', label: 'Per Piece' },
 ]
 
+const DEFAULT_FISH_CUTS = [
+  'Slices / Steaks',
+  'Boneless Cubes',
+  'Finger Fish',
+  'Whole Cleaned',
+  'Fillet',
+  'Curry Cut (With Bone)'
+]
+
+const DEFAULT_FISH_SIZES = [
+  { label: '1.0 - 1.5 kg', minWeight: 1.0, maxWeight: 1.5 },
+  { label: '1.5 - 2.0 kg', minWeight: 1.5, maxWeight: 2.0 },
+  { label: '2.0 - 3.0 kg', minWeight: 2.0, maxWeight: 3.0 }
+]
+
 const INITIAL_FORM = {
   name: '',
   category: 'mutton',
@@ -59,6 +74,11 @@ const INITIAL_FORM = {
   showInHeader: false,
   titleTop: '',
   titleBottom: '',
+  fishOptions: {
+    isFish: false,
+    availableCuts: DEFAULT_FISH_CUTS.slice(0, 4),
+    sizeVariants: DEFAULT_FISH_SIZES
+  }
 }
 
 export default function AdminMeatItemsPage() {
@@ -76,11 +96,65 @@ export default function AdminMeatItemsPage() {
   const [submitting, setSubmitting] = useState(false)
   const [imagePreview, setImagePreview] = useState(null)
   const [deleteTarget, setDeleteTarget] = useState(null)
+  const [newCutInput, setNewCutInput] = useState('')
 
   const fileRef = useRef(null)
 
   const { getAllItems } = useMeatItems()
   const { createItem, updateItem, deleteItem, toggleAvailability, toggleBestseller } = useAdminItems()
+
+  const handleToggleCut = (cut) => {
+    setForm(prev => {
+      const current = prev.fishOptions?.availableCuts || []
+      const updated = current.includes(cut) ? current.filter(c => c !== cut) : [...current, cut]
+      return {
+        ...prev,
+        fishOptions: {
+          ...(prev.fishOptions || {}),
+          isFish: prev.category === 'fish',
+          availableCuts: updated,
+          sizeVariants: prev.fishOptions?.sizeVariants || DEFAULT_FISH_SIZES
+        }
+      }
+    })
+  }
+
+  const handleAddCustomCut = (e) => {
+    e?.preventDefault?.()
+    if (!newCutInput.trim()) return
+    const cut = newCutInput.trim()
+    setForm(prev => {
+      const current = prev.fishOptions?.availableCuts || []
+      if (current.includes(cut)) return prev
+      return {
+        ...prev,
+        fishOptions: {
+          ...(prev.fishOptions || {}),
+          isFish: prev.category === 'fish',
+          availableCuts: [...current, cut],
+          sizeVariants: prev.fishOptions?.sizeVariants || DEFAULT_FISH_SIZES
+        }
+      }
+    })
+    setNewCutInput('')
+  }
+
+  const handleToggleSize = (sizeVariant) => {
+    setForm(prev => {
+      const current = prev.fishOptions?.sizeVariants || []
+      const exists = current.some(s => s.label === sizeVariant.label)
+      const updated = exists ? current.filter(s => s.label !== sizeVariant.label) : [...current, sizeVariant]
+      return {
+        ...prev,
+        fishOptions: {
+          ...(prev.fishOptions || {}),
+          isFish: prev.category === 'fish',
+          availableCuts: prev.fishOptions?.availableCuts || DEFAULT_FISH_CUTS.slice(0, 4),
+          sizeVariants: updated
+        }
+      }
+    })
+  }
 
   const fetchItems = useCallback(async () => {
     setLoading(true)
@@ -139,10 +213,32 @@ export default function AdminMeatItemsPage() {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target
-    setForm(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }))
+    setForm(prev => {
+      const nextVal = type === 'checkbox' ? checked : value
+      const updated = {
+        ...prev,
+        [name]: nextVal
+      }
+
+      if (name === 'category') {
+        if (value === 'fish') {
+          updated.unit = 'kg'
+          updated.fishOptions = {
+            ...(prev.fishOptions || {}),
+            isFish: true,
+            availableCuts: prev.fishOptions?.availableCuts?.length ? prev.fishOptions.availableCuts : DEFAULT_FISH_CUTS.slice(0, 4),
+            sizeVariants: prev.fishOptions?.sizeVariants?.length ? prev.fishOptions.sizeVariants : DEFAULT_FISH_SIZES
+          }
+        } else {
+          updated.fishOptions = {
+            ...(prev.fishOptions || {}),
+            isFish: false
+          }
+        }
+      }
+
+      return updated
+    })
   }
 
   const handleFileChange = async (e) => {
@@ -426,6 +522,132 @@ export default function AdminMeatItemsPage() {
                     rows="3"
                   ></textarea>
                 </div>
+
+                {/* Fish Specific Options */}
+                {form.category === 'fish' && (
+                  <div className="amip-form-group full" style={{
+                    background: '#f0f9ff',
+                    border: '1.5px solid #bae6fd',
+                    borderRadius: '10px',
+                    padding: '16px',
+                    marginTop: '6px',
+                    boxShadow: '0 2px 8px rgba(2, 132, 199, 0.06)'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                      <span style={{ fontSize: '1.2rem' }}>🐟</span>
+                      <h4 style={{ margin: 0, color: '#0369a1', fontSize: '0.95rem', fontWeight: 700 }}>
+                        Fish Options & Cuts Configuration
+                      </h4>
+                    </div>
+
+                    <p style={{ fontSize: '0.78rem', color: '#0284c7', margin: '0 0 12px', lineHeight: 1.4 }}>
+                      Base price set is <strong>Per KG</strong>. On the customer detail page, the customer will pick their desired fish size bracket and cut.
+                    </p>
+
+                    {/* Available Cuts */}
+                    <div style={{ marginBottom: '14px' }}>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#0f172a', marginBottom: '6px' }}>
+                        Available Cuts (Select all cuts you offer for this fish):
+                      </label>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
+                        {Array.from(new Set(DEFAULT_FISH_CUTS.concat(form.fishOptions?.availableCuts || []))).map(cut => {
+                          const isSelected = (form.fishOptions?.availableCuts || []).includes(cut)
+                          return (
+                            <button
+                              key={cut}
+                              type="button"
+                              onClick={() => handleToggleCut(cut)}
+                              style={{
+                                padding: '6px 12px',
+                                borderRadius: '20px',
+                                border: isSelected ? '1.5px solid #0284c7' : '1px solid #cbd5e1',
+                                background: isSelected ? '#e0f2fe' : '#ffffff',
+                                color: isSelected ? '#0369a1' : '#475569',
+                                fontSize: '0.78rem',
+                                fontWeight: isSelected ? 600 : 500,
+                                cursor: 'pointer',
+                                transition: 'all 0.15s ease'
+                              }}
+                            >
+                              {isSelected ? '✓ ' : '+ '} {cut}
+                            </button>
+                          )
+                        })}
+                      </div>
+
+                      {/* Add Custom Cut Input */}
+                      <div style={{ display: 'flex', gap: '8px', maxWidth: '360px' }}>
+                        <input
+                          type="text"
+                          value={newCutInput}
+                          onChange={e => setNewCutInput(e.target.value)}
+                          placeholder="Add new cut (e.g. Tikka Boti)"
+                          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddCustomCut(e); } }}
+                          style={{
+                            flex: 1,
+                            padding: '6px 10px',
+                            fontSize: '0.8rem',
+                            border: '1px solid #cbd5e1',
+                            borderRadius: '6px'
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={handleAddCustomCut}
+                          style={{
+                            background: '#0284c7',
+                            color: '#fff',
+                            border: 'none',
+                            padding: '6px 12px',
+                            borderRadius: '6px',
+                            fontSize: '0.78rem',
+                            fontWeight: 600,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Add Cut
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Size Variants */}
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#0f172a', marginBottom: '6px' }}>
+                        Fish Size Brackets (Weights):
+                      </label>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                        {DEFAULT_FISH_SIZES.map(size => {
+                          const isSelected = (form.fishOptions?.sizeVariants || []).some(s => s.label === size.label)
+                          return (
+                            <label
+                              key={size.label}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                background: isSelected ? '#e0f2fe' : '#f8fafc',
+                                border: isSelected ? '1.5px solid #0284c7' : '1px solid #e2e8f0',
+                                padding: '6px 12px',
+                                borderRadius: '6px',
+                                fontSize: '0.8rem',
+                                fontWeight: 600,
+                                color: isSelected ? '#0369a1' : '#64748b',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={() => handleToggleSize(size)}
+                              />
+                              <span>{size.label}</span>
+                            </label>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="amip-form-group full">
                   <label>Product Image</label>

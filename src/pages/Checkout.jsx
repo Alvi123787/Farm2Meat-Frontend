@@ -237,11 +237,33 @@ const Checkout = () => {
   // Calculations (Memoized)
   // ════════════════════════════════════════════
 
+  const getItemSubtotalMin = (item) => {
+    if (item.fishDetails && item.fishDetails.estimatedPriceMin) {
+      return item.fishDetails.estimatedPriceMin
+    }
+    return priceToNumber(item.price) * getEffectiveQuantity(item)
+  }
+
+  const getItemSubtotalMax = (item) => {
+    if (item.fishDetails && item.fishDetails.estimatedPriceMax) {
+      return item.fishDetails.estimatedPriceMax
+    }
+    return priceToNumber(item.price) * getEffectiveQuantity(item)
+  }
+
+  const hasFishItems = useMemo(() =>
+    orderItems.some(item => item.fishDetails || item.category === 'fish'),
+    [orderItems]
+  )
+
   const subtotal = useMemo(() =>
-    orderItems.reduce(
-      (sum, item) => sum + priceToNumber(item.price) * getEffectiveQuantity(item),
-      0
-    ), [orderItems]
+    orderItems.reduce((sum, item) => sum + getItemSubtotalMin(item), 0),
+    [orderItems]
+  )
+
+  const subtotalMax = useMemo(() =>
+    orderItems.reduce((sum, item) => sum + getItemSubtotalMax(item), 0),
+    [orderItems]
   )
 
   const totalItems = useMemo(() =>
@@ -261,6 +283,7 @@ const Checkout = () => {
     return hasMutton ? 0 : BASE_DELIVERY_CHARGE;
   }, [orderItems]);
   const grandTotal = useMemo(() => subtotal + delivery, [subtotal, delivery])
+  const grandTotalMax = useMemo(() => subtotalMax + delivery, [subtotalMax, delivery])
 
   // Meta Pixel - InitiateCheckout event
   useEffect(() => {
@@ -378,7 +401,9 @@ const Checkout = () => {
         price: item.price,
         quantity: getEffectiveQuantity(item),
         itemType: item.itemType || 'livestock',
-        purchaseMode: item.purchaseMode || 'single'
+        purchaseMode: item.purchaseMode || 'single',
+        category: item.category || '',
+        fishDetails: item.fishDetails || null
       })),
       deliveryAddress: formData.address,
       city: formData.city,
@@ -416,21 +441,40 @@ const Checkout = () => {
     currentItems.forEach((item, i) => {
       const qty = getEffectiveQuantity(item)
       const unitText = item.unit ? ` ${item.unit}` : ''
-      const itemTotal = priceToNumber(item.price) * qty
       lines.push(`${i + 1}. *${item.name}*`)
-      let breedLine = `   Breed: ${item.breed || 'N/A'}`
-      if (item.weight) breedLine += ` | Weight (Zinda): ${item.weight}`
-      lines.push(breedLine)
-      lines.push(`   Price: Rs ${formatPrice(item.price)} x ${qty}${unitText}`)
-      lines.push(`   Subtotal: Rs ${formatPrice(itemTotal)}`)
+      if (item.fishDetails) {
+        const cutName = item.fishDetails.isCustomCut
+          ? `Custom Cut (${item.fishDetails.customCutNote || ''})`
+          : (item.fishDetails.selectedCut || 'Standard Cut')
+        lines.push(`   Cut: ${cutName}`)
+        lines.push(`   Fish Size: ${item.fishDetails.sizeBracket || 'N/A'}`)
+        lines.push(`   Include Fish Head: ${item.fishDetails.includeHead ? 'Yes' : 'No (discarded)'}`)
+        lines.push(`   Pieces: ${item.fishDetails.pieces || qty}`)
+        lines.push(`   Rate: Rs ${formatPrice(item.price)}/kg`)
+        lines.push(`   Estimated Bill: Rs ${formatPrice(item.fishDetails.estimatedPriceMin)} - Rs ${formatPrice(item.fishDetails.estimatedPriceMax)}`)
+      } else {
+        let breedLine = `   Breed: ${item.breed || 'N/A'}`
+        if (item.weight) breedLine += ` | Weight (Zinda): ${item.weight}`
+        lines.push(breedLine)
+        const itemTotal = priceToNumber(item.price) * qty
+        lines.push(`   Price: Rs ${formatPrice(item.price)} x ${qty}${unitText}`)
+        lines.push(`   Subtotal: Rs ${formatPrice(itemTotal)}`)
+      }
       lines.push('')
     })
 
     lines.push(DIVIDER)
     lines.push(`Total Items: ${totalItems}`)
-    lines.push(`Product Total: Rs ${formatPrice(subtotal)}`)
-    lines.push(`Delivery: Rs. ${delivery}`)
-    lines.push(`*Grand Total: Rs ${formatPrice(grandTotal)}*`)
+    if (hasFishItems) {
+      lines.push(`Product Total: Rs ${formatPrice(subtotal)} - Rs ${formatPrice(subtotalMax)} (Estimated)`)
+      lines.push(`Delivery: Rs. ${delivery}`)
+      lines.push(`*Grand Total: Rs ${formatPrice(grandTotal)} - Rs ${formatPrice(grandTotalMax)} (Estimated)*`)
+      lines.push('*(Note: Fish final bill depends on actual gross weight on scale)*')
+    } else {
+      lines.push(`Product Total: Rs ${formatPrice(subtotal)}`)
+      lines.push(`Delivery: Rs. ${delivery}`)
+      lines.push(`*Grand Total: Rs ${formatPrice(grandTotal)}*`)
+    }
     lines.push('Payment: Cash On Delivery')
     lines.push('')
 
@@ -535,8 +579,11 @@ const Checkout = () => {
         fromPurchase: true,
         orderId: orderIdFromApi,
         grandTotal,
+        grandTotalMax,
         totalItems,
         subtotal,
+        subtotalMax,
+        hasFishItems,
         deliveryCharge: delivery,
         animalCareSelected,
         customerName: formData.fullName,
@@ -556,7 +603,9 @@ const Checkout = () => {
           price: item.price,
           quantity: getEffectiveQuantity(item),
           image: getThumbnail(item),
-          itemType: item.itemType || 'livestock'
+          itemType: item.itemType || 'livestock',
+          category: item.category || '',
+          fishDetails: item.fishDetails || null
         })),
         butcher: selectedButcher ? {
           id: selectedButcher._id,
@@ -953,12 +1002,12 @@ const Checkout = () => {
                     </button>
                     <div className={`co-section-body ${expandedSection.review ? 'co-section-body--open' : ''}`}>
                       <div className="co-review-list">
-                        {orderItems.map((item) => {
+                        {orderItems.map((item, index) => {
                           const qty = getEffectiveQuantity(item)
                           const itemTotal = priceToNumber(item.price) * qty
 
                           return (
-                            <div key={item._id || item.id} className="co-review-item">
+                            <div key={item.cartKey || item._id || item.id || index} className="co-review-item">
                               <div className="co-review-img-wrap">
                                 <img
                                   src={getThumbnail(item)}
@@ -975,35 +1024,57 @@ const Checkout = () => {
                               </div>
                               <div className="co-review-details">
                                 <h3 className="co-review-name">{item.name}</h3>
-                                <div className="co-review-meta">
-                                  {item.breed && (
-                                    <span className="co-review-tag">
-                                      <FaDna className="co-review-tag-icon" />
-                                      {item.breed}
+                                {item.fishDetails ? (
+                                  <div className="co-review-meta" style={{ flexWrap: 'wrap', gap: '6px' }}>
+                                    <span className="co-review-tag" style={{ background: '#e0f2fe', color: '#0369a1', fontWeight: 600 }}>
+                                      🐟 {item.fishDetails.isCustomCut ? `Custom: ${item.fishDetails.customCutNote}` : item.fishDetails.selectedCut}
                                     </span>
-                                  )}
-                                  {item.weight && (
                                     <span className="co-review-tag">
                                       <FaWeightHanging className="co-review-tag-icon" />
-                                      {item.weight}
+                                      {item.fishDetails.sizeBracket}
                                     </span>
-                                  )}
-                                  {item.age && (
+                                    <span className="co-review-tag" style={{ background: item.fishDetails.includeHead ? '#dcfce7' : '#fee2e2', color: item.fishDetails.includeHead ? '#166534' : '#991b1b', fontWeight: 600 }}>
+                                      Head: {item.fishDetails.includeHead ? 'Included' : 'Discarded'}
+                                    </span>
                                     <span className="co-review-tag">
-                                      <FaCalendarAlt className="co-review-tag-icon" />
-                                      {item.age}
+                                      {item.fishDetails.pieces} pc(s)
                                     </span>
-                                  )}
-                                </div>
+                                  </div>
+                                ) : (
+                                  <div className="co-review-meta">
+                                    {item.breed && (
+                                      <span className="co-review-tag">
+                                        <FaDna className="co-review-tag-icon" />
+                                        {item.breed}
+                                      </span>
+                                    )}
+                                    {item.weight && (
+                                      <span className="co-review-tag">
+                                        <FaWeightHanging className="co-review-tag-icon" />
+                                        {item.weight}
+                                      </span>
+                                    )}
+                                    {item.age && (
+                                      <span className="co-review-tag">
+                                        <FaCalendarAlt className="co-review-tag-icon" />
+                                        {item.age}
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
                                 <div className="co-review-price-row">
                                   <span className="co-review-price-label">
                                     <FaTag className="co-review-price-icon" />
-                                    {qty > 1
-                                      ? `${formatPrice(item.price)} x ${qty}${item.unit ? ` ${item.unit}` : ''}`
-                                      : 'Price'}
+                                    {item.fishDetails
+                                      ? `Rs. ${formatPrice(item.price)}/kg (Est. Weight: ${item.fishDetails.sizeBracket})`
+                                      : (qty > 1
+                                        ? `${formatPrice(item.price)} x ${qty}${item.unit ? ` ${item.unit}` : ''}`
+                                        : 'Price')}
                                   </span>
                                   <span className="co-review-price">
-                                    {formatPrice(itemTotal)}
+                                    {item.fishDetails && item.fishDetails.estimatedPriceMin
+                                      ? `Rs. ${formatPrice(item.fishDetails.estimatedPriceMin)} - Rs. ${formatPrice(item.fishDetails.estimatedPriceMax)}`
+                                      : formatPrice(itemTotal)}
                                   </span>
                                 </div>
                               </div>
@@ -1368,22 +1439,30 @@ const Checkout = () => {
                     </div>
 
                     <div className="co-summary-items">
-                      {orderItems.map((item) => {
+                      {orderItems.map((item, index) => {
                         const qty = getEffectiveQuantity(item)
                         const itemTotal = priceToNumber(item.price) * qty
                         return (
-                          <div key={item._id || item.id} className="co-summary-item">
+                          <div key={item.cartKey || item._id || item.id || index} className="co-summary-item">
                             <div className="co-summary-item-left">
                               <span className="co-summary-item-name">{item.name}</span>
-                              <span className="co-summary-item-detail">
-                                {item.breed || ''}
-                                {item.breed && item.weight ? ' · ' : ''}
-                                {item.weight || ''}
-                                {qty > 1 ? ` · x${qty}` : ''}
-                              </span>
+                              {item.fishDetails ? (
+                                <span className="co-summary-item-detail">
+                                  {item.fishDetails.selectedCut} · {item.fishDetails.sizeBracket} · {item.fishDetails.pieces} pc(s)
+                                </span>
+                              ) : (
+                                <span className="co-summary-item-detail">
+                                  {item.breed || ''}
+                                  {item.breed && item.weight ? ' · ' : ''}
+                                  {item.weight || ''}
+                                  {qty > 1 ? ` · x${qty}` : ''}
+                                </span>
+                              )}
                             </div>
                             <span className="co-summary-item-price">
-                               {formatPrice(itemTotal)}
+                              {item.fishDetails && item.fishDetails.estimatedPriceMin
+                                ? `Rs. ${formatPrice(item.fishDetails.estimatedPriceMin)} - ${formatPrice(item.fishDetails.estimatedPriceMax)}`
+                                : formatPrice(itemTotal)}
                             </span>
                           </div>
                         )
@@ -1394,7 +1473,11 @@ const Checkout = () => {
 
                     <div className="co-summary-row">
                       <span>Product Total ({totalItems} items)</span>
-                      <span> {formatPrice(subtotal)}</span>
+                      <span>
+                        {hasFishItems
+                          ? `Rs. ${formatPrice(subtotal)} - ${formatPrice(subtotalMax)}`
+                          : `Rs. ${formatPrice(subtotal)}`}
+                      </span>
                     </div>
                     <div className="co-summary-row">
                       <span className="co-summary-row-label">
@@ -1407,8 +1490,17 @@ const Checkout = () => {
 
                     <div className="co-summary-row co-summary-row--total">
                       <span>Grand Total</span>
-                      <span> {formatPrice(grandTotal)}</span>
+                      <span>
+                        {hasFishItems
+                          ? `Rs. ${formatPrice(grandTotal)} - ${formatPrice(grandTotalMax)}`
+                          : `Rs. ${formatPrice(grandTotal)}`}
+                      </span>
                     </div>
+                    {hasFishItems && (
+                      <p style={{ fontSize: '11px', color: '#64748b', margin: '6px 0 10px 0', lineHeight: 1.4 }}>
+                        *Estimated price range based on whole fish weight bracket. Final price calculated after actual scale weighing.
+                      </p>
+                    )}
 
                     {/* COD Badge */}
                     <div className="co-summary-payment-badge">

@@ -55,11 +55,21 @@ export const CartProvider = ({ children }) => {
     return () => clearInterval(t);
   }, [cartMeta?.expiresAt, clearCart]);
 
+  const getItemKey = (item) => {
+    if (item.category === 'fish' && item.fishDetails) {
+      return `${item._id}_${item.fishDetails.selectedCut}_${item.fishDetails.sizeBracket}_${item.fishDetails.includeHead}`
+    }
+    return item.cartKey || item._id
+  }
+
   const addItem = (product) => {
     const isMeat = product.type === 'meat' || product.purchaseMode === 'multi';
+    const initialQty = Number(product.quantity || product.fishDetails?.pieces || 1);
+    const cartKey = getItemKey(product);
     
     const newItem = {
       _id: product._id,
+      cartKey,
       name: product.name || 'Unknown Item',
       breed: product.breed || '',
       weight: product.weight || '',
@@ -74,12 +84,13 @@ export const CartProvider = ({ children }) => {
       city: product.city || '',
       itemType: product.type || (isMeat ? 'meat' : 'livestock'),
       purchaseMode: product.purchaseMode || (isMeat ? 'multi' : 'single'),
-      quantity: 1,
+      quantity: initialQty,
       unit: product.unit || '',
-      isAvailable: product.isAvailable !== undefined ? product.isAvailable : true
+      isAvailable: product.isAvailable !== undefined ? product.isAvailable : true,
+      fishDetails: product.fishDetails || null
     };
 
-    const existingIndex = cart.findIndex((item) => item._id === newItem._id);
+    const existingIndex = cart.findIndex((item) => getItemKey(item) === cartKey);
     let newCart = [...cart];
 
     if (existingIndex >= 0) {
@@ -90,7 +101,7 @@ export const CartProvider = ({ children }) => {
         const maxQty = 99;
         newCart[existingIndex] = { 
           ...existingItem, 
-          quantity: Math.min(maxQty, (existingItem.quantity || 1) + 1)
+          quantity: Math.min(maxQty, (existingItem.quantity || 1) + initialQty)
         };
       } else {
         // Just ensure it's there for single purchase livestock
@@ -105,13 +116,14 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeItem = (itemId) => {
-    const newCart = cart.filter(item => item._id !== itemId);
+    const newCart = cart.filter(item => (item.cartKey || item._id) !== itemId && item._id !== itemId);
     updateCart(newCart);
   };
 
   const updateQuantity = useCallback((itemId, delta) => {
     const newCart = cart.map(item => {
-      if (item._id === itemId) {
+      const matchKey = item.cartKey || item._id;
+      if (matchKey === itemId || item._id === itemId) {
         const isMeat = item.itemType === 'meat' || item.purchaseMode === 'multi';
         const maxQty = isMeat ? 99 : 1;
         const newQty = Math.max(1, Math.min(maxQty, (item.quantity || 1) + delta));

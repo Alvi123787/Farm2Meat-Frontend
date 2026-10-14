@@ -104,8 +104,11 @@ const Confirmation = () => {
     },
     products: s.items || [],
     subtotal: s.subtotal || 0,
+    subtotalMax: s.subtotalMax || s.subtotal || 0,
     shipping: s.deliveryCharge !== undefined ? s.deliveryCharge : 49,
     total: s.grandTotal || 0,
+    totalMax: s.grandTotalMax || s.grandTotal || 0,
+    hasFishItems: Boolean(s.hasFishItems || (s.items || []).some(i => i.fishDetails || i.category === 'fish')),
     butcher: s.butcher || null,
     animalCare: s.animalCareSelected || false,
     animalCarePrice:
@@ -129,6 +132,7 @@ const Confirmation = () => {
         orderData.advanceAmount;
 
   const grandTotal = orderData.total + (orderData.animalCare ? orderData.animalCarePrice : 0);
+  const grandTotalMax = orderData.totalMax + (orderData.animalCare ? orderData.animalCarePrice : 0);
 
   // Meta Pixel - Purchase event (fire once per order)
   const purchaseEventFiredRef = useRef(false);
@@ -300,19 +304,38 @@ const Confirmation = () => {
                   </div>
                   <div className="conf-item__details">
                     <p className="conf-item__name">{item.name}</p>
-                    <p className="conf-item__meta">
-                      {item.breed && <span>{item.breed}</span>}
-                      {item.breed && item.weight && <span className="conf-item__dot"> · </span>}
-                      {item.weight && <span>{item.weight}</span>}
-                      {!item.breed && !item.weight && (
-                        <span>
-                          Qty ×{item.quantity || 1}{item.unit ? ` ${item.unit}` : ''}
+                    {item.fishDetails ? (
+                      <div className="conf-item__meta" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '4px' }}>
+                        <span style={{ background: '#e0f2fe', color: '#0369a1', padding: '2px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>
+                          🐟 Cut: {item.fishDetails.isCustomCut ? `Custom (${item.fishDetails.customCutNote})` : item.fishDetails.selectedCut}
                         </span>
-                      )}
-                    </p>
+                        <span style={{ background: '#f1f5f9', color: '#475569', padding: '2px 6px', borderRadius: '4px', fontSize: '11px' }}>
+                          ⚖️ {item.fishDetails.sizeBracket}
+                        </span>
+                        <span style={{ background: item.fishDetails.includeHead ? '#dcfce7' : '#fee2e2', color: item.fishDetails.includeHead ? '#166534' : '#991b1b', padding: '2px 6px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>
+                          Head: {item.fishDetails.includeHead ? 'Included' : 'Discarded'}
+                        </span>
+                        <span style={{ background: '#f1f5f9', color: '#475569', padding: '2px 6px', borderRadius: '4px', fontSize: '11px' }}>
+                          🔢 {item.fishDetails.pieces} pc(s)
+                        </span>
+                      </div>
+                    ) : (
+                      <p className="conf-item__meta">
+                        {item.breed && <span>{item.breed}</span>}
+                        {item.breed && item.weight && <span className="conf-item__dot"> · </span>}
+                        {item.weight && <span>{item.weight}</span>}
+                        {!item.breed && !item.weight && (
+                          <span>
+                            Qty ×{item.quantity || 1}{item.unit ? ` ${item.unit}` : ''}
+                          </span>
+                        )}
+                      </p>
+                    )}
                   </div>
                   <span className="conf-item__total">
-                    {formatPrice(Number(item.price || 0) * (item.quantity || 1))}
+                    {item.fishDetails && item.fishDetails.estimatedPriceMin
+                      ? `Rs. ${formatPrice(item.fishDetails.estimatedPriceMin)} - Rs. ${formatPrice(item.fishDetails.estimatedPriceMax)}`
+                      : formatPrice(Number(item.price || 0) * (item.quantity || 1))}
                   </span>
                 </div>
               ))}
@@ -321,7 +344,11 @@ const Confirmation = () => {
             <div className="conf-totals">
               <div className="conf-total-row">
                 <span>Items subtotal</span>
-                <span>{formatPrice(orderData.subtotal)}</span>
+                <span>
+                  {orderData.hasFishItems
+                    ? `Rs. ${formatPrice(orderData.subtotal)} - ${formatPrice(orderData.subtotalMax)}`
+                    : formatPrice(orderData.subtotal)}
+                </span>
               </div>
               {orderData.animalCare && (
                 <div className="conf-total-row">
@@ -335,8 +362,17 @@ const Confirmation = () => {
               </div>
               <div className="conf-total-row conf-total-row--grand">
                 <span>Grand total</span>
-                <span className="conf-grand-amount">{formatPrice(grandTotal)}</span>
+                <span className="conf-grand-amount">
+                  {orderData.hasFishItems
+                    ? `Rs. ${formatPrice(grandTotal)} - ${formatPrice(grandTotalMax)}`
+                    : formatPrice(grandTotal)}
+                </span>
               </div>
+              {orderData.hasFishItems && (
+                <p style={{ fontSize: '11px', color: '#64748b', marginTop: '6px', lineHeight: 1.4 }}>
+                  *Estimated bill range based on whole fish weight bracket. Final price calculated after actual scale weighing.
+                </p>
+              )}
             </div>
 
             {orderData.animalCare && (

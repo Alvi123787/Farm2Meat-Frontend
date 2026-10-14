@@ -155,8 +155,15 @@ const Cart = () => {
   // Calculations
   // ════════════════════════════════════════════
 
+  const getItemSubtotal = (item) => {
+    if (item.category === 'fish' && item.fishDetails?.estimatedPriceMin) {
+      return item.fishDetails.estimatedPriceMin
+    }
+    return priceToNumber(item.price) * getEffectiveQuantity(item)
+  }
+
   const subtotal = cartItems.reduce(
-    (sum, item) => sum + priceToNumber(item.price) * getEffectiveQuantity(item),
+    (sum, item) => sum + getItemSubtotal(item),
     0
   )
   const delivery = cartItems.length > 0 ? DELIVERY_CHARGE : 0
@@ -169,9 +176,15 @@ const Cart = () => {
 
   const handleUpdateQuantity = (id, delta) => {
     // Find item to get details for GA4 event
-    const item = cartItems.find(i => i._id === id)
+    const item = cartItems.find(i => (i.cartKey || i._id) === id || i._id === id)
     if (item) {
       const newQuantity = (item.quantity || 1) + delta
+      if (item.category === 'fish' && item.fishDetails) {
+        const baseRate = priceToNumber(item.price)
+        item.fishDetails.pieces = newQuantity
+        item.fishDetails.estimatedPriceMin = Math.round(item.fishDetails.minWeight * baseRate * newQuantity)
+        item.fishDetails.estimatedPriceMax = Math.round(item.fishDetails.maxWeight * baseRate * newQuantity)
+      }
       console.log(`📦 [GA4] Tracking quantity change: ${item.name} - ${delta > 0 ? 'increased' : 'decreased'} to ${newQuantity}${item.unit ? ` ${item.unit}` : ''}`)
       
       ReactGA.event({
@@ -185,12 +198,13 @@ const Cart = () => {
         price: priceToNumber(item.price)
       })
     }
+
     updateQuantity(id, delta)
   }
 
   const handleRemoveItem = (id) => {
     // Track item removal before removing it
-    const item = cartItems.find(i => i._id === id)
+    const item = cartItems.find(i => (i.cartKey || i._id) === id || i._id === id)
     if (item) {
       console.log(`🗑️ [GA4] Tracking item removed: ${item.name}`)
       ReactGA.event({
@@ -448,8 +462,8 @@ const Cart = () => {
                     <div className="cart-items-list">
                       {cartItems.map((item) => (
                         <div
-                          key={item._id}
-                          className={`cart-item ${removingId === item._id ? 'cart-item--removing' : ''}`}
+                          key={item.cartKey || item._id}
+                          className={`cart-item ${removingId === (item.cartKey || item._id) ? 'cart-item--removing' : ''}`}
                         >
                           {/* FIX: Image thumbnail is now clickable */}
                           <button
@@ -479,7 +493,7 @@ const Cart = () => {
                               </button>
                               <button
                                 className="cart-item-remove"
-                                onClick={() => handleRemoveItem(item._id)}
+                                onClick={() => handleRemoveItem(item.cartKey || item._id)}
                                 aria-label={`Remove ${item.name}`}
                               >
                                 <FaTrashAlt />
@@ -487,42 +501,73 @@ const Cart = () => {
                             </div>
 
                             <div className="cart-item-meta">
-                              {item.breed && (
-                                <span className="cart-item-meta-tag">
-                                  <FaDna className="cart-item-meta-icon" />
-                                  {item.breed}
-                                </span>
-                              )}
-                              {item.weight && (
-                                <span className="cart-item-meta-tag">
-                                  <FaWeightHanging className="cart-item-meta-icon" />
-                                  {item.weight}
-                                </span>
-                              )}
-                              {item.age && (
-                                <span className="cart-item-meta-tag">
-                                  <FaCalendarAlt className="cart-item-meta-icon" />
-                                  {item.age}
-                                </span>
+                              {item.category === 'fish' && item.fishDetails ? (
+                                <>
+                                  <span className="cart-item-meta-tag" style={{ background: '#e0f2fe', color: '#0369a1', fontWeight: 600 }}>
+                                    🐟 {item.fishDetails.selectedCut || 'Standard Cut'}
+                                  </span>
+                                  <span className="cart-item-meta-tag" style={{ background: '#f1f5f9', color: '#334155' }}>
+                                    ⚖️ {item.fishDetails.sizeBracket || '1.0 - 1.5 kg'}
+                                  </span>
+                                  <span className="cart-item-meta-tag" style={{ background: item.fishDetails.includeHead ? '#dcfce7' : '#f8fafc', color: item.fishDetails.includeHead ? '#15803d' : '#64748b' }}>
+                                    Head: {item.fishDetails.includeHead ? 'Yes' : 'No'}
+                                  </span>
+                                </>
+                              ) : (
+                                <>
+                                  {item.breed && (
+                                    <span className="cart-item-meta-tag">
+                                      <FaDna className="cart-item-meta-icon" />
+                                      {item.breed}
+                                    </span>
+                                  )}
+                                  {item.weight && (
+                                    <span className="cart-item-meta-tag">
+                                      <FaWeightHanging className="cart-item-meta-icon" />
+                                      {item.weight}
+                                    </span>
+                                  )}
+                                  {item.age && (
+                                    <span className="cart-item-meta-tag">
+                                      <FaCalendarAlt className="cart-item-meta-icon" />
+                                      {item.age}
+                                    </span>
+                                  )}
+                                </>
                               )}
                             </div>
 
                             <div className="cart-item-bottom">
-                              <div className="cart-item-price-block">
-                                <span className="cart-item-price-label">
-                                  <FaTag className="cart-item-price-icon" />
-                                  Price
-                                </span>
-                                <span className="cart-item-price">
-                                  {formatPrice(item.price)}
-                                </span>
-                              </div>
+                              {item.category === 'fish' && item.fishDetails ? (
+                                <div className="cart-item-price-block">
+                                  <span className="cart-item-price-label">
+                                    <FaTag className="cart-item-price-icon" />
+                                    Estimated Bill
+                                  </span>
+                                  <span className="cart-item-price" style={{ color: '#0284c7', fontSize: '1.05rem', fontWeight: 700 }}>
+                                    Rs. {formatPrice(item.fishDetails.estimatedPriceMin)} – {formatPrice(item.fishDetails.estimatedPriceMax)}
+                                  </span>
+                                  <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                                    (Rate: Rs. {formatPrice(item.price)}/kg)
+                                  </span>
+                                </div>
+                              ) : (
+                                <div className="cart-item-price-block">
+                                  <span className="cart-item-price-label">
+                                    <FaTag className="cart-item-price-icon" />
+                                    Price
+                                  </span>
+                                  <span className="cart-item-price">
+                                    {formatPrice(item.price)}
+                                  </span>
+                                </div>
+                              )}
 
                               {isMultiQuantityItem(item) ? (
                         <div className="cart-item-qty">
                           <button
                             className="cart-qty-btn"
-                            onClick={() => handleUpdateQuantity(item._id, -1)}
+                            onClick={() => handleUpdateQuantity(item.cartKey || item._id, -1)}
                             disabled={(item.quantity || 1) <= 1}
                             aria-label="Decrease quantity"
                           >
@@ -530,11 +575,11 @@ const Cart = () => {
                           </button>
                           <span className="cart-qty-value">
                             {item.quantity || 1}
-                            {item.unit ? ` ${item.unit}` : ''}
+                            {item.category === 'fish' ? ' pcs' : (item.unit ? ` ${item.unit}` : '')}
                           </span>
                           <button
                             className="cart-qty-btn"
-                            onClick={() => handleUpdateQuantity(item._id, 1)}
+                            onClick={() => handleUpdateQuantity(item.cartKey || item._id, 1)}
                             disabled={(item.quantity || 1) >= 99}
                             aria-label="Increase quantity"
                           >

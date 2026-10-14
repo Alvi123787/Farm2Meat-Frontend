@@ -99,7 +99,7 @@ const MenuCard = ({ item, index, onOrder, onFavouriteClick, isFav }) => {
             onClick={e => { e.stopPropagation(); if (isAvailable) onOrder(item); }}
             disabled={!isAvailable}
           >
-            {isAvailable ? 'Order' : 'Unavailable'}
+            {isAvailable ? (item.category === 'fish' ? 'Select Cut & Size' : 'Order') : 'Unavailable'}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M5 12h14m0 0-6-6m6 6-6 6"/>
             </svg>
@@ -166,6 +166,11 @@ export default function MenuPage() {
   }
 
   const handleOrder = (item) => {
+    if (item.category === 'fish') {
+      navigate(`/shop/${item._id}`)
+      return
+    }
+
     // Track GA4 events
     ReactGA.event({
       category: 'Ecommerce',

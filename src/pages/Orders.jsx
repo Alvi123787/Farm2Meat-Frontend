@@ -1201,6 +1201,34 @@ const Orders = () => {
                         <span className="om-animal-detail-label">Item Total</span>
                         <span className="om-animal-detail-val" style={{ fontWeight: '700', color: 'var(--primary)' }}>Rs. {item.totalAmount?.toLocaleString() || '0'}</span>
                       </div>
+                      {item.fishDetails && (
+                        <>
+                          <div className="om-animal-detail-item">
+                            <span className="om-animal-detail-label">Fish Cut</span>
+                            <span className="om-animal-detail-val" style={{ fontWeight: '600', color: '#0369a1' }}>
+                              {item.fishDetails.isCustomCut ? `Custom: ${item.fishDetails.customCutNote}` : item.fishDetails.selectedCut}
+                            </span>
+                          </div>
+                          <div className="om-animal-detail-item">
+                            <span className="om-animal-detail-label">Size Bracket</span>
+                            <span className="om-animal-detail-val">{item.fishDetails.sizeBracket}</span>
+                          </div>
+                          <div className="om-animal-detail-item">
+                            <span className="om-animal-detail-label">Fish Head</span>
+                            <span className="om-animal-detail-val" style={{ fontWeight: '600', color: item.fishDetails.includeHead ? '#166534' : '#991b1b' }}>
+                              {item.fishDetails.includeHead ? 'Yes (Deliver Head)' : 'No (Discard Head)'}
+                            </span>
+                          </div>
+                          <div className="om-animal-detail-item">
+                            <span className="om-animal-detail-label">Pieces</span>
+                            <span className="om-animal-detail-val">{item.fishDetails.pieces}</span>
+                          </div>
+                          <div className="om-animal-detail-item">
+                            <span className="om-animal-detail-label">Estimated Bill</span>
+                            <span className="om-animal-detail-val">Rs. {item.fishDetails.estimatedPriceMin?.toLocaleString()} - Rs. {item.fishDetails.estimatedPriceMax?.toLocaleString()}</span>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 ))}
