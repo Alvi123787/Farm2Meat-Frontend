@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import ShopHeader from '../components/ShopHeader'
 import {
@@ -60,6 +60,19 @@ const trustElements = [
   { icon: <FaVideo />, title: 'Live Video', desc: 'Available on request' },
   { icon: <FaTruck />, title: 'Delivery in 49 Rs', desc: 'Within RYK city' },
   { icon: <FaMoneyBillWave />, title: 'Cash on Delivery', desc: 'Pay when you receive' }
+]
+
+const DEFAULT_FISH_SIZES = [
+  { label: '1.0 - 1.5 kg', minWeight: 1.0, maxWeight: 1.5 },
+  { label: '1.5 - 2.0 kg', minWeight: 1.5, maxWeight: 2.0 },
+  { label: '2.0 - 3.0 kg', minWeight: 2.0, maxWeight: 3.0 }
+]
+
+const DEFAULT_FISH_CUTS = [
+  'Slices / Steaks',
+  'Boneless Cubes',
+  'Finger Fish',
+  'Whole Cleaned'
 ]
 
 const priceToNumber = (price) => {
@@ -259,6 +272,23 @@ const ProductDetail = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [id])
 
+  useEffect(() => {
+    if (productData?.category === 'fish') {
+      const sizes = productData.fishOptions?.sizeVariants?.length
+        ? productData.fishOptions.sizeVariants
+        : DEFAULT_FISH_SIZES
+      const cuts = productData.fishOptions?.availableCuts?.length
+        ? productData.fishOptions.availableCuts
+        : DEFAULT_FISH_CUTS
+      if (!selectedSize && sizes.length > 0) {
+        setSelectedSize(sizes[0])
+      }
+      if (!selectedCut && cuts.length > 0) {
+        setSelectedCut(cuts[0])
+      }
+    }
+  }, [productData, selectedSize, selectedCut])
+
   if (loading) {
     return (
       <div className="pd-loading">
@@ -301,48 +331,25 @@ const ProductDetail = () => {
 
   const isFish = productData.category === 'fish'
 
-  const defaultSizes = useMemo(() => [
-    { label: '1.0 - 1.5 kg', minWeight: 1.0, maxWeight: 1.5 },
-    { label: '1.5 - 2.0 kg', minWeight: 1.5, maxWeight: 2.0 },
-    { label: '2.0 - 3.0 kg', minWeight: 2.0, maxWeight: 3.0 }
-  ], [])
+  const availableSizes = productData.fishOptions?.sizeVariants?.length
+    ? productData.fishOptions.sizeVariants
+    : DEFAULT_FISH_SIZES
 
-  const availableSizes = useMemo(() => {
-    if (productData.fishOptions?.sizeVariants?.length) {
-      return productData.fishOptions.sizeVariants
-    }
-    return defaultSizes
-  }, [productData, defaultSizes])
-
-  const availableCuts = useMemo(() => {
-    if (productData.fishOptions?.availableCuts?.length) {
-      return productData.fishOptions.availableCuts
-    }
-    return ['Slices / Steaks', 'Boneless Cubes', 'Finger Fish', 'Whole Cleaned']
-  }, [productData])
-
-  useEffect(() => {
-    if (isFish) {
-      if (availableSizes.length > 0 && !selectedSize) {
-        setSelectedSize(availableSizes[0])
-      }
-      if (availableCuts.length > 0 && !selectedCut) {
-        setSelectedCut(availableCuts[0])
-      }
-    }
-  }, [isFish, availableSizes, availableCuts, selectedSize, selectedCut])
+  const availableCuts = productData.fishOptions?.availableCuts?.length
+    ? productData.fishOptions.availableCuts
+    : DEFAULT_FISH_CUTS
 
   const currentBasePrice = priceToNumber(productData.price)
+  const currentMinWeight = selectedSize?.minWeight || availableSizes[0]?.minWeight || 1.0
+  const currentMaxWeight = selectedSize?.maxWeight || availableSizes[0]?.maxWeight || 1.5
 
-  const estimatedMinTotal = useMemo(() => {
-    if (!isFish || !selectedSize) return currentBasePrice
-    return Math.round(selectedSize.minWeight * currentBasePrice * pieces)
-  }, [isFish, selectedSize, currentBasePrice, pieces])
+  const estimatedMinTotal = isFish
+    ? Math.round(currentMinWeight * currentBasePrice * pieces)
+    : currentBasePrice
 
-  const estimatedMaxTotal = useMemo(() => {
-    if (!isFish || !selectedSize) return currentBasePrice
-    return Math.round(selectedSize.maxWeight * currentBasePrice * pieces)
-  }, [isFish, selectedSize, currentBasePrice, pieces])
+  const estimatedMaxTotal = isFish
+    ? Math.round(currentMaxWeight * currentBasePrice * pieces)
+    : currentBasePrice
 
   const stockStatus = productData.status || 'available'
   const isAvailable = stockStatus === 'available' || stockStatus === 'new' || stockStatus === 'Available'
