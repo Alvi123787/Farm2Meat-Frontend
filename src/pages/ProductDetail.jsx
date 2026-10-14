@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import ShopHeader from '../components/ShopHeader'
 import {
@@ -263,7 +263,7 @@ const ProductDetail = () => {
     return (
       <div className="pd-loading">
         <div className="pd-spinner" />
-        <p>Loading animal details…</p>
+        <p>Loading product details…</p>
       </div>
     )
   }
@@ -273,8 +273,8 @@ const ProductDetail = () => {
       <div className="pd-error">
         <div className="pd-error__card">
           <div className="pd-error__icon"><FaExclamationTriangle /></div>
-          <h2>{error || 'Animal Not Found'}</h2>
-          <p>The animal you're looking for might have been removed or doesn't exist.</p>
+          <h2>{error || 'Product Not Found'}</h2>
+          <p>The product you're looking for might have been removed or doesn't exist.</p>
           <div className="pd-error__actions">
             <button className="pd-btn pd-btn--primary" onClick={() => navigate('/shop')}>
               <FaArrowLeft /> Back to Shop
