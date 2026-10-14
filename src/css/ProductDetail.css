@@ -520,7 +520,6 @@
   color: var(--pd-primary);
   line-height: 1;
 }
-.pd-price__current::before { content: 'Rs '; font-size: 17px; font-weight: 600; }
 
 .pd-price__old {
   font-size: 16px;
@@ -528,7 +527,6 @@
   color: var(--pd-muted);
   text-decoration: line-through;
 }
-.pd-price__old::before { content: 'Rs '; font-size: 12px; }
 
 .pd-price__savings {
   display: inline-flex;
@@ -934,7 +932,6 @@
 .pd-mobile-bar__price { display: flex; flex-direction: column; }
 .pd-mobile-bar__label { font-size: 10.5px; color: var(--pd-muted); font-weight: 500; }
 .pd-mobile-bar__value { font-size: 17px; font-weight: 800; color: var(--pd-primary); }
-.pd-mobile-bar__value::before { content: 'Rs '; font-size: 11px; font-weight: 600; }
 
 .pd-mobile-bar__actions { display: flex; gap: 8px; margin-left: auto; }
 

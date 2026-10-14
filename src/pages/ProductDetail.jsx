@@ -366,7 +366,7 @@ const ProductDetail = () => {
         const cut = isCustomCut ? customCutText.trim() : (selectedCut || availableCuts[0])
         const size = selectedSize?.label || '1.0 - 1.5 kg'
         const head = includeHead ? 'Included (Yes)' : 'Not Included (No)'
-        msg = `Assalam o Alaikum!%0A%0AI want to order *${productData.name}*%0A%0A*Category:* Fish%0A*Cut:* ${cut}%0A*Size Bracket:* ${size}%0A*Pieces:* ${pieces}%0A*Fish Head:* ${head}%0A*Estimated Total:* Rs ${formatPrice(estimatedMinTotal)} - ${formatPrice(estimatedMaxTotal)} (Rate: Rs ${formatPrice(productData.price)}/kg)%0A%0APlease confirm my order.`
+        msg = `Assalam o Alaikum!%0A%0AI want to order *${productData.name}*%0A%0A*Category:* Fish%0A*Cut:* ${cut}%0A*Size Bracket:* ${size}%0A*Pieces:* ${pieces}%0A*Fish Head:* ${head}%0A*Estimated Total:* Rs. ${formatPrice(estimatedMinTotal, { withSymbol: false })} - ${formatPrice(estimatedMaxTotal, { withSymbol: false })} (Rate: ${formatPrice(productData.price)}/kg)%0A%0APlease confirm my order.`
       } else {
         msg = `Assalam o Alaikum!%0A%0AI'm interested in *${productData.name}*%0A%0ABreed: ${productData.breed}%0AWeight: ${productData.weight}%0APrice: Rs ${formatPrice(productData.price)}%0A%0APlease share more details.`
       }
@@ -616,12 +616,12 @@ const ProductDetail = () => {
                         Estimated Bill ({pieces} {pieces > 1 ? 'Pieces' : 'Piece'})
                       </span>
                       <span style={{ fontSize: '0.8rem', background: '#e0f2fe', color: '#0369a1', padding: '2px 8px', borderRadius: '4px', fontWeight: 700 }}>
-                        Rate: Rs {formatPrice(productData.price)} / kg
+                        Rate: {formatPrice(productData.price)} / kg
                       </span>
                     </div>
                     <div className="pd-price__row">
                       <span className="pd-price__current" style={{ color: '#0284c7', fontSize: '1.75rem' }}>
-                        Rs {formatPrice(estimatedMinTotal)} – {formatPrice(estimatedMaxTotal)}
+                        Rs. {formatPrice(estimatedMinTotal, { withSymbol: false })} – {formatPrice(estimatedMaxTotal, { withSymbol: false })}
                       </span>
                     </div>
                     <span style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '4px', display: 'block' }}>
@@ -1042,7 +1042,7 @@ const ProductDetail = () => {
         <div className="pd-mobile-bar__price">
           <span className="pd-mobile-bar__label">{isFish ? 'Est. Total' : 'Price'}</span>
           <span className="pd-mobile-bar__value">
-            {isFish ? `Rs ${formatPrice(estimatedMinTotal)} – ${formatPrice(estimatedMaxTotal)}` : formatPrice(productData.price)}
+            {isFish ? `Rs. ${formatPrice(estimatedMinTotal, { withSymbol: false })} – ${formatPrice(estimatedMaxTotal, { withSymbol: false })}` : formatPrice(productData.price)}
           </span>
         </div>
         <div className="pd-mobile-bar__actions">
