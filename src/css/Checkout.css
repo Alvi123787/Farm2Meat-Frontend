@@ -1772,3 +1772,55 @@
     justify-content: center;
   }
 }
+
+
+/* ============================================================
+   SEAFOOD SPECIAL TERMS IN CHECKOUT
+   ============================================================ */
+
+.co-seafood-terms-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 6px;
+  padding: 6px 10px;
+  background: #f0fdfa;
+  border: 1px solid #99f6e4;
+  border-left: 3px solid #0d9488;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  color: #115e59;
+  line-height: 1.35;
+}
+
+.co-seafood-terms-icon {
+  color: #0d9488;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.co-seafood-terms-badge strong {
+  color: #042f2e;
+  font-weight: 700;
+}
+
+.co-seafood-summary-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 10px 0;
+  padding: 10px 12px;
+  background: #f0fdfa;
+  border: 1px solid #99f6e4;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  color: #115e59;
+  line-height: 1.45;
+}
+
+.co-seafood-summary-note svg {
+  color: #0d9488;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}

@@ -52,6 +52,7 @@ import api from '../services/api'
 import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl'
 import { WHATSAPP_NUMBER } from '../constants/contact'
 import { formatPrice } from '../utils/priceUtils'
+import { isSeafoodItem } from '../utils/categoryUtils'
 
 const trustElements = [
   { icon: <FaBalanceScale />, title: 'Honest Weight', desc: 'Guaranteed accurate weight' },
@@ -465,7 +466,14 @@ const ProductDetail = () => {
     console.log('✅ [GA4] Begin checkout event tracked')
 
     addItem(itemToAdd)
-    navigate('/cart', { state: { fromBuyNow: true } })
+    navigate('/cart', {
+      state: {
+        fromBuyNow: true,
+        notice: isSeafoodItem(productData)
+          ? 'Special Delivery & Payment Terms apply to Seafood products (7-day delivery & 1/3 advance payment).'
+          : undefined
+      }
+    })
   }
 
   const handleShare = async () => {
@@ -910,6 +918,23 @@ const ProductDetail = () => {
                     <div>
                       <span className="pd-quick-card__label">Location</span>
                       <span className="pd-quick-card__value">{buildLocation(productData)}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {isSeafoodItem(productData) && (
+                <div className="pd-seafood-notice">
+                  <div className="pd-seafood-notice__header">
+                    <FaTruck />
+                    <span>Special Delivery &amp; Payment Terms</span>
+                  </div>
+                  <div className="pd-seafood-notice__body">
+                    <div className="pd-seafood-notice__row">
+                      <span>• <strong>Delivery:</strong> Within 7 days after order is placed.</span>
+                    </div>
+                    <div className="pd-seafood-notice__row">
+                      <span>• <strong>Advance Payment:</strong> 1/3 of the product amount is required in advance.</span>
                     </div>
                   </div>
                 </div>

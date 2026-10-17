@@ -16,7 +16,9 @@ import {
   FaBoxOpen,
   FaArrowLeft,
   FaTimes,
-  FaSpinner
+  FaSpinner,
+  FaClock,
+  FaInfoCircle
 } from 'react-icons/fa'
 import ReactGA from 'react-ga4'
 import api from '../services/api'
@@ -25,6 +27,7 @@ import { animalsService } from '../services/animalsService'
 import { useCart } from '../contexts/cartContextCore'
 import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl'
 import { formatPrice } from '../utils/priceUtils'
+import { isSeafoodItem } from '../utils/categoryUtils'
 
 // ── Config ──
 const DELIVERY_CHARGE = 0
@@ -169,6 +172,11 @@ const Cart = () => {
   const delivery = cartItems.length > 0 ? DELIVERY_CHARGE : 0
   const total = subtotal + delivery
   const totalItems = cartItems.reduce((sum, item) => sum + getEffectiveQuantity(item), 0)
+
+  const seafoodAdvanceTotal = cartItems
+    .filter(isSeafoodItem)
+    .reduce((sum, item) => sum + Math.round((priceToNumber(item.price) * getEffectiveQuantity(item)) / 3), 0)
+  const hasSeafood = seafoodAdvanceTotal > 0
 
   // ════════════════════════════════════════════
   // Handlers
@@ -537,6 +545,35 @@ const Cart = () => {
                               )}
                             </div>
 
+                            {/* Special Delivery & Payment Terms Notice (Seafood only) */}
+                            {isSeafoodItem(item) && (
+                              <div className="cart-seafood-notice" role="note" aria-label="Special Delivery & Payment Terms">
+                                <div className="cart-seafood-notice__header">
+                                  <FaClock className="cart-seafood-notice__icon" />
+                                  <span className="cart-seafood-notice__title">Special Delivery &amp; Payment Terms</span>
+                                </div>
+                                <div className="cart-seafood-notice__body">
+                                  <div className="cart-seafood-notice__row">
+                                    <span className="cart-seafood-notice__bullet">•</span>
+                                    <span className="cart-seafood-notice__text">
+                                      <strong>Delivery:</strong> Within 7 days.
+                                    </span>
+                                  </div>
+                                  <div className="cart-seafood-notice__row">
+                                    <span className="cart-seafood-notice__bullet">•</span>
+                                    <span className="cart-seafood-notice__text">
+                                      <strong>Advance Payment:</strong> 1/3 of the product amount is required in advance
+                                      {priceToNumber(item.price) > 0 && (
+                                        <span className="cart-seafood-advance-tag">
+                                          (Rs. {formatPrice(Math.round((priceToNumber(item.price) * getEffectiveQuantity(item)) / 3), { withSymbol: false })})
+                                        </span>
+                                      )}.
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
                             <div className="cart-item-bottom">
                               {item.category === 'fish' && item.fishDetails ? (
                                 <div className="cart-item-price-block">
@@ -636,8 +673,18 @@ const Cart = () => {
                         <span className="cart-summary-value"> {formatPrice(subtotal)}</span>
                       </div>
 
-                      {/* FIX: Free Delivery row in summary */}
-                      
+                      {hasSeafood && (
+                        <>
+                          <div className="cart-summary-row cart-summary-row--advance">
+                            <span className="cart-summary-label">Seafood 1/3 Advance</span>
+                            <span className="cart-summary-value">{formatPrice(seafoodAdvanceTotal)}</span>
+                          </div>
+                          <div className="cart-summary-seafood-badge">
+                            <FaInfoCircle />
+                            <span>Includes Seafood: 1/3 advance payment ({formatPrice(seafoodAdvanceTotal)}) required. Delivery within 7 days.</span>
+                          </div>
+                        </>
+                      )}
 
                       <div className="cart-summary-divider cart-summary-divider--total"></div>
 

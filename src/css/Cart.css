@@ -1452,3 +1452,119 @@ button.cart-btn--checkout {
     align-self: flex-end;
   }
 }
+
+/* ============================================================
+   SEAFOOD SPECIAL DELIVERY & PAYMENT TERMS IN CART
+   ============================================================ */
+
+.cart-seafood-notice {
+  margin: 12px 0 14px;
+  padding: 12px 14px;
+  background: #f0fdfa;
+  border: 1px solid #99f6e4;
+  border-left: 4px solid #0d9488;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.08);
+  transition: all 0.25s ease;
+}
+
+.cart-seafood-notice:hover {
+  background: #ecfdf5;
+  border-color: #5eead4;
+}
+
+.cart-seafood-notice__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.cart-seafood-notice__icon {
+  font-size: 0.95rem;
+  color: #0d9488;
+  flex-shrink: 0;
+}
+
+.cart-seafood-notice__title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #115e59;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.cart-seafood-notice__body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-left: 2px;
+}
+
+.cart-seafood-notice__row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 0.84rem;
+  color: #134e4a;
+  line-height: 1.45;
+}
+
+.cart-seafood-notice__bullet {
+  color: #0d9488;
+  font-weight: 800;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.cart-seafood-notice__text {
+  flex: 1;
+}
+
+.cart-seafood-notice__text strong {
+  font-weight: 700;
+  color: #042f2e;
+}
+
+.cart-seafood-advance-tag {
+  display: inline-block;
+  margin-left: 5px;
+  padding: 1px 7px;
+  background: #ccfbf1;
+  color: #0f766e;
+  font-weight: 700;
+  font-size: 0.78rem;
+  border-radius: 4px;
+  border: 1px solid #5eead4;
+}
+
+.cart-summary-seafood-badge {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 12px 0;
+  padding: 10px 12px;
+  background: #f0fdfa;
+  border: 1px solid #99f6e4;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  color: #115e59;
+  line-height: 1.45;
+}
+
+.cart-summary-seafood-badge svg {
+  color: #0d9488;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.cart-summary-row--advance {
+  color: #0f766e;
+  font-weight: 700;
+}
+
+.cart-summary-row--advance .cart-summary-value {
+  color: #0f766e;
+  font-weight: 800;
+}

@@ -1084,3 +1084,52 @@
     transition: none;
   }
 }
+
+
+/* ============================================================
+   SEAFOOD SPECIAL DELIVERY & PAYMENT TERMS IN PRODUCT DETAIL
+   ============================================================ */
+
+.pd-seafood-notice {
+  margin: 16px 0 18px;
+  padding: 14px 16px;
+  background: #f0fdfa;
+  border: 1px solid #99f6e4;
+  border-left: 4px solid #0d9488;
+  border-radius: var(--pd-r-sm);
+  box-shadow: var(--pd-shadow-sm);
+}
+
+.pd-seafood-notice__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #115e59;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.pd-seafood-notice__header svg {
+  color: #0d9488;
+  font-size: 16px;
+}
+
+.pd-seafood-notice__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pd-seafood-notice__row {
+  font-size: 13px;
+  color: #134e4a;
+  line-height: 1.5;
+}
+
+.pd-seafood-notice__row strong {
+  color: #042f2e;
+  font-weight: 700;
+}

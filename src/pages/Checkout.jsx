@@ -42,6 +42,7 @@ import ButcherModal from '../components/ButcherModal'
 import { buildMediaUrl, isAbsoluteUrl } from '../utils/mediaUrl'
 import { WHATSAPP_NUMBER } from '../constants/contact'
 import { formatPrice } from '../utils/priceUtils'
+import { isSeafoodItem } from '../utils/categoryUtils'
 
 // ── Config ──
 const BASE_DELIVERY_CHARGE = 49
@@ -256,6 +257,18 @@ const Checkout = () => {
     [orderItems]
   )
 
+  const hasSeafoodItems = useMemo(() =>
+    orderItems.some(isSeafoodItem),
+    [orderItems]
+  )
+
+  const seafoodAdvanceTotal = useMemo(() =>
+    orderItems
+      .filter(isSeafoodItem)
+      .reduce((sum, item) => sum + Math.round((priceToNumber(item.price) * getEffectiveQuantity(item)) / 3), 0),
+    [orderItems]
+  )
+
   const subtotal = useMemo(() =>
     orderItems.reduce((sum, item) => sum + getItemSubtotalMin(item), 0),
     [orderItems]
@@ -459,6 +472,9 @@ const Checkout = () => {
         const itemTotal = priceToNumber(item.price) * qty
         lines.push(`   Price: Rs ${formatPrice(item.price)} x ${qty}${unitText}`)
         lines.push(`   Subtotal: Rs ${formatPrice(itemTotal)}`)
+        if (isSeafoodItem(item)) {
+          lines.push(`   *Terms:* Delivery within 7 days | 1/3 Advance: Rs ${formatPrice(Math.round(itemTotal / 3))}`)
+        }
       }
       lines.push('')
     })
@@ -474,6 +490,10 @@ const Checkout = () => {
       lines.push(`Product Total: Rs ${formatPrice(subtotal)}`)
       lines.push(`Delivery: Rs. ${delivery}`)
       lines.push(`*Grand Total: Rs ${formatPrice(grandTotal)}*`)
+    }
+    if (hasSeafoodItems) {
+      lines.push(`*Seafood Advance (1/3): Rs ${formatPrice(seafoodAdvanceTotal)}*`)
+      lines.push('*(Note: Seafood items require 1/3 advance payment & have 7-day delivery timeline)*')
     }
     lines.push('Payment: Cash On Delivery')
     lines.push('')
@@ -1062,6 +1082,14 @@ const Checkout = () => {
                                     )}
                                   </div>
                                 )}
+                                {isSeafoodItem(item) && (
+                                  <div className="co-seafood-terms-badge">
+                                    <FaClock className="co-seafood-terms-icon" />
+                                    <span>
+                                      <strong>Special Terms:</strong> Delivery within 7 days · 1/3 advance payment required (Rs. {formatPrice(Math.round((priceToNumber(item.price) * qty) / 3), { withSymbol: false })})
+                                    </span>
+                                  </div>
+                                )}
                                 <div className="co-review-price-row">
                                   <span className="co-review-price-label">
                                     <FaTag className="co-review-price-icon" />
@@ -1503,6 +1531,12 @@ const Checkout = () => {
                     )}
 
                     {/* COD Badge */}
+                    {hasSeafoodItems && (
+                      <div className="co-seafood-summary-note">
+                        <FaInfoCircle />
+                        <span>Includes Seafood: 1/3 advance payment ({formatPrice(seafoodAdvanceTotal)}) required. Delivery will take 7 days.</span>
+                      </div>
+                    )}
                     <div className="co-summary-payment-badge">
                       <FaMoneyBillWave />
                       <span>Cash On Delivery</span>
